@@ -13,7 +13,7 @@ Email: limberca@oregonstate.edu
 Jack W Dunlap  
 Email: dunlapja@oregonstate.edu
 
-Jacob Munly
+Jacob Munly   
 Email: munlyj@oregonstate.edu
 
 Quinn Mcnamee  
