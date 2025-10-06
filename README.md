@@ -16,8 +16,8 @@ Email: dunlapja@oregonstate.edu
 Jacob Munly   
 Email: munlyj@oregonstate.edu
 
-Quinn Mcnamee  
-Email: mcnameeq@oregonstate.edu
-
 Rustislav Boulton  
 Email: boultonr@oregonstate.edu
+
+Quinn Mcnamee  
+Email: mcnameeq@oregonstate.edu
