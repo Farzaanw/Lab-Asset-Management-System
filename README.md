@@ -2,7 +2,6 @@
 
 ## Team Members
 Kai Johnson
-
 Email: johnkai5@oregonstate.edu
 
 Farzaan Wadiwalla  
