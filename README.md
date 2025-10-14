@@ -1,7 +1,7 @@
 # MicroCat
 
 ## Team Members
-Kai Johnson  
+Kai Johnson
 Email: johnkai5@oregonstate.edu
 
 Farzaan Wadiwalla  
