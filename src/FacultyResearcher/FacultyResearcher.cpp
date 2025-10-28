@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+class Document; //placeholder class so it compiles
+
 class FacultyResearcher {
 private:
   int FacultyID;
@@ -22,4 +24,4 @@ public:
 	Document generateUsageReport(assetUsed, dataRecords) //returns document structure
 	//display a record of the group the faculty is in charge of and their work they have done
 	void viewGroup(LabGroupID);
-}
+};
