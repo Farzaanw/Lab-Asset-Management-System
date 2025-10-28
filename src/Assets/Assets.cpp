@@ -6,16 +6,16 @@
 #include <vector>
 
 class Assets {
-	Private:
+	private:
 		int AssetID;
 		std::string assetName;
-		std::string assetType
+		std::string assetType;
 		std::string status;
 		std::string condition;
 		std::string location;
 		int assetAccess;
 
-	Public:
+	public:
 
 		void addAsset(std::string assetName, std::string location);
 		void deleteAsset(int AssetID);
