@@ -2,10 +2,13 @@
 // Auth: Dunlap, Jack
 // Supports: UR-101, UR-102, UR-103, UR-104
 // Collaborators: ResearchStudent[1..*], Assets[*], Reservation[*], Documents[*] 
-Class FacultyResearcher {
+#include <string>
+#include <vector>
+
+class FacultyResearcher {
 Private:
-  Int FacultyID;
-  Int labGroupID;
+  int FacultyID;
+  int labGroupID;
 Public:
   Std::string Fname;
   Std::string Lname;
