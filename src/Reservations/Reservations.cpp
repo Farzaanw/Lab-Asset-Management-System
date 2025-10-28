@@ -17,9 +17,9 @@ public:
   bool confirmed;	
 
 	//Makes a reservation
-	bool makeReservation(permissionApproved, description, startDate, endDate, User) //{returns bool if the reservation was successfully created or not}
+	bool makeReservation(bool permissionApproved, std::string description, std::string startDate, std::string endDate, std::string User); //returns bool if the reservation was successfully created or not
 	//cancels a previously created reservation
-	bool cancelReservation(reservationID) //{returns bool is cancelation was successful or not}
+	bool cancelReservation(reservationID); //{returns bool is cancelation was successful or not}
 	//retrieves a reservation and returns information about it
-	std::string getReservation(reservationID) //{returns string of information for that reservationID}
-}
+	std::string getReservation(reservationID); //{returns string of information for that reservationID}
+};
