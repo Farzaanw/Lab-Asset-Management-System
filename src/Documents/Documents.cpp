@@ -2,8 +2,10 @@
 // Auth: Dunlap, Jack
 // Supports: UR-102, UR-320, UR-330, UR-430, UR-431, UR-432
 // Collaborators:FacultyResearcher[1..* creates -> * documents], ResearchStudent[1..* creates -> * documents], LabManager[1..* creates -> * documents], LabAssetManager[1..* creates -> * documents], Assets[* -> *] 
+#include <string>
+#include <vector>
 
-Class Documents {
+class Documents {
 Private:
   Int documentID;
   Std::string title;
