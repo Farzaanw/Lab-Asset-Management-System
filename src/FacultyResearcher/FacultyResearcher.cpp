@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-class Document; //placeholder class so it compiles
+class Document; //placeholder classes so it compiles
+class Asset;
 
 class FacultyResearcher {
 private:
@@ -19,9 +20,9 @@ public:
   bool permissions;
 	
 	//make a reservation for an asset
-	bool reserveAsset(int assetID, bool permissions) //returns bool - was it successful in making reservation}
+	bool reserveAsset(int assetID, bool permissions); //returns bool - was it successful in making reservation}
 	//produce a usage report for resource usage by a group
-	Document generateUsageReport(assetUsed, dataRecords) //returns document structure
+	Document generateUsageReport(Asset assetUsed, Document dataRecords);//returns document structure
 	//display a record of the group the faculty is in charge of and their work they have done
-	void viewGroup(LabGroupID);
+	void viewGroup(int LabGroupID);
 };
