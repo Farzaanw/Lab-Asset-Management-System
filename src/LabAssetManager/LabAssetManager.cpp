@@ -2,6 +2,9 @@
 // Auth: Kai
 // Supports: UR-400 to UR-431
 // Collaborators: <accounts>[1..*], <Assets>[1..*], <document>[0..*], <PI>[1]
+#include <string>
+#include <vector>
+
 class LabAssetManager {
 private:
     std::vector<Account> accountList;
