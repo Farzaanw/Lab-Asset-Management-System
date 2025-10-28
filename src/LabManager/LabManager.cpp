@@ -19,4 +19,4 @@ public:
     std::string summarize_data();
     // generates reports and outputs them
     std::string generate_reports();
-} 
+};
