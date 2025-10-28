@@ -21,5 +21,5 @@ public:
   bool deleteDocument(int documentID); //returns a bool if the document was deleted or not
   //Retrieves a document a prints it
   void getDocument(int documentID);  //prints document to program
-}
+};
 
