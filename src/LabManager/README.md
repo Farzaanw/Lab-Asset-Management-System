@@ -4,7 +4,6 @@ The Lab Manager is responsible for overseeing the daily operations of the lab, e
 They will also maintain the overall scheduling of lab resources, verify that maintenance tasks are completed, and ensure everyone complies with lab safety and policy standards.
 Lastly, they will monitor the users' activities and provide support to both faculty and students using the system.
 
-- Primary Maintainer: Farzaan Wadiwalla
 ---
 
 ### Epic E-300 — User & Access Management
