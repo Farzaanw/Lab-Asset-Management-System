@@ -3,7 +3,7 @@
 // Supports: UR-200 to UR-230, UR-303, UR-331
 // Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
 
-Class ResearchStudent {
+class ResearchStudent {
 Private:
     int studentID;
     std::string name;
