@@ -2,17 +2,19 @@
 // Auth: Dunlap, Jack
 // Supports: US-101, UR-201, UR-310
 // Collaborators: FacultyResearcher[*], ResearchStudent[*], Asset[1], Documents[*]
-		
-Class Reservations {
+#include <string>
+#include <vector>
+	
+class Reservations {
 Private:
-  Int reservationID;
-  Std::string description;
-  Std::string startDate;
-  Std::string endDate;
-  Std::string User;
+  int reservationID;
+  std::string description;
+  std::string startDate;
+  std::string endDate;
+  std::string User;
 Public:
-  Bool permissionApproved;
-  Bool confirmed;	
+  bool permissionApproved;
+  bool confirmed;	
 
 	//Makes a reservation
 	Bool makeReservation(permissionApproved, description, startDate, endDate, User) {returns bool if the reservation was successfully created or not}
