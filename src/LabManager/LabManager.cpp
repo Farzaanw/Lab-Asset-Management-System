@@ -1,8 +1,8 @@
-Class LabManager {
+class LabManager {
 private:
     int labManagerID;
     std::string privilage_changes_log[];
-Public:
+public:
 	// prints LabAssetManager info
     LabAssetManager return_lab_asset_manager_info(LabAssetManager obj);
 	// Grants lab asset manager rights
