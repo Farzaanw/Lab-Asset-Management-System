@@ -1,10 +1,9 @@
-## Supported User Stories — Lab Asset Manager Class
+## Supported User Stories — Lab Asset Manager
 
 The lab asset manager is responsible for everything that has to do with accounts. This includes account creation, management, and role assigning. This role is also responsible for asset management,
 which provides for adding assets to the lab inventory, updating, deleting, and running inventory checks. Lastly, this role is responsible for uploading and modifying documents,
 including software licenses, and ensuring everything is up to date.
 
-- Primary Maintainer: Kai Johnson
 ---
 
 ### Epic E-400 — User Account Management
