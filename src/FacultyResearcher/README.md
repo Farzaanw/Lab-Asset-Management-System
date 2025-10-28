@@ -7,11 +7,11 @@ They must also book equipment and software for their group, manage group members
 ---
 
 ### Epic E-101 — Student Resource Usage Supervision
-- [UR-101: View equipment availability and usage](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/60)
-- [UR-102: Generate group-level resource usage reports](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/61)
+- [UR-101: View What Equipment Is In Use](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/62)
+- [UR-102: Generate Reports](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/63)
 
 ---
 
 ### Epic E-102 — Advanced Capabilities
-- [UR-103: Higher-level clearance for restricted equipment](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/64)
-- [UR-104: Report issues with reservation and login systems](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/65)
+- [UR-103: High Level Clearance For Faculty Researcher](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/64)
+- [UR-104: Report Issues](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/65)
