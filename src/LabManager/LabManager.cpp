@@ -1,3 +1,8 @@
+//Author:
+
+#include <string>
+#include <vector>
+
 class LabManager {
 private:
     int labManagerID;
