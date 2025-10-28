@@ -6,20 +6,20 @@ which all other user classes will inherit.  This class will give a base level of
 ---
 
 ### Epic E-200 — Reserve & Return of Lab Equipment
-- [UR-201: Reserve and return lab equipment](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/42)
-- [UR-202: Receive equipment return reminders](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/80#issue-3530480659)
+- [UR-201: Reserve/Return Lab Equipment](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/42)
+- [UR-202: Return Notifications](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/80)
 
 ---
 
 ### Epic E-210 — Request Software Access
-- [UR-211: Access software licenses for research](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/44#issue-3523437778)
+- [UR-211: Request Software](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/83)
 
 ---
 
 ### Epic E-220 — Check Equipment Status
-- [UR-221: View equipment availability and return dates](https://github.com/CS361-2025-Fall-Term/fMicroCat/issues/73)
+- [UR-221: Check Equipment Status](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/85)
 
 ---
 
 ### Epic E-230 — Report Equipment Issues
-- [UR-231: Submit reports on malfunctioning equipment](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/74)
+- [UR-231: Report Equipment Issues](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/84)
