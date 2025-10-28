@@ -2,7 +2,10 @@
 // Auth: McNamee, Quinn
 // Supports: UR-302 UR-320, UR-321, UR-331, UR-401, UR-410, UR-411, UR-413, UR-414, UR-415, UR-421, UR-43, UR-432.
 //  Reservations[0..*]  Users[0..*] 
-Class Assets {
+#include <string>
+#include <vector>
+
+class Assets {
 	Private:
 		int AssetID;
 		std::string assetName;
