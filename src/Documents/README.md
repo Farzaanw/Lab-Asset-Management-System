@@ -4,8 +4,8 @@ The documents class will manage all files, records, or reports associated with t
 This can include usage reports, maintenance logs, instruction manuals, project assignments, etc. The several possible documents will all share similar attributes, and that is what this class intends to hold.
 
 ---
-### Epic E-200 — Reserve & Return of Lab Equipment
-- [UR-102: Generate group-level resource usage reports](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/61)
+### Epic E-101 — Student Resource Usage Supervision
+- [UR-102: Generate group-level resource usage reports](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/63)
 
 ---
 ### Epic E-302 — Equipment Oversight & Inventory Management
