@@ -12,26 +12,26 @@ private:
     std::vector<Document> documentRepository;
     std::chrono::system_clock::time_point lastInventoryCheck;
     std::string assetManagerID;
-    std::boolean isAdmin;
-    std::boolean permissions;
+    bool isAdmin;
+    bool permissions;
     
 
 public:
-    // Constructor
+    //constructor
     LabAssetManager(const std::string& id);
 
-    // Account Management
+    //account Management
     Account createAccount(const std::string& name, const std::string& role, const std::string& email);
     bool updateAccount(const std::string& accountID, const Account& updatedInfo);
     bool deleteAccount(const std::string& accountID);
 
-    // Asset Management
+    //asset Management
     Asset addAsset(const Asset& assetInfo);
     bool updateAsset(const std::string& assetID, const Asset& updatedInfo);
     bool removeAsset(const std::string& assetID);
     bool flagAssetOutOfService(const std::string& assetID);
 
-    // Inventory & Documents
+    //inventory & Documents
     InventoryReport runInventoryCheck();
     Document uploadDocument(const Document& document);
 };
