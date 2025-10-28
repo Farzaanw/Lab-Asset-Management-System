@@ -1,10 +1,5 @@
 # System Design Documentation
 
-## UML Class Diagram
-
-# .......... add link to Class Diagram here .......... #
-<img width="1502" height="848" alt="Class_Diagram" src="https://github.com/user-attachments/assets/bd7eff63-c515-483c-bc64-6832df656168" />
-
 ## Class ↔ User Story Mapping
 
 
