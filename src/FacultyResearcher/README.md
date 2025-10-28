@@ -4,7 +4,6 @@ The Faculty Researcher is responsible for conducting research and supervising th
 track patterns of lab equipment for their specific research group, and create reports to describe the use of assets.
 They must also book equipment and software for their group, manage group members’ reservations, access dashboards with a summary of the usage data, and generate reports for resource usage. 
 
-- Primary Maintainers: Jacob Munly, Quinn McNamee
 ---
 
 ### Epic E-101 — Student Resource Usage Supervision
@@ -16,5 +15,3 @@ They must also book equipment and software for their group, manage group members
 ### Epic E-102 — Advanced Capabilities
 - [UR-103: Higher-level clearance for restricted equipment](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/64)
 - [UR-104: Report issues with reservation and login systems](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/65)
-
----
