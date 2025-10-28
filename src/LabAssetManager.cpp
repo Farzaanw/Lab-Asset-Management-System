@@ -8,7 +8,10 @@ private:
     std::vector<Asset> assetInventory;
     std::vector<Document> documentRepository;
     std::chrono::system_clock::time_point lastInventoryCheck;
-    std::string managerID;
+    std::string assetManagerID;
+    std::boolean isAdmin;
+    std::boolean permissions;
+    
 
 public:
     // Constructor
