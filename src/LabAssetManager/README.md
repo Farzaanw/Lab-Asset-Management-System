@@ -4,6 +4,7 @@ The lab asset manager is responsible for everything that has to do with accounts
 which provides for adding assets to the lab inventory, updating, deleting, and running inventory checks. Lastly, this role is responsible for uploading and modifying documents,
 including software licenses, and ensuring everything is up to date.
 
+- Primary Maintainer: Kai Johnson
 ---
 
 ### Epic E-400 — User Account Management
@@ -34,11 +35,3 @@ including software licenses, and ensuring everything is up to date.
 - [UR-430: Read list of documents](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/34)
 - [UR-431: Upload documents](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/35)
 - [UR-432: Update and edit documents](https://github.com/CS361-2025-Fall-Term/MicroCat/issues/67)
-
----
-
-**Summary**
-
-- Total Supported Stories: UR-400 through UR-432  
-- Epic Coverage: E-400 (Accounts), E-401 (Assets), E-402 (Ordering), E-403 (Documents)  
-- Primary Maintainer: Kai Johnson
