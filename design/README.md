@@ -1,7 +1,10 @@
 # System Design Documentation
 
 ## UML Class Diagram
-![ClassDiagram.puml](./class_diagram.png)
+
+
+# .......... add link to Class Diagram here .......... #
+
 
 ## Class ↔ User Story Mapping
 
