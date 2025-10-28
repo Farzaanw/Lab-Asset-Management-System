@@ -6,20 +6,20 @@
 #include <vector>
 
 class Documents {
-Private:
-  Int documentID;
-  Std::string title;
-  Std::string description;
+private:
+  int documentID;
+  std::string title;
+  std::string description;
   int authorID;
-  Std::string type;
-Public:
+  std::string type;
+public:
 	//Creates a document
-	bool createDocument(title, type, authorID, documentID, description) {returns bool if document was successfully created or not}
+  bool createDocument(std::string title, std::string type, int authorID, int documentID, std::string description); //returns bool if document was successfully created or not
 	//Edits a previously created document
-  Bool editDocument(documentID, description){ returns bool if edition to document was successful or not}
+  bool editDocument(int documentID, std::string description); //returns bool if edition to document was successful or not
   //Deletes a document
-  Bool deleteDocument(documentID){ returns a bool if the document was deleted or not}
+  bool deleteDocument(int documentID); //returns a bool if the document was deleted or not
   //Retrieves a document a prints it
-  void getDocument(documentID)  {prints document to program}
+  void getDocument(int documentID);  //prints document to program
 }
 
