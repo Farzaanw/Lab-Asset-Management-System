@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "LabAssetManager.h"
+#pragma once
 
 class LabManager {
 private:
