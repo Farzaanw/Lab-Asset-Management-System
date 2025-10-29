@@ -7,6 +7,7 @@
 #include <vector>
 #include "Reservations.h"
 #include "Assets.h"
+#pragma once
 
 class ResearchStudent {
 private:
