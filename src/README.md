@@ -1,3 +1,8 @@
+## How To Build
+-Clone the repository
+-Run this command: g++ main.cpp -o Test_Executable
+-main.cpp includes all the skeleton code header files
+
 ## Supported User Stories — Assets
 Assets are responsible for all of the information needed about the equipment.  Whether that be details about type, condition, and availability. It exists to provide structure to each asset in the lab.
 Supports operations like updating, adding, or removing assets.
