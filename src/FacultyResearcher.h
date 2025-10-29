@@ -7,6 +7,7 @@
 #include <vector>
 #include "Assets.h"
 #include "Documents.h"
+#pragma once
 
 class FacultyResearcher {
 private:
