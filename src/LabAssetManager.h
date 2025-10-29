@@ -7,6 +7,7 @@
 #include <chrono>
 #include "Assets.h"
 #include "Documents.h"
+#pragma once
 
 class LabAssetManager {
 private:
