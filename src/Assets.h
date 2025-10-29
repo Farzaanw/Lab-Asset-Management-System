@@ -4,6 +4,7 @@
 //  Reservations[0..*]  Users[0..*] 
 #include <string>
 #include <vector>
+#pragma once
 
 class Assets {
 	private:
