@@ -1,4 +1,4 @@
-// CS-7: Reservations.cpp
+// CS-7: Reservations.h
 // Auth: Dunlap, Jack
 // Supports: US-101, UR-201, UR-310
 // Collaborators: FacultyResearcher[*], ResearchStudent[*], Asset[1], Documents[*]
