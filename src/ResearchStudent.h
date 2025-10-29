@@ -17,7 +17,7 @@ private:
 
 public:
     bool permissions;
-    std::vector<Reservation*> reservations; //list of all reservations the student has made
+    std::vector<Reservations*> reservations; //list of all reservations the student has made
 
     //make a reservation for an asset (requires base-level permissions)
     bool reserveAsset(int assetID, bool permissions);
