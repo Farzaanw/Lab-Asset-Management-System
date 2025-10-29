@@ -6,10 +6,6 @@
 #include <string>
 #include <vector>
 
-//forward declarations so it compiles for now
-class Reservation;
-class Assets;
-
 class ResearchStudent {
 private:
     int studentID;
