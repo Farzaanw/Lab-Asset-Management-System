@@ -1,4 +1,6 @@
-//Author:
+//CS-3 LabManager.h
+//Author: Cash Limberg
+//Supports: UR-300 to UR 331
 
 #include <string>
 #include <vector>
