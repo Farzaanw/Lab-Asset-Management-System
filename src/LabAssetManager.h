@@ -30,12 +30,12 @@ public:
     bool deleteAccount(const std::string& accountID);
 
     //asset Management
-    Asset addAsset(const Asset& assetInfo);
-    bool updateAsset(const std::string& assetID, const Asset& updatedInfo);
+    Assets addAsset(const Asset& assetInfo);
+    bool updateAsset(const std::string& assetID, const Assets& updatedInfo);
     bool removeAsset(const std::string& assetID);
     bool flagAssetOutOfService(const std::string& assetID);
 
     //inventory & Documents
-    InventoryReport runInventoryCheck();
-    Documents uploadDocument(const Document& document);
+    Documents runInventoryCheck();
+    Documents uploadDocument(const Documents& document);
 };
