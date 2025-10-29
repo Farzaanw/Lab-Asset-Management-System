@@ -4,7 +4,8 @@
 // Collaborators: FacultyResearcher[*], ResearchStudent[*], Asset[1], Documents[*]
 #include <string>
 #include <vector>
-	
+#pragma once
+
 class Reservations {
 private:
   int reservationID;
