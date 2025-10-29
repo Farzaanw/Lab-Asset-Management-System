@@ -4,6 +4,7 @@
 // Collaborators:FacultyResearcher[1..* creates -> * documents], ResearchStudent[1..* creates -> * documents], LabManager[1..* creates -> * documents], LabAssetManager[1..* creates -> * documents], Assets[* -> *] 
 #include <string>
 #include <vector>
+#pragma once
 
 class Documents {
 private:
