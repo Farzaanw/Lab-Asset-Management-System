@@ -6,9 +6,6 @@
 #include <string>
 #include <vector>
 
-class Document; //placeholder classes so it compiles
-class Asset;
-
 class FacultyResearcher {
 private:
   int FacultyID;
