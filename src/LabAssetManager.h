@@ -12,8 +12,8 @@
 class LabAssetManager {
 private:
     std::vector<Account> accountList;
-    std::vector<Asset> assetInventory;
-    std::vector<Document> documentRepository;
+    std::vector<Assets> assetInventory;
+    std::vector<Documents> documentRepository;
     std::chrono::system_clock::time_point lastInventoryCheck;
     std::string assetManagerID;
     bool isAdmin;
@@ -37,5 +37,5 @@ public:
 
     //inventory & Documents
     InventoryReport runInventoryCheck();
-    Document uploadDocument(const Document& document);
+    Documents uploadDocument(const Document& document);
 };
