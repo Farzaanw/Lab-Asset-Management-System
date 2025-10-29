@@ -21,7 +21,7 @@ public:
 	//make a reservation for an asset
 	bool reserveAsset(int assetID, bool permissions); //returns bool - was it successful in making reservation}
 	//produce a usage report for resource usage by a group
-	Document generateUsageReport(Asset assetUsed, Document dataRecords);//returns document structure
+	Document generateUsageReport(Asset assetUsed, Documents dataRecords);//returns document structure
 	//display a record of the group the faculty is in charge of and their work they have done
 	void viewGroup(int LabGroupID);
 };
