@@ -1,7 +1,7 @@
-// CS-3: ResearchStudent.cpp
-// Author: Jacob Munly
-// Supports: UR-200 to UR-230, UR-303, UR-331
-// Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
+//CS-2: ResearchStudent.cpp
+//Author: Jacob Munly
+//Supports: UR-200 to UR-230, UR-303, UR-331
+//Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
 
 #include <string>
 #include <vector>
