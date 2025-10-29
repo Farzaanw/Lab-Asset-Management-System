@@ -1,14 +1,10 @@
-@startuml
-title Research Lab System - UML Class Diagram (Associations Only)
+@startuml UniversityLabSystem
 
-/'
-  Author: Farzaan Wadiwalla
-  Description: UML class diagram showing class associations (multiplicity + role names)
-  Requirement Traceability: Supports CP-3 Class Identification & Declaration
-/'
+title University Lab Management System Class Diagram
 
-
-'/
+' Author: Farzaan Wadiwalla
+' Description: UML class diagram showing class associations (multiplicity + role names)
+' Requirement Traceability: Supports CP-3 Class Identification & Declaration
 
 ' ========================
 ' Class Declarations
@@ -21,49 +17,54 @@ class Asset
 class Reservation
 class Document
 
-
 ' ========================
 ' Associations
 ' ========================
 
 ' FacultyResearcher Relationships
-FacultyResearcher "1" -- "1..*" ResearchStudent : supervises >
-FacultyResearcher "1" -- "*" Asset : manages >
-FacultyResearcher "1" -- "*" Reservation : creates/manages >
-FacultyResearcher "1" -- "*" Document : creates >
+FacultyResearcher "1" --> "1..*" ResearchStudent : supervises
+FacultyResearcher "1" --> "*" Asset : manages
+FacultyResearcher "1" --> "*" Reservation : creates/manages
+FacultyResearcher "1" --> "*" Document : creates
 
-' ResearchStudent Relationships (to be completed later)
-ResearchStudent "1" -- "*" Reservation : requests >
-ResearchStudent "1" -- "*" Document : creates >
-ResearchStudent "*" -- "1" FacultyResearcher : supervised by >
-ResearchStudent "*" -- "1" LabManager : overseen by >
+' ResearchStudent Relationships
+ResearchStudent "*" --> "1" LabManager : supervised by
+ResearchStudent "*" --> "1" FacultyResearcher : approved by
+ResearchStudent "1" --> "*" Reservation : requests
+ResearchStudent "1" --> "*" Document : creates
 
 ' LabManager Relationships
-LabManager "1" -- "*" FacultyResearcher : approves reservations >
-LabManager "1" -- "*" ResearchStudent : supervises >
-LabManager "1" -- "1..*" LabAssetManager : collaborates >
-LabManager "1" -- "*" Asset : monitors >
-LabManager "1" -- "*" Reservation : approves/schedules >
+LabManager "1" --> "*" FacultyResearcher : approves reservations
+LabManager "1" --> "*" ResearchStudent : oversees
+LabManager "1" --> "1..*" LabAssetManager : collaborates
+LabManager "1" --> "*" Asset : monitors
+LabManager "1" --> "*" Reservation : approves/schedules
+LabManager "1" --> "*" Document : creates
 
-' LabAssetManager Relationships (basic assumptions)
-LabAssetManager "1" -- "*" Asset : maintains >
-LabAssetManager "1" -- "*" Document : creates asset reports >
+' LabAssetManager Relationships
+LabAssetManager "1" --> "1..*" Asset : maintains
+LabAssetManager "1" --> "1..*" Document : creates asset reports
+LabAssetManager "1" --> "1" FacultyResearcher : accounts for
 
 ' Asset Relationships
-Asset "1" -- "*" Document : referenced by >
-Asset "1" -- "*" Reservation : reserved for >
+Asset "*" --> "*" Reservation : reserved for
+Asset "*" --> "*" Document : referenced by
+Asset "*" --> "*" ResearchStudent : interacted by
+Asset "*" --> "*" FacultyResearcher : interacted by
+Asset "*" --> "*" LabManager : interacted by
+Asset "*" --> "*" LabAssetManager : interacted by
 
 ' Reservation Relationships
-Reservation "*" -- "1" Asset : for >
-Reservation "*" -- "1" FacultyResearcher : created by >
-Reservation "*" -- "1" ResearchStudent : requested by >
-Reservation "1" -- "*" Document : recorded in >
+Reservation "*" --> "1" Asset : for
+Reservation "*" --> "*" FacultyResearcher : created by
+Reservation "*" --> "*" ResearchStudent : requested by
+Reservation "1" --> "*" Document : recorded in
 
 ' Document Relationships
-Document "*" -- "1" Asset : related asset >
-Document "*" -- "1" FacultyResearcher : created by >
-Document "*" -- "1" ResearchStudent : created by >
-Document "*" -- "1" LabManager : created by >
-Document "*" -- "1" LabAssetManager : created by >
+Document "*" --> "1" Asset : related asset
+Document "*" --> "*" FacultyResearcher : created by
+Document "*" --> "*" ResearchStudent : created by
+Document "*" --> "*" LabManager : created by
+Document "*" --> "*" LabAssetManager : created by
 
 @enduml
