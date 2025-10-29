@@ -11,7 +11,7 @@
 
 class LabAssetManager {
 private:
-    std::vector<Account> accountList;
+    std::vector<std::string> accountList;
     std::vector<Assets> assetInventory;
     std::vector<Documents> documentRepository;
     std::chrono::system_clock::time_point lastInventoryCheck;
@@ -25,8 +25,8 @@ public:
     LabAssetManager(const std::string& id);
 
     //account Management
-    Account createAccount(const std::string& name, const std::string& role, const std::string& email);
-    bool updateAccount(const std::string& accountID, const Account& updatedInfo);
+    std::string createAccount(const std::string& name, const std::string& role, const std::string& email);
+    bool updateAccount(const std::string& accountID, const std::string& updatedInfo);
     bool deleteAccount(const std::string& accountID);
 
     //asset Management
