@@ -1,4 +1,4 @@
-// CS-2: FacultyResearcher.h
+// CS-1: FacultyResearcher.h
 // Auth: Dunlap, Jack
 // Supports: UR-101, UR-102, UR-103, UR-104
 // Collaborators: ResearchStudent[1..*], Assets[*], Reservation[*], Documents[*] 
