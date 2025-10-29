@@ -5,6 +5,8 @@
 
 #include <string>
 #include <vector>
+#include "Reservations.h"
+#include "Assets.h"
 
 class ResearchStudent {
 private:
