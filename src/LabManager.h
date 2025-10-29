@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "LabAssetManager.h"
 
 class LabManager {
 private:
