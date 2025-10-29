@@ -30,7 +30,7 @@ public:
     bool deleteAccount(const std::string& accountID);
 
     //asset Management
-    Assets addAsset(const Asset& assetInfo);
+    Assets addAsset(const Assets& assetInfo);
     bool updateAsset(const std::string& assetID, const Assets& updatedInfo);
     bool removeAsset(const std::string& assetID);
     bool flagAssetOutOfService(const std::string& assetID);
