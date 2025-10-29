@@ -1,5 +1,11 @@
 # MicroCat
 
+## HOW TO BUILD
+-Clone the repository
+-Run this command: g++ main.cpp -o Test_Executable
+- Run Test_Executable
+- main.cpp includes all the skeleton code for each class
+
 ## Team Members
 Kai Johnson  
 Email: johnkai5@oregonstate.edu
