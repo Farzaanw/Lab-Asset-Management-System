@@ -1,43 +1,38 @@
 @startuml
-title Dashboard Asset View and Listing (Swimlane Format)
+title AD-02: Dashboard Asset View and Listing (Swimlane Diagram)
 
 |User|
 start
-:Enter username and password;
-:Submit credentials;
+:Enter credentials;
 
 |System|
-if (Credentials valid?) then (Yes)
-    :Verify account in system;
-    :Identify user role
-    (Research Student or Lab Manager);
+:Receive login credentials;
+:Validate credentials;
 
-    if (Role = Research Student?) then (Yes)
-        :Load Research Student Dashboard;
-    else (No)
-        :Load Lab Manager Dashboard;
-    endif
-
-    |Dashboard|
-    :Display initial asset list (limited set);
-
-    |User|
-    repeat
-        :Scroll through dashboard;
-        if (More assets needed?) then (Yes)
-            |Dashboard|
-            :Load additional assets;
-        endif
-    repeat while (User selects "List More Assets")
-
-    |User|
-    stop
-
-else (No)
-    |System|
-    :Display invalid credentials error;
-    |User|
+if () then ([valid])
+    :Determine user role;
+    :Load role-specific dashboard;
+    :Retrieve asset list;
+    :Display asset table;
+else ([invalid])
+    :Display authentication error;
     stop
 endif
 
+' ---------- DASHBOARD ASSET LISTING ----------
+|User|
+:Scroll asset table;
+
+|System|
+:Render visible asset entries;
+
+|User|
+:Select Show More Assets;
+
+|System|
+:Retrieve additional assets;
+:Append assets to table;
+:Update dashboard view;
+
+stop
 @enduml
