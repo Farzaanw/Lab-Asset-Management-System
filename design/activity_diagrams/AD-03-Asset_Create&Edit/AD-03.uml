@@ -1,69 +1,65 @@
-
 @startuml
-title Asset Creation and Editing
+title AD-03: Asset Creation and Editing (Swimlane Diagram)
 
-|LAM|
+|User|
 start
-:Enter username and password;
-:Submit login;
+:Enter credentials;
 
 |System|
-if (Credentials valid?) then (Yes)
-    :Authenticate LAM;
-    :Load LAM Dashboard;
-else (No)
-    :Display login error message;
-    |LAM|
+:Receive login credentials;
+:Validate credentials;
+
+if () then ([valid])
+    :Load dashboard;
+    :Load asset table;
+else ([invalid])
+    :Display authentication error;
     stop
 endif
 
-|Dashboard|
-:Display asset table and "Add Asset" button;
-:Display Edit button for each asset;
+' ------------------ ADD ASSET FLOW ------------------
+|User|
+:Select Add Asset;
 
-|LAM|
-if (Select "Add Asset"?) then (Yes)
-    |System|
-    :Open blank asset creation form;
-    
-    |LAM|
-    :Enter asset details;
-    :Submit form;
-    
-    |System|
-    if (All required fields complete?) then (Yes)
-        :Store new asset in database;
-        :Refresh dashboard with new asset;
-    else (No)
-        :Display missing field error;
-        |LAM|
-        :Correct form fields;
-        -> Submit form;
-    endif
+|System|
+:Load empty asset form;
 
-else (No)
-    |LAM|
-    :Select "Edit" on an asset;
+|User|
+:Enter asset details;
 
-    |System|
-    :Load form prefilled with asset details;
+|System|
+:Capture asset input;
+:Validate required fields;
 
-    |LAM|
-    :Modify one or more fields;
-    :Submit updated form;
-
-    |System|
-    if (Required fields valid?) then (Yes)
-        :Save updated asset to database;
-        :Refresh dashboard with updated details;
-    else (No)
-        :Display validation error;
-        |LAM|
-        :Correct invalid fields;
-        -> Submit updated form;
-    endif
+if () then ([complete])
+    :Store asset data;
+    :Refresh asset table;
+else ([incomplete])
+    :Display validation error;
+    -> [return to form] :Load empty asset form;
 endif
 
-|LAM|
+' ------------------ EDIT ASSET FLOW ------------------
+|User|
+:Select Edit Asset;
+
+|System|
+:Load existing asset data into form;
+
+|User|
+:Modify asset details;
+
+|System|
+:Capture updated data;
+:Validate required fields;
+
+if () then ([valid])
+    :Update asset in database;
+    :Refresh asset table;
+else ([invalid])
+    :Display validation error;
+    -> [return to form] :Load existing asset data into form;
+endif
+
 stop
 @enduml
