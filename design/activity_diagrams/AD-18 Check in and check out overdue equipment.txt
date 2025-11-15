@@ -1,0 +1,43 @@
+@startuml
+partition Research Student{
+    start
+    if (What is happneing to equipment?) then (checking out)
+        partition Reservations{
+        if (Does this equipment match the reservation?) then (Yes)
+            :Mark equipment as checked out;
+            :Record timestamp in UTC of checkout time;
+            :Notify user of when they must check in in their equipment;
+            repeat
+                :Wait every minute;
+                if (Did user turn in equipment?) then (Yes);
+                    end
+                else (No)
+                endif
+            repeat while (Check if current time exceeds check in time + 5 minutes) is (within time) not (exceeding)
+            :Mark equipment as overdue;
+            :Notify reserver;
+            :Notify Lab Asset Manager;
+            :Log incident in database;
+        else (No)
+            :send "This equipment cannot is not apart of your reservation" to user;
+        endif
+        }
+    else (Checking in)
+        partition Reservations{
+            :Mark equipment as turned in;
+            :Record turned in timestamp in UTC;
+            if (is this equipment overdue?) then (yes)
+                :Send notification to lab asset manager that equipment has been turned in;
+                fork
+                    partition Lab Asset Manager {
+                        :Prompt lab asset manager to input equipment damage/missuse notes;
+                    }
+                fork again
+                end fork
+            else (no)
+            endif
+        }
+    endif
+    stop
+}
+@enduml
