@@ -1,0 +1,69 @@
+
+@startuml
+title Asset Creation and Editing
+
+|LAM|
+start
+:Enter username and password;
+:Submit login;
+
+|System|
+if (Credentials valid?) then (Yes)
+    :Authenticate LAM;
+    :Load LAM Dashboard;
+else (No)
+    :Display login error message;
+    |LAM|
+    stop
+endif
+
+|Dashboard|
+:Display asset table and "Add Asset" button;
+:Display Edit button for each asset;
+
+|LAM|
+if (Select "Add Asset"?) then (Yes)
+    |System|
+    :Open blank asset creation form;
+    
+    |LAM|
+    :Enter asset details;
+    :Submit form;
+    
+    |System|
+    if (All required fields complete?) then (Yes)
+        :Store new asset in database;
+        :Refresh dashboard with new asset;
+    else (No)
+        :Display missing field error;
+        |LAM|
+        :Correct form fields;
+        -> Submit form;
+    endif
+
+else (No)
+    |LAM|
+    :Select "Edit" on an asset;
+
+    |System|
+    :Load form prefilled with asset details;
+
+    |LAM|
+    :Modify one or more fields;
+    :Submit updated form;
+
+    |System|
+    if (Required fields valid?) then (Yes)
+        :Save updated asset to database;
+        :Refresh dashboard with updated details;
+    else (No)
+        :Display validation error;
+        |LAM|
+        :Correct invalid fields;
+        -> Submit updated form;
+    endif
+endif
+
+|LAM|
+stop
+@enduml
