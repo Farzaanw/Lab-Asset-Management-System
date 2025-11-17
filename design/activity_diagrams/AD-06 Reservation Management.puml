@@ -5,7 +5,7 @@ partition Reservation {
     if ("Get list of reservations?") then (yes)
         partition "Research Student" {
             if ("Select action") then ("View details")
-                :Get details of reservation;
+                :Reservation Details;
 
                 fork
                     :Get Assets reserved;
@@ -18,18 +18,18 @@ partition Reservation {
             else ("Cancel reservation")
                 if ("Before Start Time?") then (yes)
                     partition Reservation {
-                        :Mark reservation canceled by Research Student;
-                        :Send alert to Lab Asset Manager;
+                        :Research Student canceled Reservation;
+                        :Alert Lab Asset Manager;
                     }
                 else (no)
-                    :"Cancelation must be made before reservation period;
+                    :"Cancel before reservation period;
                 endif
             endif
         }
     else (no)
         partition "Lab Asset Manager" {
             if ("Select action") then ("View details")
-                :Get details of reservation;
+                :Reservation details;
 
                 fork
                     :Get reserver’s name;
@@ -44,7 +44,7 @@ partition Reservation {
             elseif ("Cancel reservation")
                 if ("Prompt confirm text") then (yes)
                     partition Reservation {
-                        :Label reservation as Canceled;
+                        :Cancel reservation;
                         :Notify Reserver of cancellation;
                         :Notify Lab Asset Manager of cancellation;
                     }
@@ -54,7 +54,7 @@ partition Reservation {
             elseif ("Override reservation")
                 if ("Prompt confirm text") then (yes)
                     partition Reservation {
-                        :Label reservation as Overwritten;
+                        :Overrite reservation;
                         :Provide lab asset manager with note field;
                     }
                 else (no)
@@ -67,3 +67,4 @@ partition Reservation {
     stop
 }
 @enduml
+
