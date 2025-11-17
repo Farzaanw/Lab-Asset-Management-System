@@ -1,0 +1,70 @@
+@startuml
+partition Reservation {
+    start
+
+    if ("Get list of reservations?") then (yes)
+        partition "Research Student" {
+            if ("Select action") then ("View details")
+                :Reservation Details;
+
+                fork
+                    :Get Assets reserved;
+                fork again
+                    :Get Start time;
+                fork again
+                    :Get End time;
+                end fork
+
+            else ("Cancel reservation")
+                if ("Before Start Time?") then (yes)
+                    partition Reservation {
+                        :Research Student canceled Reservation;
+                        :Alert Lab Asset Manager;
+                    }
+                else (no)
+                    :"Cancel before reservation period;
+                endif
+            endif
+        }
+    else (no)
+        partition "Lab Asset Manager" {
+            if ("Select action") then ("View details")
+                :Reservation details;
+
+                fork
+                    :Get reserver’s name;
+                fork again
+                    :Get Assets reserved;
+                fork again
+                    :Get Start time;
+                fork again
+                    :Get End time;
+                end fork
+
+            elseif ("Cancel reservation")
+                if ("Prompt confirm text") then (yes)
+                    partition Reservation {
+                        :Cancel reservation;
+                        :Notify Reserver of cancellation;
+                        :Notify Lab Asset Manager of cancellation;
+                    }
+                else (no)
+                endif
+
+            elseif ("Override reservation")
+                if ("Prompt confirm text") then (yes)
+                    partition Reservation {
+                        :Overrite reservation;
+                        :Provide lab asset manager with note field;
+                    }
+                else (no)
+                endif
+
+            endif
+        }
+    endif
+
+    stop
+}
+@enduml
+
