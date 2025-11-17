@@ -1,0 +1,53 @@
+@startuml
+title Audit Logging for Deletes and Updates
+
+start
+
+' --- Technician Attempt ---
+:Receive technician delete request;
+:Check technician permissions;
+
+if (Authorized?) then ([yes])
+  :Delete asset;
+  :Write audit (delete / completed / tech);
+else ([no])
+  :Reject request;
+  :Write audit (delete / denied / tech);
+endif
+
+' --- LAM Attempt ---
+:Receive LAM delete request;
+:Check LAM permissions;
+
+if (Authorized?) then ([yes])
+  :Delete asset;
+  :Write audit (delete / completed / LAM);
+else ([no])
+  :Reject request;
+  :Write audit (delete / denied / LAM);
+endif
+
+' --- Audit Dashboard ---
+:Receive audit dashboard query;
+:Filter audit log;
+:Return audit entries;
+
+' --- Quantity Update ---
+:Receive quantity update;
+:Load and apply update;
+:Persist change;
+:Write audit (quantity before→after);
+
+' --- Threshold Update ---
+:Receive threshold update;
+:Load and apply update;
+:Persist change;
+:Write audit (threshold before→after);
+
+' --- Filtered Audit Query ---
+:Receive filtered audit query;
+:Filter log by asset/date;
+:Return filtered entries and export option;
+
+stop
+@enduml
