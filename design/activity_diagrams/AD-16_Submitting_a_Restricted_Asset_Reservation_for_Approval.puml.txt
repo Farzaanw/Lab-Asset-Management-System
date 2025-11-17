@@ -1,0 +1,43 @@
+@startuml FR-16 Submitting a Restricted Asset Reservation for Approval
+title Submitting a Restricted Asset Reservation for Approval
+
+|Research Student|
+start
+
+:A reservation for a restrited product is submitted;
+
+|System|
+
+:Notify user that asset is restricted;
+
+:Updates reservation status to "pending approval";
+
+:Notify manager to new reservation on restricted asset;
+
+if (Manager Approval == false) then (yes)
+     :Updates reservation status to "approval denied";
+     stop
+else (no)
+     :Reserves asset;
+stop
+
+|Research Student|
+start
+
+:View reservation status;
+
+|System|
+
+:Asset should have reservation status:;
+
+split
+     :reserved;
+split again
+     :pending approval;
+split again
+     :approval denied;
+end split
+
+stop
+
+@enduml
