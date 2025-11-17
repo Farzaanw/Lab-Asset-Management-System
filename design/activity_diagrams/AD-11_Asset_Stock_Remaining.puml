@@ -1,0 +1,28 @@
+@startuml FR-11 Asset Stock Remaining
+
+|Research Student|
+start
+
+:Item is selected with stock remaining;
+
+|System|
+
+:Unit/Units of asset is reserved
+stop
+
+start
+:Item stock updated;
+note right
+     Triggered when
+     item was reserved
+end note
+
+if (Stock < Reserved Amount) then (yes)
+     :Insuffecient Stock - Deny reservation;
+else (no)
+     if (Stock == Reserved Amount) then (yes)
+          :Item is reserved;
+          :Items availability is updated to: False;
+     else (no)
+          :Item is reserved;
+stop
