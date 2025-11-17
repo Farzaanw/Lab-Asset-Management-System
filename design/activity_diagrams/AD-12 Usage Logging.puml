@@ -1,0 +1,49 @@
+@startuml FR-12_Usage_Logging
+
+title Activity Diagram: FR-12 - Usage Logging
+
+|System|
+start
+
+:Reservation Event Occurs;
+note right
+  Event Types:
+  - Reservation Created
+  - Reservation Completed
+end note
+
+if (Event Type?) then (Creation)
+  :Capture Reservation Creation Data;
+  note right
+    - User
+    - Asset
+    - Start Time
+    - End Time
+    - Status: "Created"
+  end note
+  
+  :Record Usage Log Entry;
+  
+  :Store Log with Creation Status;
+  
+else (Completion)
+  :Capture Reservation Completion Data;
+  note right
+    - User
+    - Asset
+    - Start Time
+    - End Time
+    - Status: "Completed"
+  end note
+  
+  :Record Usage Log Entry;
+  
+  :Store Log with Completion Status;
+  
+endif
+
+:Usage Log Recorded Successfully;
+
+stop
+
+@enduml
