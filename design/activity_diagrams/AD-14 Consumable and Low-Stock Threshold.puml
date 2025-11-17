@@ -1,0 +1,39 @@
+@startuml
+title Consumable and Low-Stock Threshold
+
+start
+
+:Load inventory module;
+:Display new asset form;
+:Receive asset data;
+:Validate asset data;
+
+if (Data valid) then ([valid])
+  :Create asset record;
+  :Set isConsumable = true;
+  :Set status = In Stock;
+  :Store low-stock threshold;
+  :Return asset details;
+else ([invalid])
+  :Build validation errors;
+  :Return errors to UI;
+endif
+
+while (Quantity change event) is (more)
+  :Load asset;
+  :Apply quantity change;
+  :Evaluate low-stock condition;
+
+  if (Quantity < threshold) then ([low])
+    :Set status = Low-Stock;
+    :Update low-stock flag;
+  else ([ok])
+    :Set status = In Stock;
+    :Clear low-stock flag;
+  endif
+
+  :Persist asset update;
+endwhile (done)
+
+stop
+@enduml
