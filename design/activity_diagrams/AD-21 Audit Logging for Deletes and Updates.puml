@@ -1,53 +1,73 @@
 @startuml
 title Audit Logging for Deletes and Updates
 
-start
+partition "Audit Logging" {
 
-' --- Technician Attempt ---
-:Receive technician delete request;
-:Check technician permissions;
+    start
 
-if (Authorized?) then ([yes])
-  :Delete asset;
-  :Write audit (delete / completed / tech);
-else ([no])
-  :Reject request;
-  :Write audit (delete / denied / tech);
-endif
+    :Receive system action event;
+    :Identify actor (user role);
+    :Identify action type;
+    :Identify target entity;
+    :Record timestamp and reason;
 
-' --- LAM Attempt ---
-:Receive LAM delete request;
-:Check LAM permissions;
+    ' Universal audit entry
+    :Write audit entry;
 
-if (Authorized?) then ([yes])
-  :Delete asset;
-  :Write audit (delete / completed / LAM);
-else ([no])
-  :Reject request;
-  :Write audit (delete / denied / LAM);
-endif
+    if (Asset operation?) then (yes)
+        :Process asset CRUD;
+        :Write audit entry;
+    else (no)
+        :Continue to next category;
+    endif
 
-' --- Audit Dashboard ---
-:Receive audit dashboard query;
-:Filter audit log;
-:Return audit entries;
+    if (Reservation operation?) then (yes)
+        :Process reservation modification;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
 
-' --- Quantity Update ---
-:Receive quantity update;
-:Load and apply update;
-:Persist change;
-:Write audit (quantity before→after);
+    if (OOS operation?) then (yes)
+        :Process OOS update;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
 
-' --- Threshold Update ---
-:Receive threshold update;
-:Load and apply update;
-:Persist change;
-:Write audit (threshold before→after);
+    if (Approval operation?) then (yes)
+        :Process approval update;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
 
-' --- Filtered Audit Query ---
-:Receive filtered audit query;
-:Filter log by asset/date;
-:Return filtered entries and export option;
+    if (Privilege change?) then (yes)
+        :Apply new permissions;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
 
-stop
+    if (Check-in/out event?) then (yes)
+        :Process check-in/out;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
+
+    if (Inventory adjustment?) then (yes)
+        :Apply adjustment;
+        :Write audit entry;
+    else (no)
+        :Continue;
+    endif
+
+    :Receive audit dashboard request;
+    :Filter audit log by actor, action, entity, timestamp, reason;
+    :Return filtered entries;
+    :Provide export option;
+
+    stop
+}
 @enduml
