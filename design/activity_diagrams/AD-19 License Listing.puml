@@ -1,0 +1,48 @@
+@startuml
+title Software License Listings
+
+|Student|
+start
+:Student is logged in;
+:Navigate to available licenses;
+
+|Licenses|
+if (No licenses are available for user) then (yes)
+    :Error: No licenses available to user;
+    stop
+else (no)
+    :Displays license available to students;
+    note right
+        Does not display license
+        not available to students
+    end note
+    :License is selected to have details viewed;
+    :Outputs:;
+    split
+    :Expiration Date;
+    split again
+    :Description;
+    end split
+    stop
+endif
+|Faculty|
+start
+:Navigate to available licenses;
+
+|Licenses|
+:Displays all licenses available to faculty;
+note right
+    Displays licenses not available
+    to students but available to
+    faculty
+end note
+:License is selected to have details viewed;
+:Outputs:;
+split
+:Expiration Date;
+split again
+:Description;
+end split
+stop
+
+@enduml
