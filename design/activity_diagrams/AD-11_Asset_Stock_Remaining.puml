@@ -1,28 +1,73 @@
-@startuml FR-11 Asset Stock Remaining
-
+@startuml
 |Research Student|
 start
+:Asset is selected with stock remaining;
 
-:Item is selected with stock remaining;
-
-|System|
-
-:Unit/Units of asset is reserved
-stop
-
-start
-:Item stock updated;
-note right
-     Triggered when
-     item was reserved
-end note
-
-if (Stock < Reserved Amount) then (yes)
-     :Insuffecient Stock - Deny reservation;
+|Reservation|
+if (Reservation is Cancelled?) then (yes)
+    :Cancel reservation;
+    end
 else (no)
-     if (Stock == Reserved Amount) then (yes)
-          :Item is reserved;
-          :Items availability is updated to: False;
-     else (no)
-          :Item is reserved;
-stop
+    :Unit/Units of asset is reserved;
+    :Asset stock updated;
+
+    if (Stock < Reserved Amount) then (yes)
+        :Insufficient Stock - Deny reservation;
+        end
+    else (no)
+        if (Stock == Reserved Amount) then (yes)
+            :Asset is reserved;
+            :Assets availability is updated to False;
+            stop
+        else (no)
+            :Asset is reserved;
+            stop
+        endif
+    endif
+
+|Lab Manager|
+start
+:Cancel reservation at any time;
+
+|Reservation|
+if (Reservation is Cancelled) then (yes)
+    :Cancel in-process reservation;
+    end
+else (no)
+    :Continue;
+    stop
+
+|Faculty Researcher|
+start
+:Reserve multiple items at once;
+
+|Reservation|
+if (Reservation is Cancelled?) then (yes)
+    :Cancel reservation;
+    end
+else (no)
+    :Unit/Units of asset is reserved;
+    :Asset stock updated;
+
+    if (Stock < Reserved Amount) then (yes)
+        :Insufficient Stock - Deny reservation;
+        end
+    else (no)
+        if (Stock == Reserved Amount) then (yes)
+            :Asset is reserved;
+            :Assets availability is updated to False;
+            stop
+        else (no)
+            :Asset is reserved;
+            stop
+        endif
+    endif
+
+|Reservation|
+if (Reservation is Cancelled) then (yes)
+    :Cancel in-process reservation;
+    end
+else (no)
+    :Continue;
+    stop
+@enduml
