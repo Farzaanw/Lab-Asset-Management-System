@@ -1,0 +1,40 @@
+@startuml
+partition Lab Asset Manager{
+    start
+    if ("Select Action") then (View documents)
+        :Get list of assets;
+        if ("View asset document") then (Document Selected)
+        fork
+            :Asset Name;
+        fork again
+            :Document type (manuals, warranties, calibration/maintenance logs);
+        fork again
+            :Name of uploader;
+        fork again
+            :Document timestamp;
+        end fork
+        endif
+    else (Upload Documents)
+        :Upload document file location;
+        partition Documents{
+            :Receive file;
+            :Check file type;
+            if (Is file type a PDF?) then (valid)
+                :Upload document to database;
+                fork
+                    :Record timestamp in UTC;
+                fork again
+                    :Record Uploader;
+                fork again
+                    :Record document type;
+                end fork
+                :Attach all recorded metadata to file;
+            else (invalid)
+                :Send invalid file type error to uploader;
+            endif
+        }
+    endif
+stop
+}
+
+@enduml
