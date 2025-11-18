@@ -1,0 +1,47 @@
+@startuml
+partition Research Student{
+    start
+    if (Equipment event type?) then (checking out)
+        partition Reservations{
+        if (Equipment matches reservation?) then (Yes)
+            :Update equipment status to Checked Out;
+            :Record checkout timestamp (UTC);
+            :Calculate required check-in time;
+            :Prompt check-in deadline notification;
+            repeat
+                :Wait interval(min);
+                if (Equipment turned in?) then (Yes);
+                    end
+                else (No)
+                endif
+            repeat while (Current time exceeds check-in time) is (within time) not (exceeding)
+            :Set status to Overdue;
+            :Notify reserver;
+            :Notify Lab Asset Manager;
+            :Log incident in database;
+        else (No)
+            :"Return error "equipment not in reservation";
+        endif
+        }
+    else (Checking in)
+        partition Reservations{
+            :Record return timestamp (UTC);
+            :Record turned in timestamp in UTC;
+            if (Equipment overdue?) then (yes)
+                :Notify Lab Asset Manager of overdue return;
+                fork
+                    partition Lab Asset Manager {
+                        :Notify for damage/misuse notes;
+                        :Log damage/misuse notes;;
+                    }
+                fork again
+                end fork
+            else (no)
+            endif
+        }
+    endif
+    stop
+}
+@enduml
+
+
