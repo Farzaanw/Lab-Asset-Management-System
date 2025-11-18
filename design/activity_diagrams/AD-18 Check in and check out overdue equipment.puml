@@ -1,36 +1,38 @@
 @startuml
 partition Research Student{
     start
-    if (What is happneing to equipment?) then (checking out)
+    if (Equipment event type?) then (checking out)
         partition Reservations{
-        if (Does this equipment match the reservation?) then (Yes)
-            :Mark equipment as checked out;
-            :Record timestamp in UTC of checkout time;
-            :Notify user of when they must check in in their equipment;
+        if (Equipment matches reservation?) then (Yes)
+            :Update equipment status to Checked Out;
+            :Record checkout timestamp (UTC);
+            :Calculate required check-in time;
+            :Prompt check-in deadline notification;
             repeat
-                :Wait every minute;
-                if (Did user turn in equipment?) then (Yes);
+                :Wait interval(min);
+                if (Equipment turned in?) then (Yes);
                     end
                 else (No)
                 endif
-            repeat while (Check if current time exceeds check in time + 5 minutes) is (within time) not (exceeding)
-            :Mark equipment as overdue;
+            repeat while (Current time exceeds check-in time) is (within time) not (exceeding)
+            :Set status to Overdue;
             :Notify reserver;
             :Notify Lab Asset Manager;
             :Log incident in database;
         else (No)
-            :send "This equipment cannot is not apart of your reservation" to user;
+            :"Return error "equipment not in reservation";
         endif
         }
     else (Checking in)
         partition Reservations{
-            :Mark equipment as turned in;
+            :Record return timestamp (UTC);
             :Record turned in timestamp in UTC;
-            if (is this equipment overdue?) then (yes)
-                :Send notification to lab asset manager that equipment has been turned in;
+            if (Equipment overdue?) then (yes)
+                :Notify Lab Asset Manager of overdue return;
                 fork
                     partition Lab Asset Manager {
-                        :Prompt lab asset manager to input equipment damage/missuse notes;
+                        :Notify for damage/misuse notes;
+                        :Log damage/misuse notes;;
                     }
                 fork again
                 end fork
@@ -41,4 +43,5 @@ partition Research Student{
     stop
 }
 @enduml
+
 
