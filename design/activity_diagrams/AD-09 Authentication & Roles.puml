@@ -1,0 +1,63 @@
+@startuml
+title Activity Diagram FR-09: Authentication & Roles
+
+|User|
+start
+:Submit login credentials;
+
+|Login|
+:Validate credentials;
+
+if (Credentials valid?) then (yes)
+    :Grant access with role permissions;
+    stop
+else (no)
+    :Failed login attempt counter increased;
+
+    if (Failed attempts > 4\nwithin a 5 minute window?) then (yes)
+        :Lock account for 10 minutes;
+
+
+        fork
+            |User|
+            :Display: "Account locked for 10 minutes";
+        fork again
+            |Notification System|
+            :Send notification to Lab Asset Manager;
+        |User|
+        end fork
+
+        |User|
+        :Wait and attempt login again;
+        :Enter credentials;
+
+        |Login|
+        :Check lockout status;
+
+        if (Lockout period expired?) then (no)
+            :Display remaining lockout time;
+
+            stop
+        else (yes)
+            :Reset failed login counter;
+            :Unlock account;
+            :Validate credentials;
+            if (Credentials valid?) then (yes)
+    :Grant access with role permissions;
+            stop
+            else (no)
+    :Failed login attempt counter increased;
+             stop
+
+            endif
+        endif
+    else (no)
+    |User|
+    :Retry;
+
+    stop
+endif
+endif
+
+@enduml
+
