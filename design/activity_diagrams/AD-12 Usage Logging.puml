@@ -6,11 +6,6 @@ title Activity Diagram: FR-12 - Usage Logging
 start
 
 :Reservation Event Occurs;
-note right
-  Event Types:
-  - Reservation Created
-  - Reservation Completed
-end note
 
 if (Event Type?) then (Creation)
   :Capture Reservation Creation Data;
@@ -45,5 +40,6 @@ endif
 :Usage Log Recorded Successfully;
 
 stop
+
 
 @enduml
