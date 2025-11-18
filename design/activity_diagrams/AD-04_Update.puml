@@ -1,0 +1,39 @@
+@startuml
+|System|
+start
+
+:Verify User Role;
+
+if (Research Student?) then (yes)
+    :Load Research Student Dashboard Components;
+    :Enable System Functions for Research Student;
+else (no)
+    :Load Other User Dashboard Components;
+    :Enable System Functions for Other User;
+endif
+
+:Render Dashboard;
+:Open Asset Return Function;
+
+:Check Asset Availability;
+ 
+if (Asset Available?) then (yes)
+    :Record Reservation Request;
+    :Update Asset Status to Reserved;
+    :Update Status Across System;
+    :Log Reservation Timestamp;
+    :Send Reservation Confirmation Email to User;
+    :Reservation Complete; 
+else (no)
+    :Trigger Asset Unavailable Notification;
+    :Reservation Complete;
+endif
+
+:Identify Reserved Asset in System;
+:Confirm Return in System;
+:Update Asset Status to Available;
+:Update Status Across Network;
+:Clear Reservation Record from User Account;
+:Send Return Notification Email (User must return item within X days);
+stop
+@enduml
