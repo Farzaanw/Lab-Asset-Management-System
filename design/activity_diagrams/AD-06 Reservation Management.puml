@@ -2,9 +2,9 @@
 partition Reservation {
     start
 
-    if ("Get list of reservations?") then (yes)
+    if (Get list of reservations?) then (yes)
         partition "Research Student" {
-            if ("Select action") then ("View details")
+            if (Select action) then (View details)
                 :Reservation Details;
 
                 fork
@@ -15,8 +15,8 @@ partition Reservation {
                     :Get End time;
                 end fork
 
-            else ("Cancel reservation")
-                if ("Before Start Time?") then (yes)
+            else (Cancel reservation)
+                if (Before Start Time?) then (yes)
                     partition Reservation {
                         :Research Student canceled Reservation;
                         :Alert Lab Asset Manager;
@@ -28,7 +28,7 @@ partition Reservation {
         }
     else (no)
         partition "Lab Asset Manager" {
-            if ("Select action") then ("View details")
+            if (Select action) then (View details)
                 :Reservation details;
 
                 fork
@@ -41,8 +41,8 @@ partition Reservation {
                     :Get End time;
                 end fork
 
-            elseif ("Cancel reservation")
-                if ("Prompt confirm text") then (yes)
+            elseif (Cancel reservation)
+                if (Prompt confirm text) then (yes)
                     partition Reservation {
                         :Cancel reservation;
                         :Notify Reserver of cancellation;
@@ -51,8 +51,8 @@ partition Reservation {
                 else (no)
                 endif
 
-            elseif ("Override reservation")
-                if ("Prompt confirm text") then (yes)
+            elseif (Override reservation)
+                if (Prompt confirm text) then (yes)
                     partition Reservation {
                         :Overrite reservation;
                         :Provide lab asset manager with note field;
@@ -67,4 +67,5 @@ partition Reservation {
     stop
 }
 @enduml
+
 
