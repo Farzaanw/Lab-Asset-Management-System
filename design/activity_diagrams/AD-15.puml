@@ -1,0 +1,47 @@
+@startuml
+title Activity Diagram FR-15: PI Policies and Governance
+
+|Lab Manager (PI)|
+start
+:Navigate to Lab Settings and Policies page;
+:Configure lab wide policies;
+:Set policy values;
+:Mark assets that require approval;
+|System|
+:Save policy setup;
+:Apply policies to all users;
+|Lab Manager (PI)|
+:Reach Restricted Requests page;
+:Select a pending request;
+if (Approve or Deny?) then (Approve)
+    |System|
+    :Process approval;
+    :Create reservation;
+    :Log approval in audit log;
+    |Lab Manager (PI)|
+    if (Escalate user privileges?) then (yes)
+        |System|
+        :Grant privileges for asset;
+        :Record privilege escalation in audit log;
+        stop
+    else (no)
+     |Lab Manager (PI)|
+        stop
+    endif
+else (Deny)
+    |System|
+    :Process denial;
+    :Log denial in audit log;
+    |Lab Manager (PI)|
+    if (Suspend user privileges?) then (yes)
+        |System|
+        :Suspend user privileges;
+        :Record privilege suspension in audit log;
+        :Block user from requesting restricted assets;
+        stop
+    else (no)
+         |Lab Manager (PI)|
+        stop
+    endif
+endif
+@enduml
