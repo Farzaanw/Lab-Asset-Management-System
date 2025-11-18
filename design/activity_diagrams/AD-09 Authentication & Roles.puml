@@ -46,7 +46,7 @@ else (no)
     :Grant access with role permissions;
             stop
             else (no)
-    :Failed login attempt counter increaed;
+    :Failed login attempt counter increased;
              stop
 
             endif
