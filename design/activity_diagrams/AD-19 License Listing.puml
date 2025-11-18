@@ -1,7 +1,7 @@
 @startuml
 title Software License Listings
 
-|Student|
+|Research Student|
 start
 :Student is logged in;
 :Navigate to available licenses;
@@ -25,6 +25,16 @@ else (no)
     end split
     stop
 endif
+
+start
+:Provide renewal alerts and license-specific usage summaries to user;
+note right
+    This will provide the user with alers
+    and updates on renewals and license-specific
+    usage summaries as the license is used
+end note
+stop
+
 |Faculty|
 start
 :Navigate to available licenses;
