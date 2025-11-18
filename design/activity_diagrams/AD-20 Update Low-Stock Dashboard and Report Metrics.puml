@@ -1,43 +1,64 @@
 @startuml
 title Update Low-Stock Dashboard and Report Metrics
 
-start
+partition Dashboard {
 
-:Receive dashboard request;
-:Query inventory data;
-:Compute inventory totals;
-:Compute low-stock count;
-:Return dashboard metrics;
+    start
 
-:Receive CSV file;
-:Validate CSV rows;
+    :Receive dashboard request;
+    :Query inventory data;
+    :Query reservation data;
+    :Query utilization data;
+    :Query overdue incidents;
+    :Compute inventory totals;
+    :Compute low-stock count;
+    :Compute top assets;
+    :Compute top reservations;
+    :Compute asset utilization;
+    :Compute overdue summary;
+    :Return dashboard lists & metrics;
 
-if (Rows valid) then ([valid])
-  :Upsert asset records;
-  :Recompute inventory totals;
-  :Recompute low-stock count;
-  :Build import summary;
-  :Return summary and updated metrics;
-else ([invalid])
-  :Build CSV error list;
-  :Return validation errors;
-endif
+    :Receive CSV file;
+    :Validate CSV rows;
 
-while (Inventory change event) is (more)
-  :Load affected asset;
-  :Recompute quantity and status;
+    if (Rows valid?) then (valid)
+      :Update asset records;
+      :Recompute inventory totals;
+      :Recompute low-stock count;
+      :Recompute top assets;
+      :Recompute top reservations;
+      :Recompute asset utilization;
+      :Recompute overdue summary;
+      :Build import summary;
+      :Return updated metrics & list;
+      :Return updated summery;
+    else (invalid)
+      :Build CSV error list;
+      :Return validation errors;
+    endif
 
-  if (Quantity < threshold) then ([low])
-    :Mark asset Low-Stock;
-    :Add or update alert entry;
-  else ([ok])
-    :Clear Low-Stock flag;
-    :Remove alert entry if needed;
-  endif
+    while (More change events?) is (yes)
+      :Inventory or threshold change;
+      :Load affected asset;
+      :Recompute quantity and status;
 
-  :Recompute low-stock count;
-  :Expose updated metrics to dashboard;
-endwhile (done)
+      if (Quantity < threshold?) then (low)
+        :Mark asset Low-Stock;
+        :Add or update alert entry;
+      else (ok)
+        :Clear Low-Stock flag;
+        :Remove alert entry if needed;
+      endif
 
-stop
+      :Recompute low-stock count;
+      :Recompute top assets;
+      :Recompute top reservations;
+      :Recompute asset utilization;
+      :Recompute overdue summary;
+      :Show updated metrics & lists to dashboard;
+    endwhile (no)
+
+    stop
+}
+
 @enduml
