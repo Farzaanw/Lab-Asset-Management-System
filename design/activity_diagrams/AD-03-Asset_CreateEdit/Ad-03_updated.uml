@@ -1,0 +1,72 @@
+@startuml
+title AD-03: Asset Creation and Editing (Swimlane Diagram)
+
+|User|
+start
+
+' ---------- DECISION: ADD OR EDIT ----------
+:Select action;
+
+if (Add Asset?) then (yes)
+    ' ------------------ ADD ASSET FLOW ------------------
+    |User|
+    :Select Add Asset;
+
+    |System|
+    :Load empty asset form;
+
+    |User|
+    repeat
+        :Enter asset details;
+
+        |System|
+        :Capture asset input;
+        :Validate required fields;
+
+        if (complete?) then (yes)
+            :Store asset data;
+            :Refresh asset table;
+            break
+        else (no)
+            :Display validation error;
+        endif
+    repeat while (incomplete)
+
+    ' Optional cancel
+    if (user cancels?) then (yes)
+        stop
+    endif
+
+elseif (Edit Asset?) then (yes)
+    ' ------------------ EDIT ASSET FLOW ------------------
+    |User|
+    :Select Edit Asset;
+
+    |System|
+    :Load existing asset data into form;
+
+    |User|
+    repeat
+        :Modify asset details;
+
+        |System|
+        :Capture updated data;
+        :Validate required fields;
+
+        if (valid?) then (yes)
+            :Update asset in database;
+            :Refresh asset table;
+            break
+        else (no)
+            :Display validation error;
+        endif
+    repeat while (invalid)
+
+    ' Optional cancel
+    if (user cancels?) then (yes)
+        stop
+    endif
+endif
+
+stop
+@enduml
