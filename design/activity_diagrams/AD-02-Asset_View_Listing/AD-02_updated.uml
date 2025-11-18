@@ -1,1 +1,34 @@
+@startuml
+title AD-02: Dashboard Asset View and Listing (Swimlane Diagram)
 
+|User|
+start
+
+|System|
+:Determine user role;
+:Load role-specific dashboard;
+:Retrieve initial asset list;
+:Display asset table;
+
+|User|
+:Scroll asset table;
+
+|System|
+if (more assets available?) then (yes)
+    |User|
+    :Select Show More Assets;
+    
+    |System|
+    :Retrieve additional assets;
+    :Append assets to table;
+    :Update dashboard view;
+    
+    --> User
+else (no)
+endif
+
+|User|
+:Select / interact with assets (view details, reserve, download documents, etc);
+
+stop
+@enduml
