@@ -1,0 +1,73 @@
+@startuml
+|Research Student|
+start
+:Asset is selected with stock remaining;
+
+|Reservation|
+if (Reservation is Cancelled?) then (yes)
+    :Cancel reservation;
+    end
+else (no)
+    :Unit/Units of asset is reserved;
+    :Asset stock updated;
+
+    if (Stock < Reserved Amount) then (yes)
+        :Insufficient Stock - Deny reservation;
+        end
+    else (no)
+        if (Stock == Reserved Amount) then (yes)
+            :Asset is reserved;
+            :Assets availability is updated to False;
+            stop
+        else (no)
+            :Asset is reserved;
+            stop
+        endif
+    endif
+
+|Lab Manager|
+start
+:Cancel reservation at any time;
+
+|Reservation|
+if (Reservation is Cancelled) then (yes)
+    :Cancel in-process reservation;
+    end
+else (no)
+    :Continue;
+    stop
+
+|Faculty Researcher|
+start
+:Reserve multiple items at once;
+
+|Reservation|
+if (Reservation is Cancelled?) then (yes)
+    :Cancel reservation;
+    end
+else (no)
+    :Unit/Units of asset is reserved;
+    :Asset stock updated;
+
+    if (Stock < Reserved Amount) then (yes)
+        :Insufficient Stock - Deny reservation;
+        end
+    else (no)
+        if (Stock == Reserved Amount) then (yes)
+            :Asset is reserved;
+            :Assets availability is updated to False;
+            stop
+        else (no)
+            :Asset is reserved;
+            stop
+        endif
+    endif
+
+|Reservation|
+if (Reservation is Cancelled) then (yes)
+    :Cancel in-process reservation;
+    end
+else (no)
+    :Continue;
+    stop
+@enduml
