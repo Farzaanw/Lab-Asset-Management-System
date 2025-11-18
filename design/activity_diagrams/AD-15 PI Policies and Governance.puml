@@ -5,43 +5,62 @@ title Activity Diagram FR-15: PI Policies and Governance
 start
 :Navigate to Lab Settings and Policies page;
 :Configure lab wide policies;
-:Set policy values;
+:Set policy values\n(Max booking duration,\nAdvance booking horizon,\nReservation priority rules);
 :Mark assets that require approval;
+
 |System|
 :Save policy setup;
 :Apply policies to all users;
+
 |Lab Manager (PI)|
 :Reach Restricted Requests page;
 :Select a pending request;
+note right
+  View ApprovalRequest:
+  - Requester
+  - Asset ID
+  - Time interval
+  - Reason
+end note
+
 if (Approve or Deny?) then (Approve)
     |System|
     :Process approval;
-    :Create reservation;
+    :Update ApprovalRequest status to Approved;
+    :Create reservation based on ApprovalRequest;
     :Log approval in audit log;
+    
     |Lab Manager (PI)|
     if (Escalate user privileges?) then (yes)
+        :Enter reason for privilege escalation;
+        
         |System|
         :Grant privileges for asset;
-        :Record privilege escalation in audit log;
+        :Record privilege escalation with reason in audit log;
         stop
     else (no)
-     |Lab Manager (PI)|
+        |Lab Manager (PI)|
         stop
     endif
 else (Deny)
     |System|
     :Process denial;
+    :Update ApprovalRequest status to Denied;
     :Log denial in audit log;
+    
     |Lab Manager (PI)|
     if (Suspend user privileges?) then (yes)
+        :Enter reason for privilege suspension;
+        
         |System|
         :Suspend user privileges;
-        :Record privilege suspension in audit log;
+        :Record privilege suspension with reason in audit log;
         :Block user from requesting restricted assets;
         stop
     else (no)
-         |Lab Manager (PI)|
+        |Lab Manager (PI)|
         stop
     endif
 endif
+
 @enduml
