@@ -3,24 +3,24 @@ partition Lab Asset Manager{
     start
     if ("Select Action") then (View documents)
         :Get list of assets;
-        if ("Select asset to view its document") then (Document Selected)
+        if ("View asset document") then (Document Selected)
         fork
-            :Get asset name;
+            :Asset Name;
         fork again
-            :Get Document type (manuals, warranties, calibration/maintenance logs);
+            :Document type (manuals, warranties, calibration/maintenance logs);
         fork again
-            :Get name of who uploaded said document;
+            :Name of uploader;
         fork again
-            :Get date and timestamp of when document was uploaded;
+            :Document timestamp;
         end fork
         endif
     else (Upload Documents)
-        :Ask for document file location to upload;
+        :Upload document file location;
         partition Documents{
             :Receive file;
             :Check file type;
             if (Is file type a PDF?) then (valid)
-                :Upload document to documents folder;
+                :Upload document to database;
                 fork
                     :Record timestamp in UTC;
                 fork again
@@ -36,4 +36,5 @@ partition Lab Asset Manager{
     endif
 stop
 }
+
 @enduml
