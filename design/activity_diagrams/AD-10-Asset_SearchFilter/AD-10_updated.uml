@@ -1,0 +1,32 @@
+@startuml
+|User|
+start
+
+:Top of search/filter flow;
+
+if (user provides keyword?) then (yes)
+    :Provide keyword;
+    |System|
+    :Capture keyword;
+    :Filter assets by keyword;
+elseif (user provides status?) then (yes)
+    :Provide status;
+    |System|
+    :Capture status;
+    :Filter assets by status;
+else
+    |System|
+    :Display full asset list;
+endif
+
+|System|
+:Update asset table;
+
+|User|
+:Select / act on filtered assets (view details, reserve, download doc, etc);
+
+if (new input received?) then (yes)
+    --> :Top of search/filter flow;
+else (no)
+    stop
+endif
