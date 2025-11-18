@@ -1,0 +1,43 @@
+@startuml
+title Activity Diagram FR-13: Maintenance / OOS
+
+|Lab Asset Manager|
+start
+:Access asset management;
+:Select hardware asset;
+
+|System|
+:Display asset details;
+
+|Lab Asset Manager|
+:Choose new status;
+
+if (Status to set?) then (Out of Service)
+    :Enter OOS reason;
+    :Enter expected return date;
+    
+    |System|
+    :Update asset status to OOS;
+    :Remove from available assets list;
+    :Add OOS banner to asset info page;
+    :Display confirmation;
+    
+    stop
+    
+else (Available)
+    |System|
+    if (Current status is OOS?) then (yes)
+        :Update asset status to Available;
+        :Add to available assets list;
+        :Remove OOS banner;
+        :Display confirmation;
+        
+        stop
+    else (no)
+        :Display error: Asset is already Available;
+        
+        stop
+    endif
+endif
+
+@enduml
