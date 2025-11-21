@@ -1,0 +1,16 @@
+@startuml
+
+class System {
+
+  -- Attributes --
+  - currentUser : StudentResearcher | FacultyResearcher | LabManager | LabAssetManager
+  - usageLog : List<String> <<each String = "User:Action">>
+
+  -- Methods --
+  + select_user() : void
+  + user_log_in() : boolean
+  - valid_user_login(email : String, password : String) : boolean
+  - update_usage_log(new_log : String) : void
+}
+
+@enduml
