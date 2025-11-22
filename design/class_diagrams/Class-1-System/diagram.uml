@@ -5,12 +5,13 @@ class System {
   -- Attributes --
   - currentUser : StudentResearcher | FacultyResearcher | LabManager | LabAssetManager
   - usageLog : List<String> <<each String = "User:Action">>
+  + userActive : boolean = False  <<True = logged-in, False = logged-out>>
 
   -- Methods --
   + select_user() : void
   + user_log_in() : boolean
-  - valid_user_login(email : String, password : String) : boolean
-  - update_usage_log(new_log : String) : void
+  - valid_user_login(email: String, password: String) : boolean
+  - update_usage_log(new_log: String) : void
 }
 
 @enduml
