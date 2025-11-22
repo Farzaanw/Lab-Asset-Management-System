@@ -1,0 +1,49 @@
+@startuml LabAssetManager_Class
+
+class LabAssetManager {
+  -assetManagerID: String
+  -assetManagerName: String
+  -assetManagerEmail: String
+  -permissions: String
+  -accountList: vector<String>
+  -assetInventory: vector<Asset>
+  -documentRepository: vector<Document>
+  -lastInventoryCheck: String
+  
+  ' Basic Methods
+  +display_page(): void
+  +user_actions(): void
+  +view_notifications(): void
+  
+  ' Account Management Methods
+  +createAccount(name: String, role: String, email: String): String
+  +returnAccount(userID: String): User
+  +updateAccount(accountID: String, updatedInfo: String): boolean
+  +deleteAccount(accountID: String): boolean
+  +assignRole(accountID: String, role: String): boolean
+  +updatePermissions(accountID: String, permissions: String): boolean
+  
+  ' Asset Management Methods
+  +addAsset(assetName: String, location: String, purchaseDate: String, condition: String, maintenanceSchedule: String): Asset
+  +updateAsset(assetID: String, assetInfo: Asset): boolean
+  +removeAsset(assetID: String): boolean
+  +flagAsset(assetID: String, reason: String, returnDate: String): boolean
+  
+  ' Inventory Methods
+  +inventoryCheck(): Document
+  +viewCheckIns(): List<Reservation>
+  +viewCheckOuts(): List<Reservation>
+  +trackConsumables(): List<Asset>
+  +replenish(assetID: String): boolean
+  
+  ' Document Methods
+  +uploadDocument(assetID: String, document: Document, documentType: String): Document
+  +viewDocuments(assetID: String): List<Document>
+  +updateDocument(documentID: String, updatedInfo: String): boolean
+  +deleteDocument(documentID: String): boolean
+  
+  ' Usage Logs Methods
+  +viewUsageLogs(): List<String>
+}
+
+@enduml
