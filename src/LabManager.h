@@ -1,13 +1,10 @@
-//CS-3 LabManager.h
-//Author: Cash Limberg
-//Supports: UR-300 to UR 331
-//test
 #include <string>
 #include <vector>
 #include "LabAssetManager.h"
+#include "User.h"
 #pragma once
 
-class LabManager {
+class LabManager : public User {
 private:
     int labManagerID;
     std::string privilage_changes_log[];
