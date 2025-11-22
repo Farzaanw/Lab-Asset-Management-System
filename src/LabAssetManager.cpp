@@ -1,4 +1,9 @@
 #include "LabAssetManager.h"
+
+// Example usage (copy into main.cpp):
+//    #include "LabAssetManager.h"
+//      LabAssetManager manager;
+//      manager.createAccount();
 void LabAssetManager::createAccount() {
     string accountsFile = "Database/accounts.json";
     json j;
