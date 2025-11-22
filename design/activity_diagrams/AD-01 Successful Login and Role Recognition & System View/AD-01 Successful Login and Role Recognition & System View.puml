@@ -1,0 +1,48 @@
+@startuml
+|User|
+start
+
+:Open System Interface;
+:Enter Username;
+:Enter Password;
+:Submit Credentials;
+
+|System|
+:Validate Credentials;
+
+if (Username/Password valid?) then (yes)
+    :Identify User Role;
+else (no)
+    :+1 Failed Attempts;
+    :Display Invalid Login Error;
+
+    if (Failed Attempts < 3) then (yes)
+        |User|
+        :Re-enter Credentials;
+        :Open System Interface;
+    else (no)
+        |System|
+        :Lock Account;
+        :Send Reset Email;
+        stop
+    endif
+endif
+
+|System|
+:Check User Role;
+
+if (Research Student?) then (yes)
+    :Load Research Student Dashboard;
+    :Recognize Accessible Functions;
+else (no)
+    :Load Other User Dashboard;
+    :Recognize Accessible Functions;
+endif
+
+:Display Dashboard;
+
+|User|
+:Interact with Dashboard Functions;
+
+stop
+@enduml

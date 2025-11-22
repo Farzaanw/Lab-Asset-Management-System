@@ -1,0 +1,30 @@
+@startuml
+title Activity Diagram: FR-08 - Low Inventory Flag
+
+|Lab Asset Manager|
+start
+:Select Item to Mark as Consumable;
+:Set Minimum Quantity Threshold;
+
+|System|
+:Save Item as Consumable with Threshold;
+:Item Quantity Updated;
+
+if (Quantity < Minimum Threshold?) then (yes)
+  :Flag Item as "Low Stock";
+  :Update Item Status;
+else (no)
+  :Keep Current Status;
+endif
+
+|Lab Asset Manager|
+:View Consumable Items List;
+
+|System|
+:Retrieve All Consumable Items;
+:Display Items with Stock Status;
+
+|Lab Asset Manager|
+:Review Low Stock Items;
+stop
+@enduml

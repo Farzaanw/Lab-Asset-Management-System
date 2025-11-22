@@ -1,0 +1,25 @@
+@startuml
+title Activity Diagram: FR-07 - Automatic Usage Log
+    |System|
+    
+start
+    |System|
+fork
+    |System|
+    :Reservation Successfully Created;
+    :Capture Reservation Details;
+    :Create Usage Log Entry;
+    :Store Log Entry in Database;
+fork again
+    |Lab Asset Manager|
+    :Request to View Usage Logs;
+    |System|
+    :Retrieve All Usage Log Entries;
+    :Display Usage Logs;
+    |Lab Asset Manager|
+    :View Usage Logs for Accountability;
+end fork
+
+stop
+@enduml
+

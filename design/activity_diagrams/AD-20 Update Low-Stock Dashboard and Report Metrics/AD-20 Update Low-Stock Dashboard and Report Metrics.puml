@@ -1,0 +1,64 @@
+@startuml
+title Update Low-Stock Dashboard and Report Metrics
+
+partition Dashboard {
+
+    start
+
+    :Receive dashboard request;
+    :Query inventory data;
+    :Query reservation data;
+    :Query utilization data;
+    :Query overdue incidents;
+    :Compute inventory totals;
+    :Compute low-stock count;
+    :Compute top assets;
+    :Compute top reservations;
+    :Compute asset utilization;
+    :Compute overdue summary;
+    :Return dashboard lists & metrics;
+
+    :Receive CSV file;
+    :Validate CSV rows;
+
+    if (Rows valid?) then (valid)
+      :Update asset records;
+      :Recompute inventory totals;
+      :Recompute low-stock count;
+      :Recompute top assets;
+      :Recompute top reservations;
+      :Recompute asset utilization;
+      :Recompute overdue summary;
+      :Build import summary;
+      :Return updated metrics & list;
+      :Return updated summery;
+    else (invalid)
+      :Build CSV error list;
+      :Return validation errors;
+    endif
+
+    while (More change events?) is (yes)
+      :Inventory or threshold change;
+      :Load affected asset;
+      :Recompute quantity and status;
+
+      if (Quantity < threshold?) then (low)
+        :Mark asset Low-Stock;
+        :Add or update alert entry;
+      else (ok)
+        :Clear Low-Stock flag;
+        :Remove alert entry if needed;
+      endif
+
+      :Recompute low-stock count;
+      :Recompute top assets;
+      :Recompute top reservations;
+      :Recompute asset utilization;
+      :Recompute overdue summary;
+      :Show updated metrics & lists to dashboard;
+    endwhile (no)
+
+    stop
+}
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+|System|
+start
+
+:Verify User Role;
+:Load User Dashboard;
+:Open Asset Handling;
+
+:Check Specific Asset;
+:Check Asset Availability;
+
+if (Asset Available?) then (yes)
+    :Record Reservation Request with Date/Time Range;
+    :Update Asset Status to Reserved;
+    :Update Status Across Network;
+    :Send Reservation Confirmation to User;
+    :Log Reservation Timestamp;
+else (no)
+    :Detect Reservation Conflict;
+    :Identify Conflicting User/Reservation;
+    :Notify User of Conflict Details;
+    :Provide Alternative Asset Suggestions;
+endif 
+
+stop
+@enduml

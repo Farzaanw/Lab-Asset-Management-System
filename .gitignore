@@ -53,3 +53,11 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+
+
+# The folder Database will need to be added here once we have all predetermined accounts and assets. This is so when testing we dont fill up the json files
+#   with testing data
+
+.vscode/
+src/main.cpp

@@ -1,0 +1,24 @@
+@startuml
+
+class StudentResearcher {
+  
+  -- Attributes --
+  - id : int
+  - name : String
+  - email : String
+  + permissions : List<String> <<values ∈ {low-level, high-level, administrative}>>
+  + reservations : vector<Reservation*> [0..*]  <<list of all reservations created by the user>>
+  
+  -- Methods --
+  + display_page() : void
+  - user_actions() : void
+  - requestAsset(assetID: int, quantity: int, permissions: String) : void
+  - cancelReservation(assetID: int, permissions: String) : boolean
+  + view_notifications() : void
+  - return_asset() : void
+  + update_profile() : void
+  - submit_usage_feedback(equipmentID: int, comments: String, rating: int) : void
+  + log_out() : boolean
+}
+
+@enduml
