@@ -60,4 +60,4 @@ dkms.conf
 #   with testing data
 
 .vscode/
-src/main.exe
+src/main.cpp
