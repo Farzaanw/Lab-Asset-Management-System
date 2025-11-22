@@ -1,0 +1,27 @@
+@startuml
+
+class LabManager {
+
+    -- Attributes --
+    - managerID : int
+    + name : string
+    + email : string
+    - department : string
+    -- Methods --
+    + display_page() : void
+    + user_actions() : void
+    + grantRights(assetManagerID : int) : void
+    + revokeRights(assetManagerID : int) : void
+    + assignPermissions(userID : int, newCategory : string) : List
+    + suspendUserPrivilege() : void
+    + updateSystemPolicy() : void
+    + manageScheduling(userID : int) : List<List>
+    + approveReservation(reservationID : int) : Boolean
+    + viewDashboard() : List<List>
+    + monitorAssets() : List
+    + assignMaintenance(assetID : int, technicianID : int) : void
+    + generateReport() : dict
+    + analyzeBudgetUsage() : dict
+}
+
+@enduml
