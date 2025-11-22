@@ -1,0 +1,20 @@
+@startuml
+
+class FacultyResearcher {
+
+    -- Attributes --
+    - facultyID : int
+    + name : string
+    + email : string
+    + permissions : boolean
+    - labGroupID : int
+    
+    -- Methods --
+    + reserveAsset(assetID : int, permissions : boolean) : Boolean
+    + generateUsageReport(assetUsed : List, dataRecords : List) : Document
+    + viewGroup(labGroupID : int) : Document
+    + display_page() : void
+    + user_actions() : void
+}
+
+@enduml
