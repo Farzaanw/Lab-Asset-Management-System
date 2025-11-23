@@ -1,0 +1,20 @@
+@startuml
+
+class Reservations {
+    -- Attributes --
+    - reservationID : int
+    + permissionApproved : boolean
+    + confirmed : boolean 
+    - description : string
+    - startDate : string
+    - endDate : string
+    - user: string
+
+    -- Methods --
+    + update_asset_stock_count(assetID: String, quantity: int) : void
+    + makeReservation(permissionApproved: Boolean, description: String, startDate: String(Date/Time), endDate: String(Date/Time), User: String) : bool
+    + cancelReservation(reservationID: int) : bool
+    + getReservation(reservationID: int) : string
+}
+
+@enduml
