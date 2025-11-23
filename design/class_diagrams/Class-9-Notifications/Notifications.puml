@@ -1,1 +1,24 @@
+@startuml
 
+class Notifications {
+     -- Attributes --
+     - notificationID: string
+     - recipientID: string
+     - message: string
+     - type: notificationType
+     - urgency: bool
+     - readFlag: bool
+     - timeStamp: zonedDateTimeStamp
+     - metaData: map<string, string>
+
+     -- Methods --
+     - add_notification(notification: string): void
+     - get_unread_notifications(userID: string, readFlag: bool): vector<string>
+     - get_read_notifications(userID: string, readFlag: bool): vector<string>
+     - mark_notifications_read(notificationID: string): void
+     - clear_notifications(userID: string): void
+     - search_notifications(notificationID: string): string
+     - get_notification_metadata(notificationID: string): map<string, string>
+     - get_urgent_notifications(notificationID: string): vector<string>
+}
+@enduml
