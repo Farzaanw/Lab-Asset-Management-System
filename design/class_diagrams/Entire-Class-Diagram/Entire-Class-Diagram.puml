@@ -1,1 +1,195 @@
 
+@startuml
+
+class System {
+
+  -- Attributes --
+  - currentUser : StudentResearcher | FacultyResearcher | LabManager | LabAssetManager
+  - usageLog : List<String> <<each String = "User:Action">>
+  + userActive : boolean = False  <<True = logged-in, False = logged-out>>
+
+  -- Methods --
+  + select_user() : void
+  + user_log_in() : boolean
+  - valid_user_login(email: String, password: String) : boolean
+  - update_usage_log(new_log: String) : void
+}
+
+class StudentResearcher {
+  
+  -- Attributes --
+  - id : int
+  - name : String
+  - email : String
+  + permissions : List<String> <<values ∈ {low-level, high-level, administrative}>>
+  + reservations : vector<Reservation*> [0..*]  <<list of all reservations created by the user>>
+  
+  -- Methods --
+  + display_page() : void
+  - user_actions() : void
+  - requestAsset(assetID: int, quantity: int, permissions: String) : void
+  - cancelReservation(assetID: int, permissions: String) : boolean
+  + view_notifications() : void
+  - return_asset() : void
+  + update_profile() : void
+  - submit_usage_feedback(equipmentID: int, comments: String, rating: int) : void
+  + log_out() : boolean
+}
+
+class FacultyResearcher {
+
+    -- Attributes --
+    - facultyID : int
+    + name : string
+    + email : string
+    + permissions : boolean
+    - labGroupID : int
+    
+    -- Methods --
+    + reserveAsset(assetID : int, permissions : boolean) : Boolean
+    + generateUsageReport(assetUsed : List, dataRecords : List) : Document
+    + viewGroup(labGroupID : int) : Document
+    + display_page() : void
+    + user_actions() : void
+}
+
+class LabManager {
+
+    -- Attributes --
+    - managerID : int
+    + name : string
+    + email : string
+    - department : string
+    -- Methods --
+    + display_page() : void
+    + user_actions() : void
+    + grantRights(assetManagerID : int) : void
+    + revokeRights(assetManagerID : int) : void
+    + assignPermissions(userID : int, newCategory : string) : List
+    + suspendUserPrivilege() : void
+    + updateSystemPolicy() : void
+    + manageScheduling(userID : int) : List<List>
+    + approveReservation(reservationID : int) : Boolean
+    + viewDashboard() : List<List>
+    + monitorAssets() : List
+    + assignMaintenance(assetID : int, technicianID : int) : void
+    + generateReport() : dict
+    + analyzeBudgetUsage() : dict
+}
+
+class LabAssetManager {
+  -assetManagerID: String
+  -assetManagerName: String
+  -assetManagerEmail: String
+  -permissions: String
+  -accountList: vector<String>
+  -assetInventory: vector<Asset>
+  -documentRepository: vector<Document>
+  -lastInventoryCheck: String
+  
+  ' Basic Methods
+  +display_page(): void
+  +user_actions(): void
+  +view_notifications(): void
+  
+  ' Account Management Methods
+  +createAccount(name: String, role: String, email: String): String
+  +returnAccount(userID: String): User
+  +updateAccount(accountID: String, updatedInfo: String): boolean
+  +deleteAccount(accountID: String): boolean
+  +assignRole(accountID: String, role: String): boolean
+  +updatePermissions(accountID: String, permissions: String): boolean
+  
+  ' Asset Management Methods
+  +addAsset(assetName: String, location: String, purchaseDate: String, condition: String, maintenanceSchedule: String): Asset
+  +updateAsset(assetID: String, assetInfo: Asset): boolean
+  +removeAsset(assetID: String): boolean
+  +flagAsset(assetID: String, reason: String, returnDate: String): boolean
+  
+  ' Inventory Methods
+  +inventoryCheck(): Document
+  +viewCheckIns(): List<Reservation>
+  +viewCheckOuts(): List<Reservation>
+  +trackConsumables(): List<Asset>
+  +replenish(assetID: String): boolean
+  
+  ' Document Methods
+  +uploadDocument(assetID: String, document: Document, documentType: String): Document
+  +viewDocuments(assetID: String): List<Document>
+  +updateDocument(documentID: String, updatedInfo: String): boolean
+  +deleteDocument(documentID: String): boolean
+  
+  ' Usage Logs Methods
+  +viewUsageLogs(): List<String>
+}
+
+class Asset {
+  -minimumThreshold: Int
+  -stock: Int
+  -assetID: String
+  -assetName: String
+  -outOfService: boolean
+  -isAvailable: boolean
+  -isConsumable: boolean
+  -documents: vector<String>
+  -reservationHistory: vector<Reservation>
+
+  ' Display Methods
+  +display(): void
+
+  ' Document Methods
+  +getDocuments(): vector<Documents>
+  +addDocument(DocumentID: String): boolean
+  +removeDocument(DocumentID: String): boolean
+
+  ' Availability / Stock Methods
+  +assetIsAvailable(assetID: String): boolean
+  +reduceStock(quantity: Int): void
+  +increaseStock(quantity: Int): void
+  +isBelowThreshold(): boolean
+  +markAvailable(): void
+
+  ' Reservation Methods
+  +getReservationHistory(): List<Reservation>
+}
+
+class Reservations {
+    -- Attributes --
+    - reservationID : int
+    + permissionApproved : boolean
+    + confirmed : boolean 
+    - description : string
+    - startDate : string
+    - endDate : string
+    - user: string
+
+    -- Methods --
+    + update_asset_stock_count(assetID: String, quantity: int) : void
+    + makeReservation(permissionApproved: Boolean, description: String, startDate: String(Date/Time), endDate: String(Date/Time), User: String) : bool
+    + cancelReservation(reservationID: int) : bool
+    + getReservation(reservationID: int) : string
+}
+
+class Notifications {
+     -- Attributes --
+     - notificationID: string
+     - recipientID: string
+     - message: string
+     - type: notificationType
+     - urgency: bool
+     - readFlag: bool
+     - timeStamp: zonedDateTimeStamp
+     - metaData: map<string, string>
+
+     -- Methods --
+     - add_notification(notification: string): void
+     - get_unread_notifications(userID: string, readFlag: bool): vector<string>
+     - get_read_notifications(userID: string, readFlag: bool): vector<string>
+     - mark_notifications_read(notificationID: string): void
+     - clear_notifications(userID: string): void
+     - search_notifications(notificationID: string): string
+     - get_notification_metadata(notificationID: string): map<string, string>
+     - get_urgent_notifications(notificationID: string): vector<string>
+}
+
+@enduml
