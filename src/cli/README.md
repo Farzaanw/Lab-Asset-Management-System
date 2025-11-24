@@ -1,5 +1,10 @@
 # CLI Folder
 
+## Call - from within this folder
+
+1. Run the command: g++ main.cpp ../SystemController.cpp -o TestExecutable.exe
+2. Run the command: ./TestExecutable.exe
+
 ## Purpose
 The `cli/` folder contains the **Command-Line Interface (CLI)** entry point for the Lab Asset Management System.  
 It provides a text-based interface for users to interact with the system, including logging in, creating accounts, and performing role-specific actions.
@@ -8,11 +13,8 @@ It provides a text-based interface for users to interact with the system, includ
 - **Main.cpp**: The main entry point of the application. Starts the CLI, displays menus, and handles user input.
 
 ## Interactions
-- **Main.cpp** creates an instance of **System** and calls its methods to handle all business logic, including:
-  - User authentication and account management  
-  - Accessing and managing assets (Equipment, Documents, Reservations, Notifications)  
-  - Logging actions and notifications  
-
+- **Main.cpp** creates an instance of **System** and calls its methods to handle all business logic
+  
 ## Flow Diagram
 ```
 Main.cpp (CLI)
