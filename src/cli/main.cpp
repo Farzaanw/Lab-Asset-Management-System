@@ -1,12 +1,16 @@
-//To compile, run this command: g++ main.cpp -o Test_Executable
-//Any changes made in this file will not be saved to git (visit .gitignore to change)
-//   This is to make it so testing is easier! please add #include files whenever you would like to test something
-//   Once we are ready to put everything together delete "src/*.exe" from .gitignore
+// Steps to start up CLI interface //
+// 1. Enter this folder /cli
+// 2. Run the command: g++ main.cpp ../SystemController.cpp -o TestExecutable.exe
+// 3. Run the command: ./TestExecutable.exe
+
 #include <iostream>
+#include "../SystemController.h"
 
 int main(){
-    // Add testing code here:
+    std::cout << "Welcome to the Lab Asset Management System!" << std::endl;
 
-    system("pause");
-    return 1; 
+    SystemController system;
+    system.run();
+
+    return 0; 
 }
