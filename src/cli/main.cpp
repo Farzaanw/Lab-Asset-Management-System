@@ -7,7 +7,7 @@
 #include "../SystemController.h"
 
 int main(){
-    std::cout << "Welcome to the Lab Asset Management System!" << std::endl;
+    std::cout << "...starting up system..." << std::endl;
 
     SystemController system;
     system.run();
