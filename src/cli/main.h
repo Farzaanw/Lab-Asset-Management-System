@@ -1,4 +1,4 @@
-// CS-4:Main.h
+// Main.h
 // Auth: Farzaan 
 
 #ifndef MAIN_H
