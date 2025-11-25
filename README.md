@@ -2,9 +2,9 @@
 
 ## HOW TO BUILD
 -Clone the repository
--Run this command: g++ main.cpp -o Test_Executable
-- Run Test_Executable
-- main.cpp includes all the skeleton code for each class
+1. cd src/cli
+2. Run the command: g++ main.cpp ../SystemController.cpp -I../library -std=c++17 -o TestExecutable.exe
+3. Execute: ./TestExecutable.exe
 
 ## Team Members
 Kai Johnson  
