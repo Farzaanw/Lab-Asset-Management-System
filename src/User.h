@@ -1,16 +1,13 @@
-#include <string>
+// User.cpp
+// Auth: Farzaan Wadiwala
 
 class User {
 private:
-    std::string firstName;
-    std::string lastName;
-    std::string role;
     std::string email;
     std::string password;
-
+    std::string role;
 public:
-    // Constructor
-    User(const std::string& f, const std::string& l,
-         const std::string& e, const std::string& p)
-        : firstName(f), lastName(l), email(e), password(p) {}
+    std::string getEmail() const { return email; }
+    std::string getPassword() const { return password; }
+    std::string getRole() const { return role; }
 };

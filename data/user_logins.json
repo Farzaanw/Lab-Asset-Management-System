@@ -1,0 +1,25 @@
+{
+    "Faculty Researcher": [
+        {
+            "email": "dr.smith@osu.edu",
+            "password": "smithpass"
+        }
+    ],
+    "Lab Asset Manager": [
+        {
+            "email": "labadmin@osu.edu",
+            "password": "admin123"
+        }
+    ],
+    "Lab Manager": [],
+    "Student Researcher": [
+        {
+            "email": "alice@osu.edu",
+            "password": "alice123"
+        },
+        {
+            "email": "tom@osu.edu",
+            "password": "tom123"
+        }
+    ]
+}
