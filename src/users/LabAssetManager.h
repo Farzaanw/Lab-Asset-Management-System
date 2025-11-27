@@ -3,8 +3,8 @@
 // Supports: UR-400 to UR-431
 // Collaborators:  <Assets>[1..*], <document>[0..*], <PI>[1]
 #include <string>
-#include "Assets.h"
-#include "Documents.h"
+#include "../resources/Asset.h"
+#include "../resources/Document.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -46,9 +46,11 @@ public:
 	Assets addAsset(const Assets& assetInfo);
 	bool updateAsset(const std::string& assetID, const Assets& updatedInfo);
 	bool removeAsset(const std::string& assetID);
-	bool flagAssetOutOfService(const std::string& assetID);
+	bool flagAsset(const std::string& assetID);
+	bool trackConsumables();
+	bool replenishAsset(const std::string& assetID);
 
 	//inventory & Documents
-	Documents runInventoryCheck();
+	Documents viewDocuments(const std::string& documentID);
 	Documents uploadDocument(const Documents& document);
 };

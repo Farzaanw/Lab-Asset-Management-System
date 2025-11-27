@@ -1,9 +1,26 @@
 #include "LabAssetManager.h"
 
 // Example usage (copy into main.cpp):
-//    #include "LabAssetManager.h"
+//    #include "../users/LabAssetManager.h"
 //      LabAssetManager manager;
 //      manager.createAccount();
+bool updateAccount(const std::string& accountID);
+	//asks for confirmation to delete account
+	//deletes account from file/database
+bool deleteAccount(const std::string& accountID);
+
+	//asset Management
+Assets addAsset(const Assets& assetInfo);
+bool updateAsset(const std::string& assetID, const Assets& updatedInfo);
+bool removeAsset(const std::string& assetID);
+bool flagAsset(const std::string& assetID);
+
+	//inventory & Documents
+Documents InventoryCheck();
+Documents uploadDocument(const Documents& document);
+
+
+
 void LabAssetManager::createAccount() {
     string accountsFile = "Database/accounts.json";
     json j;
