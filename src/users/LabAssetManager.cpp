@@ -280,14 +280,14 @@ bool LabAssetManager::addAsset(){
 		inFile.close();
 	}
 
-	string name, category, status, accessLevel, condition, location, quantityOnHand, minimumThreshold;
+	string name, category, status, accessLevel, condition, location, quantityOnHand, minimumThreshold, description;
 	cout << "Creating a new asset." << endl;
 	cout << "Enter asset name: ";
 	getline(cin, name);
-	cout << "Enter asset type: ";// equipment, consumable, software.
+	cout << "Enter asset category: ";// equipment, consumable, software.
 	getline(cin, category);
 	while (assetTypes.find(category) == assetTypes.end()) {
-		cout << "Invalid asset type entered. Please enter a valid asset type from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
+		cout << "Invalid asset category entered. Please enter a valid asset category from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
 		getline(cin, category);
 	}
 	if (category == "consumable") {
@@ -300,7 +300,7 @@ bool LabAssetManager::addAsset(){
 	cout << "Enter asset status: ";
 	getline(cin, status);
 	while (assetStatus.find(status) == assetStatus.end()) {
-		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "Available" << endl << "Reserved" << endl << "Out of Service" << endl;
+		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
 		getline(cin, status);
 	}
 	cout << "Enter asset securty access level (numeric): ";
@@ -313,6 +313,8 @@ bool LabAssetManager::addAsset(){
 	getline(cin, condition);
 	cout << "Enter asset location: ";
 	getline(cin, location);
+	cout << "Enter asset description: ";
+	getline(cin, description);
 
 	//role validation
 
@@ -330,7 +332,7 @@ bool LabAssetManager::addAsset(){
 	asset["id"] = uniqueID;
 	asset["name"] = name;
 	asset["category"] = category;
-	asset["status"] = status;
+	asset["operationalStatus"] = status;
 	asset["accessLevel"] = accessLevel;
 	asset["condition"] = condition;
 	asset["location"] = location;
@@ -338,6 +340,7 @@ bool LabAssetManager::addAsset(){
 		asset["quantityOnHand(grams)"] = quantityOnHand;
 		asset["minimumThreshold(grams)"] = minimumThreshold;
 	}
+	asset["description"] = description;
 
 	// Add to JSON array
 	j.push_back(asset);
@@ -512,7 +515,6 @@ bool LabAssetManager::removeAsset(){
     cout << "\nAsset deleted successfully!\n";
     return true;
 }
-
 
 bool LabAssetManager::replenishAsset(const std::string& assetID, const std::string& amount){
 	return true;
