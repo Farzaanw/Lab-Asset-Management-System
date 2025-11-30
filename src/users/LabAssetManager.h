@@ -3,14 +3,14 @@
 // Supports: UR-400 to UR-431
 // Collaborators:  <Assets>[1..*], <document>[0..*], <PI>[1]
 #include <string>
-#include "../resources/Asset.h"
-#include "../resources/Document.h"
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <set>
+#include <filesystem> // for documents
 #include "../library/nlohmann/json.hpp"
 using namespace std;
+namespace fs = std::filesystem;
 using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
 
 class LabAssetManager {
@@ -18,12 +18,14 @@ private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	string accountsFile = "../db/accounts.json";
 	string assetsFile = "../db/assets.json";
+	string documentsFile = "../db/documents.json";
+	string documentsFolder = "../db/documents/";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
 		"lab manager",
 		"lab asset manager"
-    };
+	};
 
 	//the level of clearence needed to obtain each asset
 	set<string> clearenceLevels = {
@@ -43,6 +45,13 @@ private:
 		"reserved",
 		"out of service"
 	};
+
+	set<string> documentTypes = {
+		"manual",
+		"warranty",
+		"calibration log",
+		"maintenance log"
+	};
 public:
 	//constructor
 	LabAssetManager() = default;
@@ -61,11 +70,12 @@ public:
 
 	bool removeAsset();
 
+	bool listAssets();
+
 	bool trackConsumables();
-	
-	bool replenishAsset(const std::string& assetID, const std::string& amount);
 
 	//inventory & Documents
-	Documents viewDocuments(const std::string& documentID);
-	Documents uploadDocument(const Documents& document);
+	bool listDocuments();
+
+	bool uploadDocument();
 };

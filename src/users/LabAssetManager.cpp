@@ -186,97 +186,97 @@ bool LabAssetManager::listAccounts() {
 }
 
 bool LabAssetManager::deleteAccount() {
-    json accounts;
+	json accounts;
 
-    // Load JSON file
-    ifstream inFile(accountsFile);
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    inFile >> accounts;
-    inFile.close();
+	// Load JSON file
+	ifstream inFile(accountsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open accounts.json" << endl;
+		return false;
+	}
+	inFile >> accounts;
+	inFile.close();
 
-    // Pointer to the account to delete
-    json* accountToDelete = nullptr;
-    int ID = -1;
+	// Pointer to the account to delete
+	json* accountToDelete = nullptr;
+	int ID = -1;
 
-    // Loop until user enters a valid ID
-    while (!accountToDelete) {
-        string input;
-        cout << "Please enter the account ID you want to delete (or type 'quit' to cancel): ";
-        getline(cin, input);
+	// Loop until user enters a valid ID
+	while (!accountToDelete) {
+		string input;
+		cout << "Please enter the account ID you want to delete (or type 'quit' to cancel): ";
+		getline(cin, input);
 
-        if (input == "quit") {
-            cout << "Delete operation canceled.\n";
-            return false;
-        }
+		if (input == "quit") {
+			cout << "Delete operation canceled.\n";
+			return false;
+		}
 
-        // Validate numeric ID
-        try {
-            ID = stoi(input);
-        } catch (...) {
-            cout << "Invalid input. Please enter a numeric ID.\n";
-            continue;
-        }
+		// Validate numeric ID
+		try {
+			ID = stoi(input);
+		} catch (...) {
+			cout << "Invalid input. Please enter a numeric ID.\n";
+			continue;
+		}
 
-        // Search for account
-        for (auto& acc : accounts) {
-            if (acc["id"].get<int>() == ID) {
-                accountToDelete = &acc;
-                break;
-            }
-        }
+		// Search for account
+		for (auto& acc : accounts) {
+			if (acc["id"].get<int>() == ID) {
+				accountToDelete = &acc;
+				break;
+			}
+		}
 
-        if (!accountToDelete) {
-            cout << "Account ID not found. Please try again.\n";
-        }
-    }
+		if (!accountToDelete) {
+			cout << "Account ID not found. Please try again.\n";
+		}
+	}
 
-    // Display account info before deleting
-    cout << "\nAccount found:\n";
-    for (auto& [key, value] : accountToDelete->items()) {
-        cout << key << ": " << value << endl;
-    }
+	// Display account info before deleting
+	cout << "\nAccount found:\n";
+	for (auto& [key, value] : accountToDelete->items()) {
+		cout << key << ": " << value << endl;
+	}
 
-    // Confirmation
-    string confirm;
-    cout << "\nAre you sure you want to delete this account? (yes/no): ";
-    getline(cin, confirm);
+	// Confirmation
+	string confirm;
+	cout << "\nAre you sure you want to delete this account? (yes/no): ";
+	getline(cin, confirm);
 
-    while (confirm != "yes" && confirm != "no") {
-        cout << "Please enter 'yes' or 'no': ";
-        getline(cin, confirm);
-    }
+	while (confirm != "yes" && confirm != "no") {
+		cout << "Please enter 'yes' or 'no': ";
+		getline(cin, confirm);
+	}
 
-    if (confirm == "no") {
-        cout << "Deletion canceled.\n";
-        return false;
-    }
+	if (confirm == "no") {
+		cout << "Deletion canceled.\n";
+		return false;
+	}
 
-    // Delete account
-    for (size_t i = 0; i < accounts.size(); i++) {
-        if (accounts[i]["id"].get<int>() == ID) {
-            accounts.erase(accounts.begin() + i);
-            break;
-        }
-    }
+	// Delete account
+	for (size_t i = 0; i < accounts.size(); i++) {
+		if (accounts[i]["id"].get<int>() == ID) {
+			accounts.erase(accounts.begin() + i);
+			break;
+		}
+	}
 
-    // Save updated JSON
-    ofstream outFile(accountsFile);
-    outFile << accounts.dump(4);
-    outFile.close();
+	// Save updated JSON
+	ofstream outFile(accountsFile);
+	outFile << accounts.dump(4);
+	outFile.close();
 
-    cout << "\nAccount deleted successfully!\n";
-    return true;
+	cout << "\nAccount deleted successfully!\n";
+	return true;
 }
 
 bool LabAssetManager::addAsset(){
-	json j;
+	json assetFile;
 	json asset;
 	ifstream inFile(assetsFile);
 	if (inFile.is_open()) {
-		inFile >> j;
+		inFile >> assetFile;
 		inFile.close();
 	}
 
@@ -320,7 +320,7 @@ bool LabAssetManager::addAsset(){
 
 	// Generate unique ID. This will generate the highest ID in the accounts.json file.
 	int maxID = 0;
-	for (const auto& asset : j) {
+	for (const auto& asset : assetFile) {
 		if (asset.contains("id") && asset["id"].is_number()) {
 			int id = asset["id"];
 			if (id > maxID) maxID = id;
@@ -343,11 +343,11 @@ bool LabAssetManager::addAsset(){
 	asset["description"] = description;
 
 	// Add to JSON array
-	j.push_back(asset);
+	assetFile.push_back(asset);
 
 	// Save back to file
 	ofstream outFile(assetsFile);
-	outFile << setw(4) << j << endl;
+	outFile << setw(4) << assetFile << endl;
 	outFile.close();
 	return true;
 }
@@ -432,101 +432,338 @@ bool LabAssetManager::updateAsset(){
 
 bool LabAssetManager::removeAsset(){
 	int ID = -1;
-    json assets;
+	json assets;
 
-    // Load JSON file
-    ifstream inFile(assetsFile);
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-    inFile >> assets;
-    inFile.close();
+	// Load JSON file
+	ifstream inFile(assetsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open assets.json" << endl;
+		return false;
+	}
+	inFile >> assets;
+	inFile.close();
 
-    // Pointer to the asset to delete
-    json* assetToDelete = nullptr;
+	// Pointer to the asset to delete
+	json* assetToDelete = nullptr;
 
-    // Loop until user enters a valid ID
-    while (!assetToDelete) {
-        string input;
-        cout << "Please enter the asset ID you want to delete (or type 'quit' to cancel): ";
-        getline(cin, input);
+	// Loop until user enters a valid ID
+	while (!assetToDelete) {
+		string input;
+		cout << "Please enter the asset ID you want to delete (or type 'quit' to cancel): ";
+		getline(cin, input);
 
-        if (input == "quit") {
-            cout << "Delete operation canceled.\n";
-            return false;
-        }
+		if (input == "quit") {
+			cout << "Delete operation canceled.\n";
+			return false;
+		}
 
-        // Validate numeric ID
-        try {
-            ID = stoi(input);
-        } catch (...) {
-            cout << "Invalid input. Please enter a numeric ID.\n";
-            continue;
-        }
+		// Validate numeric ID
+		try {
+			ID = stoi(input);
+		} catch (...) {
+			cout << "Invalid input. Please enter a numeric ID.\n";
+			continue;
+		}
 
-        // Search for asset
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == ID) {
-                assetToDelete = &asset;
-                break;
-            }
-        }
+		// Search for asset
+		for (auto& asset : assets) {
+			if (asset["id"].get<int>() == ID) {
+				assetToDelete = &asset;
+				break;
+			}
+		}
 
-        if (!assetToDelete) {
-            cout << "Asset ID not found. Please try again.\n";
-        }
-    }
+		if (!assetToDelete) {
+			cout << "Asset ID not found. Please try again.\n";
+		}
+	}
 
-    // Display asset info before deleting
-    cout << "\nAsset found:\n";
-    for (auto& [key, value] : assetToDelete->items()) {
-        cout << key << ": " << value << endl;
-    }
+	// Display asset info before deleting
+	cout << "\nAsset found:\n";
+	for (auto& [key, value] : assetToDelete->items()) {
+		cout << key << ": " << value << endl;
+	}
 
-    // Confirmation
-    string confirm;
-    cout << "\nAre you sure you want to delete this asset? (yes/no): ";
-    getline(cin, confirm);
+	// Confirmation
+	string confirm;
+	cout << "\nAre you sure you want to delete this asset? (yes/no): ";
+	getline(cin, confirm);
 
-    while (confirm != "yes" && confirm != "no") {
-        cout << "Please enter 'yes' or 'no': ";
-        getline(cin, confirm);
-    }
+	while (confirm != "yes" && confirm != "no") {
+		cout << "Please enter 'yes' or 'no': ";
+		getline(cin, confirm);
+	}
 
-    if (confirm == "no") {
-        cout << "Deletion canceled.\n";
-        return false;
-    }
+	if (confirm == "no") {
+		cout << "Deletion canceled.\n";
+		return false;
+	}
 
-    // Delete asset
-    for (size_t i = 0; i < assets.size(); i++) {
-        if (assets[i]["id"].get<int>() == ID) {
-            assets.erase(assets.begin() + i);
-            break;
-        }
-    }
+	// Delete asset
+	for (size_t i = 0; i < assets.size(); i++) {
+		if (assets[i]["id"].get<int>() == ID) {
+			assets.erase(assets.begin() + i);
+			break;
+		}
+	}
 
-    // Save updated JSON
-    ofstream outFile(assetsFile);
-    outFile << assets.dump(4);
-    outFile.close();
+	// Save updated JSON
+	ofstream outFile(assetsFile);
+	outFile << assets.dump(4);
+	outFile.close();
 
-    cout << "\nAsset deleted successfully!\n";
-    return true;
-}
-
-bool LabAssetManager::replenishAsset(const std::string& assetID, const std::string& amount){
+	cout << "\nAsset deleted successfully!\n";
 	return true;
 }
+
+bool LabAssetManager::listAssets(){
+	json assets;
+
+	ifstream inFile(assetsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << assetsFile << endl;
+		return false;
+	}
+
+	try {
+		inFile >> assets;
+	} catch (const std::exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		inFile.close();
+		return false;
+	}
+	inFile.close();
+
+	if (assets.empty()) {
+		cout << "No assets found." << endl;
+		return true;
+	}
+
+	cout << "Listing all assets:\n" << endl;
+	for (const auto& asset : assets) {
+		cout << "ID: " << asset["id"] << endl;
+		cout << "Name: " << asset["name"] << endl;
+		cout << "Category: " << asset["category"] << endl;
+		cout << "Operational Status: " << asset["operationalStatus"] << endl;
+		cout << "Access Level: " << asset["accessLevel"] << endl;
+		cout << "Condition: " << asset["condition"] << endl;
+		cout << "Location: " << asset["location"] << endl;
+		if (asset["category"] == "consumable") {
+			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
+			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
+		}
+		cout << "Description: " << asset["description"] << endl;
+		cout << "-----------------------------------" << endl;
+	}
+
+	return true;
+}
+
 
 bool LabAssetManager::trackConsumables(){
 	return true;
 }
 
-Documents LabAssetManager::viewDocuments(const std::string& documentID){
-	return Documents();
+
+bool LabAssetManager::uploadDocument() {
+	string filePath;
+	string assetId;
+	json assets;
+	json newDocument;
+	json documentFile = json::array();
+	bool assetFound = false;
+	// Load Documents file
+	ifstream inFileDocuments(documentsFile);
+	if (!inFileDocuments.is_open()) {
+		cerr << "Error: Could not open " << documentsFile << endl;
+		return false;
+	}
+	try {
+		inFileDocuments >> documentFile;
+	} catch (const std::exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		inFileDocuments.close();
+		return false;
+	}
+	inFileDocuments.close();
+	if (!documentFile.is_array()) {
+		if (documentFile.is_null()) {
+			documentFile = json::array();
+		} else {
+			json tmp = documentFile;
+			documentFile = json::array();
+			documentFile.push_back(tmp);
+		}
+	}
+
+	// Load Assets file
+	ifstream inFileAssets(assetsFile);
+	if (!inFileAssets.is_open()) {
+		cerr << "Error: Could not open " << assetsFile << endl;
+		return false;
+	}
+	try {
+		inFileAssets >> assets;
+	} catch (const std::exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		inFileAssets.close();
+		return false;
+	}
+	inFileAssets.close();
+
+	// Ask for file path
+	cout << "Enter the full path of the PDF you want to upload: ";
+	getline(cin, filePath);
+
+	// File validation
+	if (filePath.size() == 0) {
+		cout << "No file path entered.\n";
+		return false;
+	}
+	else if (!fs::exists(filePath)) {
+		cout << "Error: File not found.\n";
+		return false;
+	}
+	else if (fs::path(filePath).extension() != ".pdf") {
+		cout << "Error: File must be a PDF (.pdf).\n";
+		return false;
+	}
+
+	// Ask for asset ID
+	cout << "Enter the asset ID this document belongs to: ";
+	getline(cin, assetId);
+	while (assetFound == false) {
+		if (assetId == "quit") {
+			return false;
+		}
+		try {
+			stoi(assetId);
+		}
+		catch (...) {
+			cout << "Invalid input. Please enter a numeric asset ID or type 'quit' to exit: ";
+			getline(cin, assetId);
+			if (assetId == "quit") {
+				return false;
+			}
+			continue;
+		}
+		for (auto& asset : assets) {
+			if (asset["id"].get<int>() == stoi(assetId)) {
+				assetFound = true;
+				break;
+			}
+		}
+		if (assetFound == false) {
+			cout << "Asset ID not found. Please try again or type 'quit' to exit: ";
+			getline(cin, assetId);
+			if (assetId == "quit") {
+				return false;
+			}
+		}
+	}
+
+	// Destination folder
+	fs::path destFolder = documentsFolder + assetId;
+	if (!fs::exists(destFolder)) {
+		fs::create_directories(destFolder);
+	}
+
+	// Destination file path
+	fs::path destPath = destFolder / fs::path(filePath).filename();
+
+	try {
+		// Copy the file
+		fs::copy_file(filePath, destPath, fs::copy_options::overwrite_existing);
+		cout << "Document successfully uploaded to: " << destPath << endl;
+	}
+	catch (const fs::filesystem_error& error) {
+		cout << "Failed to copy file: " << error.what() << endl;
+		return false;
+	}
+
+
+	string title, type, accessLevel;
+	cout << "What type of document is this? (manual, warranty, calibration log, maintenance log): ";
+	getline(cin, type);
+	while (documentTypes.find(type) == documentTypes.end()) {
+		cout << "Invalid document type entered. Please enter a valid document type from the list: " << endl << "manual" << endl << "warranty" << endl << "calibration log" << endl << "maintenance log" << endl;
+		getline(cin, type);
+	}
+
+	cout << "Enter document security access level (numeric): ";
+	getline(cin, accessLevel);
+	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list: " << endl << "Research student: (1)" << endl << "Faculty researcher: (2)" << endl << "Lab manager: (3)" << endl;
+		getline(cin, accessLevel);
+	}
+
+	// Generate unique document ID
+	int maxID = 0;
+	for (const auto& docEntry : documentFile) {
+		if (docEntry.contains("documentId") && docEntry["documentId"].is_number()) {
+			int id = docEntry["documentId"];
+			if (id > maxID) maxID = id;
+		}
+	}
+	int uniqueID = maxID + 1;
+	// Get time
+	auto now = chrono::system_clock::now();
+	time_t now_c = chrono::system_clock::to_time_t(now);
+
+	// Create document entry
+	newDocument["documentId"] = uniqueID;
+	newDocument["assetId"] = stoi(assetId);
+	newDocument["type"] = type;
+	newDocument["filePath"] = destPath.string();
+	newDocument["uploader"] = "Lab Asset Manager";
+	newDocument["clearanceLevel"] = accessLevel;
+	newDocument["timestamp_utc"] = ctime(&now_c);  // The way this time is recorded a \n will be included at the end. 
+	 												//	We can change this by parsing if needed but i think its fine
+
+	documentFile.push_back(newDocument);
+
+	// Save back to file
+	ofstream outFileDocuments(documentsFile);
+	outFileDocuments << setw(4) << documentFile << endl;
+	outFileDocuments.close();
+	return true;
 }
-Documents LabAssetManager::uploadDocument(const Documents& document){
-	return Documents();
+
+
+
+bool LabAssetManager::listDocuments(){
+	json documents;
+
+	ifstream inFile(documentsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << documentsFile << endl;
+		return false;
+	}
+
+	try {
+		inFile >> documents;
+	} catch (const std::exception& error) {
+		cerr << "Error reading JSON: " << error.what() << endl;
+		inFile.close();
+		return false;
+	}
+	inFile.close();
+
+	if (documents.empty()) {
+		cout << "No documents found." << endl;
+		return true;
+	}
+
+	cout << "Listing all documents:\n" << endl;
+	for (const auto& doc : documents) {
+		cout << "Document ID: " << doc["documentId"] << endl;
+		cout << "Asset ID: " << doc["assetId"] << endl;
+		cout << "Type: " << doc["type"] << endl;
+		cout << "File Path: " << doc["filePath"] << endl;
+		cout << "Uploader: " << doc["uploader"] << endl;
+		cout << "Clearance Level: " << doc["clearanceLevel"] << endl;
+		cout << "Timestamp (UTC): " << doc["timestamp_utc"] << endl;
+		cout << "-----------------------------------" << endl;
+	}
+	return true;
 }
