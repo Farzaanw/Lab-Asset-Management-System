@@ -16,7 +16,6 @@ using json = nlohmann::ordered_json; // By default json has alphabetical order f
 class LabAssetManager {
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
-	string assetManagerID;
 	string accountsFile = "../db/accounts.json";
 	string assetsFile = "../db/assets.json";
 	set<string> validRoles = {
@@ -25,32 +24,46 @@ private:
 		"lab manager",
 		"lab asset manager"
     };
-	bool isAdmin;
-	bool permissions;
 
+	//the level of clearence needed to obtain each asset
+	set<string> clearenceLevels = {
+		"1", // Research Student
+		"2", // Facutly Researcher
+		"3"  // Lab Manager
+	};
+
+	set<string> assetTypes = {
+		"equipment",
+		"consumable",
+		"software"
+	};
+
+	set<string> assetStatus = {
+		"available",
+		"reserved",
+		"out of service"
+	};
 public:
 	//constructor
 	LabAssetManager() = default;
 
-	//Will ask user for first name and last name, email, password, role
-	//Will return a string wether the account has been created successfully or not
-	//Stores account in a file/database
 	bool createAccount();
-	//asks user for accountID to update
-	//replaces old info with new info
+
 	bool updateAccount();
-	//asks for confirmation to delete account
-	//deletes account from file/database
+
 	bool deleteAccount();
 
 	bool listAccounts();
-	//asset Management
-	Assets addAsset(const Assets& assetInfo);
-	bool updateAsset(const std::string& assetID, const Assets& updatedInfo);
-	bool removeAsset(const std::string& assetID);
-	bool flagAsset(const std::string& assetID);
+
+	bool addAsset();
+
+	bool updateAsset();
+
+	bool removeAsset();
+
 	bool trackConsumables();
-	bool replenishAsset(const std::string& assetID);
+	
+	bool replenishAsset(const std::string& assetID, const std::string& amount);
 
 	//inventory & Documents
 	Documents viewDocuments(const std::string& documentID);

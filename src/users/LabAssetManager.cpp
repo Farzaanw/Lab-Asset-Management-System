@@ -271,22 +271,254 @@ bool LabAssetManager::deleteAccount() {
     return true;
 }
 
-Assets LabAssetManager::addAsset(const Assets& assetInfo){
-	return Assets();
-}
-bool LabAssetManager::updateAsset(const std::string& assetID, const Assets& updatedInfo){
+bool LabAssetManager::addAsset(){
+	json j;
+	json asset;
+	ifstream inFile(assetsFile);
+	if (inFile.is_open()) {
+		inFile >> j;
+		inFile.close();
+	}
+
+	string name, category, status, accessLevel, condition, location, quantityOnHand, minimumThreshold;
+	cout << "Creating a new asset." << endl;
+	cout << "Enter asset name: ";
+	getline(cin, name);
+	cout << "Enter asset type: ";// equipment, consumable, software.
+	getline(cin, category);
+	while (assetTypes.find(category) == assetTypes.end()) {
+		cout << "Invalid asset type entered. Please enter a valid asset type from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
+		getline(cin, category);
+	}
+	if (category == "consumable") {
+		cout << "Because this asset is a consumeable please enter:" << endl;
+		cout << "Quantity on hand (grams): ";
+		getline(cin, quantityOnHand);
+		cout << "minimum threshold (grams): ";
+		getline(cin, minimumThreshold);
+	}
+	cout << "Enter asset status: ";
+	getline(cin, status);
+	while (assetStatus.find(status) == assetStatus.end()) {
+		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "Available" << endl << "Reserved" << endl << "Out of Service" << endl;
+		getline(cin, status);
+	}
+	cout << "Enter asset securty access level (numeric): ";
+	getline(cin, accessLevel);
+	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list:" << endl << "Research student: (1)" << endl << "Faculty researcher: (2)" << endl << "Lab manager: (3)" << endl;
+		getline(cin, accessLevel);
+	}
+	cout << "Enter asset condition: ";
+	getline(cin, condition);
+	cout << "Enter asset location: ";
+	getline(cin, location);
+
+	//role validation
+
+	// Generate unique ID. This will generate the highest ID in the accounts.json file.
+	int maxID = 0;
+	for (const auto& asset : j) {
+		if (asset.contains("id") && asset["id"].is_number()) {
+			int id = asset["id"];
+			if (id > maxID) maxID = id;
+		}
+	}
+	int uniqueID = maxID + 1;
+
+	// Create asset
+	asset["id"] = uniqueID;
+	asset["name"] = name;
+	asset["category"] = category;
+	asset["status"] = status;
+	asset["accessLevel"] = accessLevel;
+	asset["condition"] = condition;
+	asset["location"] = location;
+	if (category == "consumable") {
+		asset["quantityOnHand(grams)"] = quantityOnHand;
+		asset["minimumThreshold(grams)"] = minimumThreshold;
+	}
+
+	// Add to JSON array
+	j.push_back(asset);
+
+	// Save back to file
+	ofstream outFile(assetsFile);
+	outFile << setw(4) << j << endl;
+	outFile.close();
 	return true;
 }
-bool LabAssetManager::removeAsset(const std::string& assetID){
+
+bool LabAssetManager::updateAsset(){
+	int ID;
+	json assets;
+
+	// Load the JSON file
+	ifstream inFile(assetsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open assets.json" << endl;
+		return false;
+	}
+	inFile >> assets;
+	inFile.close();
+
+	// Loop until valid ID is entered
+	json* assetToUpdate = nullptr;
+	while (!assetToUpdate) {
+		string input;
+		cout << "Please enter the asset ID you would like to modify (type quit to cancel the modification): ";
+		getline(cin, input);
+
+		if (input == "quit") {
+			return false;
+		}
+
+		try {
+			ID = stoi(input);
+		} catch (...) {
+			cout << "Invalid input. Please enter a numeric ID." << endl;
+			continue;
+		}
+
+		// Search for the asset
+		for (auto& asset : assets) {
+			if (asset["id"].get<int>() == ID) {
+				assetToUpdate = &asset;
+				break;
+			}
+		}
+
+		if (!assetToUpdate) {
+			cout << "Asset ID not found. Please try again." << endl;
+		}
+	}
+
+	// Display current account info
+	cout << "\nCurrent account information:\n";
+	for (auto& [key, value] : assetToUpdate->items()) {
+		cout << key << ": " << value << endl;
+	}
+
+	cout << "\nEnter new information (leave blank to keep current value):\n";
+
+	// Update fields (ID is NOT updated)
+	for (auto& [key, value] : assetToUpdate->items()) {
+		if (key == "id") continue;
+
+		string input;
+		cout << key << " (" << value << "): ";
+		getline(cin, input);
+
+		if (input.empty()) {
+			continue;
+		}
+
+
+		// Update JSON value
+		(*assetToUpdate)[key] = input;
+	}
+
+	// Save updated JSON back to file
+	ofstream outFile(assetsFile);
+	outFile << assets.dump(4);
+	outFile.close();
+
+	cout << "\nAsset updated successfully!\n";
 	return true;
 }
-bool LabAssetManager::flagAsset(const std::string& assetID){
+
+bool LabAssetManager::removeAsset(){
+	int ID = -1;
+    json assets;
+
+    // Load JSON file
+    ifstream inFile(assetsFile);
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
+    }
+    inFile >> assets;
+    inFile.close();
+
+    // Pointer to the asset to delete
+    json* assetToDelete = nullptr;
+
+    // Loop until user enters a valid ID
+    while (!assetToDelete) {
+        string input;
+        cout << "Please enter the asset ID you want to delete (or type 'quit' to cancel): ";
+        getline(cin, input);
+
+        if (input == "quit") {
+            cout << "Delete operation canceled.\n";
+            return false;
+        }
+
+        // Validate numeric ID
+        try {
+            ID = stoi(input);
+        } catch (...) {
+            cout << "Invalid input. Please enter a numeric ID.\n";
+            continue;
+        }
+
+        // Search for asset
+        for (auto& asset : assets) {
+            if (asset["id"].get<int>() == ID) {
+                assetToDelete = &asset;
+                break;
+            }
+        }
+
+        if (!assetToDelete) {
+            cout << "Asset ID not found. Please try again.\n";
+        }
+    }
+
+    // Display asset info before deleting
+    cout << "\nAsset found:\n";
+    for (auto& [key, value] : assetToDelete->items()) {
+        cout << key << ": " << value << endl;
+    }
+
+    // Confirmation
+    string confirm;
+    cout << "\nAre you sure you want to delete this asset? (yes/no): ";
+    getline(cin, confirm);
+
+    while (confirm != "yes" && confirm != "no") {
+        cout << "Please enter 'yes' or 'no': ";
+        getline(cin, confirm);
+    }
+
+    if (confirm == "no") {
+        cout << "Deletion canceled.\n";
+        return false;
+    }
+
+    // Delete asset
+    for (size_t i = 0; i < assets.size(); i++) {
+        if (assets[i]["id"].get<int>() == ID) {
+            assets.erase(assets.begin() + i);
+            break;
+        }
+    }
+
+    // Save updated JSON
+    ofstream outFile(assetsFile);
+    outFile << assets.dump(4);
+    outFile.close();
+
+    cout << "\nAsset deleted successfully!\n";
+    return true;
+}
+
+
+bool LabAssetManager::replenishAsset(const std::string& assetID, const std::string& amount){
 	return true;
 }
+
 bool LabAssetManager::trackConsumables(){
-	return true;
-}
-bool LabAssetManager::replenishAsset(const std::string& assetID){
 	return true;
 }
 
