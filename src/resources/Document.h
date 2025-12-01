@@ -9,9 +9,9 @@
 class Documents {
 private:
   int documentID;
+  int authorID;
   std::string title;
   std::string description;
-  int authorID;
   std::string type;
 public:
 	//Creates a document
@@ -22,4 +22,8 @@ public:
   bool deleteDocument(int documentID); //returns a bool if the document was deleted or not
   //Retrieves a document a prints it
   void getDocument(int documentID);  //prints document to program
+
+  bool uploadDocument(std::string pathToDoc); //returns bool if edition to document was successful or not
+
+
 };
