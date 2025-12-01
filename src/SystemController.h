@@ -3,6 +3,9 @@
 
 #include <string>
 #include "./library/nlohmann/json.hpp"
+#include "./resources/Assets.h"
+#include <map>
+#include <vector>
 
 class User;
 
@@ -10,6 +13,7 @@ class SystemController {
 public:
     SystemController();
     void run();
+    std::vector<Assets*> assets;
 
 private:
     // Core program control
@@ -27,10 +31,12 @@ private:
     std::string get_current_time();
     bool load_json_safe(const std::string& path, nlohmann::json& out);
 
-    bool isOpen;
-    User* currentUser = nullptr;
-    nlohmann::json roleLoginJson;
-    nlohmann::json usage_log;
+    // Member variables
+    bool isOpen;                  // Indicates if the system is open
+    User* currentUser = nullptr;  // Pointer to currently logged-in user
+    std::map<std::string, std::string> systemPolicies; // Stores system policies
+    nlohmann::json roleLoginJson; // Stores user login data
+    nlohmann::json usage_log;     // Stores usage log data
 };
 
 #endif // SYSTEM_CONTROLLER_H
