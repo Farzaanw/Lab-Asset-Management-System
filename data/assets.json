@@ -8,5 +8,17 @@
         "condition": "excellent",
         "location": "Lab A – Astronomy Equipment Room",
         "description": "An 8-inch Schmidt-Cassegrain telescope with advanced coma-free optics. Ideal for deep-sky imaging and planetary observation."
+    },
+    {
+        "id": 2,
+        "name": "Fillament",
+        "category": "consumable",
+        "operationalStatus": "available",
+        "accessLevel": "3",
+        "condition": "good",
+        "location": "lab",
+        "quantityOnHand(grams)": "350",
+        "minimumThreshold(grams)": "20",
+        "description": "used for 3D printers"
     }
 ]
