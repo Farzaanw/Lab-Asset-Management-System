@@ -16,10 +16,10 @@ using json = nlohmann::ordered_json; // By default json has alphabetical order f
 class LabAssetManager {
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
-	string accountsFile = "../db/accounts.json";
-	string assetsFile = "../db/assets.json";
-	string documentsFile = "../db/documents.json";
-	string documentsFolder = "../db/documents/";
+	string accountsFile = "../../data/accounts.json";
+	string assetsFile = "../../data/assets.json";
+	string documentsFile = "../../data/documents.json";
+	string documentsFolder = "../../data/documents/";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
