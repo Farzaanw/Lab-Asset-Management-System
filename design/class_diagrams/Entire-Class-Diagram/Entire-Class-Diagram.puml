@@ -1,217 +1,228 @@
 @startuml
 
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 80
+
+title Lab Asset Management System - Class Diagram
+
+
+'--- Core System Classes ---
+
+
 class System {
-
-  -- Attributes --
-  - currentUser : StudentResearcher | FacultyResearcher | LabManager | LabAssetManager
-  - usageLog : List<String> <<each String = "User:Action">>
-  + userActive : boolean = False  <<True = logged-in, False = logged-out>>
-
-  -- Methods --
-  + select_user() : void
-  + user_log_in() : boolean
-  - valid_user_login(email: String, password: String) : boolean
-  - update_usage_log(new_log: String) : void
+    - CurrentUser : User
+    - Incidents : vector<String>
+    - usageLog : List<String>
+    - userActive : boolean = false
+    + run() : void
+    + start_page() : void
+    + create_account() : void
+    + select_user() : void
+    + user_log_in() : boolean
+    - valid_user_login(email: String, pass: String) : boolean
+    - update_usage_log(log: String) : void
+    + hasOverlap(asset: Asset, start: ZonedDateTime, end: ZonedDateTime) : boolean
+    + check_in(reservationID: int, user: User) : boolean
+    + check_out(reservationID: int, user: User) : boolean
 }
 
-class StudentResearcher {
-  
-  -- Attributes --
-  - id : int
-  - name : String
-  - email : String
-  + permissions : List<String> <<values ∈ {low-level, high-level, administrative}>>
-  + reservations : vector<Reservation*> [0..*]  <<list of all reservations created by the user>>
-  
-  -- Methods --
-  + display_page() : void
-  - user_actions() : void
-  - requestAsset(assetID: int, quantity: int, permissions: String) : void
-  - cancelReservation(assetID: int, permissions: String) : boolean
-  + view_notifications() : void
-  - return_asset() : void
-  + update_profile() : void
-  - submit_usage_feedback(equipmentID: int, comments: String, rating: int) : void
-  + log_out() : boolean
+class NotificationService {
+    - notificationID : String
+    - recipientID : String
+    - message : String
+    - urgency : boolean
+    - readFlag : boolean
+    - timeStamp : ZonedDateTime
+    - metaData : Map<String, String>
+    + add_notification(msg: String) : void
+    + get_unread_notifications(userID: String) : vector<String>
+    + mark_notifications_read(notifID: String) : void
+    + clear_notifications(userID: String) : void
 }
 
-class FacultyResearcher {
+' --- Resource Classes ---
 
-    -- Attributes --
-    - facultyID : int
-    + name : string
-    + email : string
-    + permissions : boolean
-    - labGroupID : int
-    
-    -- Methods --
-    + reserveAsset(assetID : int, permissions : boolean) : Boolean
-    + generateUsageReport(assetUsed : List, dataRecords : List) : Document
-    + viewGroup(labGroupID : int) : Document
+abstract class Assets {
+    - assetID : int
+    - assetName : String
+    - location : String
+    - assetAccessLevel : int
+    # documents : vector<Document>
+    # reservationHistory : vector<Reservation>
+    + displayDetails() : void
+    + {abstract} isAvailable() : boolean
+    + getDocuments() : vector<Document>
+    + addDocument(docID: int, title: String) : boolean
+    + removeDocument(docID: int) : boolean
+    + getReservationHistory() : vector<Reservation>
+}
+
+class Equipment {
+    - outOfService : boolean
+    - condition : String
+    + isAvailable() : boolean
+    + setOutOfService(status: boolean, reason: String) : void
+    + markAvailable() : void
+    + checkOut() : void
+    + checkIn() : void
+}
+
+class Consumable {
+    - stock : int
+    - minimumThreshold : int
+    + isAvailable() : boolean
+    + reduceStock(qty: int) : void
+    + increaseStock(qty: int) : void
+    + isBelowThreshold() : boolean
+}
+
+class SoftwareLicense {
+    - seatCount : int
+    - renewalDate : String
+    - concurrentlyUsedSeats : int
+    + isAvailable() : boolean
+    + reserveSeat() : boolean
+    + releaseSeat() : boolean
+    + getUsageSummary() : String
+    + renewalAlert(days: int) : boolean
+}
+
+class Documents {
+    - documentID : int
+    - authorID : int
+    - timestamp : ZonedDateTime
+    - description : String
+    - title : String
+    - type : String
+    - accessControl : String
     + display_page() : void
-    + user_actions() : void
-}
-
-class LabManager {
-
-    -- Attributes --
-    - managerID : int
-    + name : string
-    + email : string
-    - department : string
-    -- Methods --
-    + display_page() : void
-    + user_actions() : void
-    + grantRights(assetManagerID : int) : void
-    + revokeRights(assetManagerID : int) : void
-    + assignPermissions(userID : int, newCategory : string) : List
-    + suspendUserPrivilege() : void
-    + updateSystemPolicy() : void
-    + manageScheduling(userID : int) : List<List>
-    + approveReservation(reservationID : int) : Boolean
-    + viewDashboard() : List<List>
-    + monitorAssets() : List
-    + assignMaintenance(assetID : int, technicianID : int) : void
-    + generateReport() : dict
-    + analyzeBudgetUsage() : dict
-}
-
-class LabAssetManager {
-  -assetManagerID: String
-  -assetManagerName: String
-  -assetManagerEmail: String
-  -permissions: String
-  -accountList: vector<String>
-  -assetInventory: vector<Asset>
-  -documentRepository: vector<Document>
-  -lastInventoryCheck: String
-  
-  ' Basic Methods
-  +display_page(): void
-  +user_actions(): void
-  +view_notifications(): void
-  
-  ' Account Management Methods
-  +createAccount(name: String, role: String, email: String): String
-  +returnAccount(userID: String): User
-  +updateAccount(accountID: String, updatedInfo: String): boolean
-  +deleteAccount(accountID: String): boolean
-  +assignRole(accountID: String, role: String): boolean
-  +updatePermissions(accountID: String, permissions: String): boolean
-  
-  ' Asset Management Methods
-  +addAsset(assetName: String, location: String, purchaseDate: String, condition: String, maintenanceSchedule: String): Asset
-  +updateAsset(assetID: String, assetInfo: Asset): boolean
-  +removeAsset(assetID: String): boolean
-  +flagAsset(assetID: String, reason: String, returnDate: String): boolean
-  
-  ' Inventory Methods
-  +inventoryCheck(): Document
-  +viewCheckIns(): List<Reservation>
-  +viewCheckOuts(): List<Reservation>
-  +trackConsumables(): List<Asset>
-  +replenish(assetID: String): boolean
-  
-  ' Document Methods
-  +uploadDocument(assetID: String, document: Document, documentType: String): Document
-  +viewDocuments(assetID: String): List<Document>
-  +updateDocument(documentID: String, updatedInfo: String): boolean
-  +deleteDocument(documentID: String): boolean
-  
-  ' Usage Logs Methods
-  +viewUsageLogs(): List<String>
-}
-
-class Asset {
-  -minimumThreshold: Int
-  -stock: Int
-  -assetID: String
-  -assetName: String
-  -outOfService: boolean
-  -isAvailable: boolean
-  -isConsumable: boolean
-  -documents: vector<String>
-  -reservationHistory: vector<Reservation>
-
-  ' Display Methods
-  +display(): void
-
-  ' Document Methods
-  +getDocuments(): vector<Documents>
-  +addDocument(DocumentID: String): boolean
-  +removeDocument(DocumentID: String): boolean
-
-  ' Availability / Stock Methods
-  +assetIsAvailable(assetID: String): boolean
-  +reduceStock(quantity: Int): void
-  +increaseStock(quantity: Int): void
-  +isBelowThreshold(): boolean
-  +markAvailable(): void
-
-  ' Reservation Methods
-  +getReservationHistory(): List<Reservation>
+    + uploadDocument(path: String) : boolean
+    + createDocument(title: String, type: String) : boolean
+    + editDocument(docID: int, desc: String) : boolean
+    + deleteDocument(docID: int) : boolean
 }
 
 class Reservations {
-    -- Attributes --
     - reservationID : int
+    - assetID : int
+    - user : String
+    - startDate : ZonedDateTime
+    - endDate : ZonedDateTime
+    - status : ReservationStatus
+    - description : String
+    - overdueFlag : boolean
     + permissionApproved : boolean
-    + confirmed : boolean 
-    - description : string
-    - startDate : string
-    - endDate : string
-    - user: string
-
-    -- Methods --
-    + update_asset_stock_count(assetID: String, quantity: int) : void
-    + makeReservation(permissionApproved: Boolean, description: String, startDate: String(Date/Time), endDate: String(Date/Time), User: String) : bool
-    + cancelReservation(reservationID: int) : bool
-    + getReservation(reservationID: int) : string
+    + confirmed : boolean
+    + update_asset_stock_count(assetID: String, qty: int) : void
+    + makeReservation(args...) : boolean
+    + cancelReservation() : boolean
 }
 
-class Notifications {
-     -- Attributes --
-     - notificationID: string
-     - recipientID: string
-     - message: string
-     - type: notificationType
-     - urgency: bool
-     - readFlag: bool
-     - timeStamp: zonedDateTimeStamp
-     - metaData: map<string, string>
+' --- User Classes ---
 
-     -- Methods --
-     - add_notification(notification: string): void
-     - get_unread_notifications(userID: string, readFlag: bool): vector<string>
-     - get_read_notifications(userID: string, readFlag: bool): vector<string>
-     - mark_notifications_read(notificationID: string): void
-     - clear_notifications(userID: string): void
-     - search_notifications(notificationID: string): string
-     - get_notification_metadata(notificationID: string): map<string, string>
-     - get_urgent_notifications(notificationID: string): vector<string>
+class StudentResearcher {
+    - id : int
+    - name : String
+    - email : String
+    - permissions : List<String>
+    - reservations : vector<Reservation>
+    + display_page() : void
+    - user_actions() : void
+    - requestAsset(assetID: int, qty: int) : void
+    - viewReservations() : void
+    - cancelReservation(assetID: int) : void
+    - return_asset() : void
+    - submit_usage_feedback(equipID: int, comment: String) : void
 }
 
-@startuml
-class Documents {
-  
-  -- Attributes --
-  - documentID : int
-  - authorID: int
-  - ZonedDateTime: int
-  - Description: string
-  - title : string
-  - type : string
-  - accessControl : string  
-  -- Methods --
-  + display_page() : void
-  + user_actions() : void
-  - uploadDocument(pathToDoc) : boolean
-  - createDocument(title, type, authorID, documentID, description) : boolean
-  - editDocument(documentID, description): boolean
-  - deleteDocument(documentID): boolean
-  - getDocument(documentID): boolean
+class FacultyResearcher {
+    - facultyID : int
+    - name : String
+    - email : String
+    - permissions : List<String>
+    - labGroupID : int
+    - reservations : vector<Reservation>
+    + display_page() : void
+    - user_actions() : void
+    + reserveAsset(assetID: int) : boolean
+    + generateUsageReport(assetUsed: Asset) : Document
+    + viewGroup(groupID: int) : Document
 }
-@enduml
 
+class LabManager {
+    - managerID : int
+    - name : String
+    - email : String
+    - department : String
+    - permissions : List<String>
+    + display_page() : void
+    - user_actions() : void
+    + viewDashboard() : List
+    + grantRights(amID: int) : void
+    + revokeRights(amID: int) : void
+    + approveReservation(resID: int) : boolean
+    + monitorAssets() : List
+    + generateReport() : Dict
+    + analyzeBudgetUsage() : Dict
+}
+
+class LabAssetManager {
+    - assetManagerID : String
+    - assetManagerName : String
+    - assetManagerEmail : String
+    - permissions : List<String>
+    - accountList : vector<String>
+    - assetInventory : vector<Asset>
+    - documentRepository : vector<Document>
+    + display_page() : void
+    + user_actions() : void
+    + createAccount(name: String, role: String) : String
+    + updateAccount(id: String, info: String) : boolean
+    + addAsset(name: String, loc: String) : Asset
+    + flagAsset(id: String, reason: String) : boolean
+    + inventoryCheck() : Document
+    + uploadDocument(assetID: String, doc: Document) : Document
+}
+
+' --- Relationships ---
+
+' Inheritance
+Assets <|-- Equipment
+Assets <|-- Consumable
+Assets <|-- SoftwareLicense
+
+' Interface Implementation
+User <|.. StudentResearcher
+User <|.. FacultyResearcher
+User <|.. LabManager
+User <|.. LabAssetManager
+
+' System Relationships
+System "1" *-- "many" Reservations : Composition >
+System "1" o-- "many" Assets : Aggregation >
+System "1" o-- "many" Documents : Aggregation >
+System o-- User : "manages session for" >
+System ..> NotificationService : <<uses>>
+
+' User Relationships
+StudentResearcher ..> Reservations : <<manages>>
+FacultyResearcher ..> Reservations : <<manages>>
+
+LabAssetManager ..> Assets : <<manages inventory>>
+LabAssetManager ..> Documents : <<CRUD operations>>
+LabAssetManager ..> Reservations : <<monitors>>
+LabAssetManager ..> User : <<manages accounts>>
+LabAssetManager ..> NotificationService : <<receives alerts>>
+
+LabManager ..> System : <<privileged access>>
+LabManager ..> NotificationService : <<receives alerts>>
+
+' Asset & Resource Relationships
+Assets "1" o-- "many" Documents : Aggregation >
+Reservations "many" --> "1" Assets : References >
+NotificationService ..> Reservations : <<monitors>>
+NotificationService ..> Assets : <<monitors stock>>
 
 @enduml
