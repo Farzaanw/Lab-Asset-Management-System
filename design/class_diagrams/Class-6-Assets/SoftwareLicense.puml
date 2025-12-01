@@ -1,0 +1,14 @@
+@startuml
+class SoftwareLicense extends Assets {
+  - Int seatCount
+  - string renewalDate
+  - Int concurrentlyUsedSeats
+  --
+  + void displayDetails()
+  + boolean isAvailable()
+  + boolean reserveSeat() / releaseSeat()
+  + string getUsageSummary()
+  + boolean renewalAlert(days)
+  + void updateRenewalDate(newDate)
+}
+@enduml
