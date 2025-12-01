@@ -1,5 +1,6 @@
 #include <iostream>
 #include "FacultyResearcher.h"
+using namespace std;
 
 //Destructor
 FacultyResearcher::~FacultyResearcher() {
@@ -8,17 +9,31 @@ FacultyResearcher::~FacultyResearcher() {
 
 //BASIC
 //Navigation, displays the dashboard and the user actions
-void display_page();
-void user_actions();
+void display_page() {
+
+}
+void user_actions() {
+
+}
 
 //ASSETS
 //make a reservation for an asset, returns bool - was it successful in making reservation}
 //same as use asset, when they reserve it, we are assuming they are using it
-bool reserveAsset(int assetID, bool permissions);
+bool reserveAsset(int assetID, bool permissions) {
+  cout << "--- Reserve Asset ---\n" << endl;
+  //Asset Information
+}
 //Return an asser
-bool return_asset(int reservationID);
+bool return_asset(int reservationID) {
+  cout << "--- Return Asset ---\n" << endl;
+  //Return Information
+}
 // view a student's list of assets they have checked out
-std::vector<Assets> viewStudentAssets(int studentID);
+std::vector<Assets> viewStudentAssets(int studentID) {
+  cout << "--- Student Assets ---\n" << endl;
+  //Enter studentID
+  //List the current assets the have
+}
 
 //GROUP SECTION
 //view the groups list of assets they have checked out
