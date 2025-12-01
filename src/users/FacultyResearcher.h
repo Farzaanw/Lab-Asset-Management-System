@@ -8,9 +8,9 @@
 //test
 #include <string>
 #include <vector>
-#include "Assets.h"
-#include "Documents.h"
-#include "Reservations.h"
+#include "Asset.h"
+#include "Document.h"
+#include "Reservation.h"
 #include "User.h"
 #pragma once
 
@@ -42,11 +42,11 @@ public:
   //Return an asser
   bool return_asset(int reservationID);
   // view a student's list of assets they have checked out
-  List<Assets> viewStudentAssets(int studentID);
+  std::vector<Assets> viewStudentAssets(int studentID);
 
   //GROUP SECTION
   //view the groups list of assets they have checked out
-  List<Assets> viewGroupAssets(int labGroupID);
+  std::vector<Assets> viewGroupAssets(int labGroupID);
   //view group usage records(their usage log)
   void viewGroupUsage(int labGroupID);
   //display a record of the group the faculty is in charge of and their work they have done
@@ -54,19 +54,19 @@ public:
 
   //SOFTWARE LICENSE
   //View the available software licenses
-  List<SoftwareLicense> viewAvailableLicenseSeats();
+  std::vector<Documents> viewAvailableLicenseSeats();
   //Request software licenses for self, returns a bool for if its successful or not
   bool requestSoftwareLicense(int licenseID, const std::string& startDate, const std::string& endDate);
   //Request software licesnes for group
   bool requestSoftwareLicenseGroup(int licenseID, int labGroupID, const std::string& startDate, const std::string& endDate);
   //view their own licenses
-  List<SoftwareLicense> viewLicenses();
+  std::vector<Documents> viewLicenses();
   //view a groups licenses
-  List<SoftwareLicense> viewGroupLicenses(int labGroupID);
+  std::vector<Documents> viewGroupLicenses(int labGroupID);
 
   //Reservations
   //View Group reservations
-  List<Reservations*> viewGroupReservations(int labGroupID);
+  std::vector<Reservations*> viewGroupReservations(int labGroupID);
   //Manage Group reservations
   bool manageGroupReservations(int labGroupID, int reservationID /*Add Info needed to manage reservation*/);
 
