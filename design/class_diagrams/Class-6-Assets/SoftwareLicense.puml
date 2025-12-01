@@ -1,5 +1,5 @@
 @startuml
-class SoftwareLicense extends Assets {
+class SoftwareLicense {
   - Int seatCount
   - string renewalDate
   - Int concurrentlyUsedSeats
