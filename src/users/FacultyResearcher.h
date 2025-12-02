@@ -14,7 +14,7 @@
 #include "User.h"
 #pragma once
 
-class FacultyResearcher {
+class FacultyResearcher : public User{
 private:
   int FacultyID;
   int labGroupID;
@@ -24,6 +24,15 @@ private:
   bool permissions;
 	
 public:
+  //FacultyResearcher(string email, SystemController* sys) : User(email, sys) {}
+  //void showMenu() override;
+  //void reserveAsset(int assetID);
+  
+  //main starting point
+  int main();
+
+  void assetManagementMenu();
+
   //Constructor
   FacultyResearcher() = default;
 
@@ -41,6 +50,8 @@ public:
 	bool reserveAsset(int assetID, bool permissions);
   //Return an asser
   bool return_asset(int reservationID);
+  //view own assets
+  std::vector<Assets> viewAssets();
   // view a student's list of assets they have checked out
   std::vector<Assets> viewStudentAssets(int studentID);
 
