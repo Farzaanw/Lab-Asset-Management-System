@@ -1,4 +1,18 @@
 {
+    "Student Researcher": [
+        {
+            "email": "alice@osu.edu",
+            "password": "alice123"
+        },
+        {
+            "email": "tom@osu.edu",
+            "password": "tom123"
+        },
+        {
+            "email": "test",
+            "password": "123123"
+        }
+    ],
     "Faculty Researcher": [
         {
             "email": "dr.smith@osu.edu",
@@ -11,15 +25,5 @@
             "password": "admin123"
         }
     ],
-    "Lab Manager": [],
-    "Student Researcher": [
-        {
-            "email": "alice@osu.edu",
-            "password": "alice123"
-        },
-        {
-            "email": "tom@osu.edu",
-            "password": "tom123"
-        }
-    ]
+    "Lab Manager": []
 }
