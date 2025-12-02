@@ -9,7 +9,7 @@
 #include "Documents.h"
 #pragma once
 
-class FacultyResearcher {
+class FacultyResearcher: public User {
 private:
   int FacultyID;
   int labGroupID;

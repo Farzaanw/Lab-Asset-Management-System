@@ -13,7 +13,7 @@ using namespace std;
 namespace fs = std::filesystem;
 using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
 
-class LabAssetManager {
+class LabAssetManager: public User {
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	string accountsFile = "../../data/accounts.json";

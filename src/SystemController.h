@@ -11,6 +11,18 @@
 
 class User;
 
+
+/*
+High-Level Overview of SystemController Class:
+- Constructor: loads persistent JSON (usage log, user logins, assets, policies).
+- load_json_safe(path, out): opens and parses a JSON file (returns false on missing / parse error).
+- run() → homepage(): interactive CLI main menu (Login / Create Account / Exit).
+- role_selection_menu(): pick a role (1–4).
+- create_account(roleChoice): read email/password, add a user to the in-memory JSON and save file.
+- log_in(roleChoice): prompt credentials, call validate_user, update usage log on success.
+- validate_user(email,password,role): checks credentials against in-memory JSON.
+- update_usage_log(message): append to usage_log and write file.
+*/
 class SystemController {
 public:
     // methods
@@ -25,9 +37,10 @@ private:
     // CORE UI METHODS
     // ================
     int homepage();
-    int role_selection_menu();         // role selection menu
-    void create_account(int roleChoice); 
-    int log_in(int roleChoice);        // now matches .cpp
+    int role_selection_menu();   
+    bool create_account(int roleChoice); 
+    bool log_in(int roleChoice);        
+    User* create_user(const std::string& first_name, const std::string& last_name, const std::string& email, int role);  // create instance of CurrentUser
 
     // ==============================
     // PERSISTENT DATA LOAD 
@@ -41,7 +54,7 @@ private:
     // HELPER FUNCTIONS
     // ================
     void update_usage_log(const std::string& message);
-    bool validate_user(const std::string& email, const std::string& password, const std::string& role);
+    bool validate_user(const std::string& email, const std::string& password, int role);
     bool load_json_safe(const std::string& path, nlohmann::json& out);
     std::string get_current_time();
 
@@ -49,6 +62,8 @@ private:
     // MEMBER VARIABLES
     // ====================
     bool isOpen;                  // Indicates if the system is open
+    bool userActive;                  // Indicates if a user is currently active / logged in
+
     User* currentUser = nullptr;  // Pointer to currently logged-in user
     std::map<std::string, std::string> systemPolicies; // Stores system policies
     nlohmann::json roleLoginJson; // Stores user login data
