@@ -1,27 +1,81 @@
 // CS-6: Assets.h
-// Auth: McNamee, Quinn
-// Supports: UR-302 UR-320, UR-321, UR-331, UR-401, UR-410, UR-411, UR-413, UR-414, UR-415, UR-421, UR-43, UR-432.
-//  Reservations[0..*]  Users[0..*] 
+// Auth: Jacob Munly
+// Supports: UR-302 to UR-432
+// Description: Defines the Asset hierarchy (Inheritance) and the Manager class.
+
+#pragma once
 #include <string>
 #include <vector>
-#pragma once
+#include <iostream>
+#include <algorithm>
 
-class Assets {
-	private:
-		int AssetID;
-		std::string assetName;
-		std::string assetType;
-		std::string status;
-		std::string condition;
-		std::string location;
-		int assetAccess;
+// ==========================================
+// 1. Parent asset class
+// ==========================================
+class Asset {
+protected:
+    int assetID;
+    std::string assetName;
+    std::string location;
+    int assetAccessLevel; // e.g., 1=Student, 2=Manager
+    std::vector<Document> documents;
 
-	public:
+public:
+    Asset(int id, std::string name, std::string loc, int access);
+    virtual ~Asset() {}
 
-		void addAsset(std::string assetName, std::string location);
-		void deleteAsset(int AssetID);
-		void updateAssetStatus(int AssetID, std::string Updatedstatus);
-		void getAssetInfo(int AssetID);
-		void listAvailAssets(std::string assetType);
-		void updateAssetAccess(int AssetID, int newAccess);
+    // Pure virtual function: Children MUST implement this
+    virtual std::string getType() const = 0; 
+    virtual bool isAvailable() const = 0;
+    virtual void displayInfo() const;
+
+    // Getters/Setters
+    int getID() const { return assetID; }
+    std::string getName() const { return assetName; }
+    
+    // Document Management
+    void addDocument(int id, std::string title);
+    std::vector<Document> getDocuments() const;
+};
+
+// ==========================================
+// 2. Child Class: Equipment (e.g., Microscope)
+// ==========================================
+class Equipment : public Asset {
+private:
+    bool outOfService; // OOS Flag
+    std::string condition; // e.g., "Good", "Needs Calibration"
+
+public:
+    Equipment(int id, std::string name, std::string loc, int access, std::string cond);
+
+    // Overrides
+    std::string getType() const override { return "Equipment"; }
+    bool isAvailable() const override; // Checks OOS status
+    void displayInfo() const override;
+
+    // Specific Methods
+    void setOutOfService(bool status, std::string reason = "");
+};
+
+// ==========================================
+// 3. Child Class: Consumable (e.g., Gloves)
+// ==========================================
+class Consumable : public Asset {
+private:
+    int stock;
+    int minThreshold;
+
+public:
+    Consumable(int id, std::string name, std::string loc, int access, int qty, int thresh);
+
+    // Overrides
+    std::string getType() const override { return "Consumable"; }
+    bool isAvailable() const override; // Checks if stock > 0
+    void displayInfo() const override;
+
+    // Specific Methods
+    void reduceStock(int quantity); // Decreases stock (does NOT reserve)
+    void restock(int quantity);
+    bool isLowStock() const;
 };
