@@ -1,0 +1,13 @@
+@startuml
+class Equipment {
+  - boolean outOfService
+  - string condition
+  --
+  + void displayDetails()
+  + boolean isAvailable()
+  + void setOutOfService(status, reason)
+  + void markAvailable()
+  + void checkOut()
+  + void checkIn()
+}
+@enduml
