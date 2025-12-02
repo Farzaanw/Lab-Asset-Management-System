@@ -14,9 +14,7 @@ class User;
 class SystemController {
 public:
     // methods
-    SystemController();     // Loads all data from /data
-    ~SystemController();    // Saves all data to /data
-    
+    SystemController();     // Loads all data from /data    
     void run();    // CLI entry point
 
     // variables
@@ -32,19 +30,12 @@ private:
     int log_in(int roleChoice);        // now matches .cpp
 
     // ==============================
-    // PERSISTENT DATA LOAD / SAVE
+    // PERSISTENT DATA LOAD 
     // ==============================
     void load_assets();
-    void save_assets();
-
     void load_policies();
-    void save_policies();
-
     void load_usage_log();
-    void save_usage_log();
-
     void load_user_logins();
-    void save_user_logins();
 
     // ================
     // HELPER FUNCTIONS

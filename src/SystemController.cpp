@@ -10,7 +10,7 @@
 #include <limits>
 #include <cctype>
 #include "SystemController.h"
-// #include "User.h"
+#include "User.h"
 
 #include "./library/nlohmann/json.hpp"
 using json = nlohmann::json;
@@ -21,9 +21,7 @@ static const std::string DATA_DIR = "../../data/";
 /////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////
-SystemController::SystemController()
-    : isOpen(true), currentUser(nullptr)
-{   
+SystemController::SystemController() : isOpen(true), currentUser(nullptr) {   
     // load all persistent data
     load_usage_log();
     load_user_logins();
@@ -37,12 +35,6 @@ SystemController::SystemController()
     }
 }
 
-    // Destructor: save state if needed (defined to satisfy linker)
-    SystemController::~SystemController() {
-        // Currently no persistent-save functions implemented here.
-        // Placeholder for future save calls (e.g., save_user_logins(), save_usage_log(), save_assets()).
-    }
-
 /////////////////////////////////////////////////////////////////
 // Safety checker for/before data loading
 /////////////////////////////////////////////////////////////////
@@ -50,6 +42,7 @@ bool SystemController::load_json_safe(const std::string& path, json& out) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open JSON file: " << path << "\n";
+        update_usage_log("ERROR: Failed to load JSON: " + path);
         return false;
     }
 
@@ -81,9 +74,12 @@ bool SystemController::load_json_safe(const std::string& path, json& out) {
 
 void SystemController::run() {
     std::cout << "Welcome to the Lab Asset Management System!\n";
+    update_usage_log("System started");
+
     while (isOpen) {
         int result = homepage();
         if (result == -1) {
+            update_usage_log("System shutdown");
             isOpen = false;
         }
     }
@@ -126,7 +122,8 @@ int SystemController::homepage() {
         }
     }
 
-    // INTIALIZE THE USER THAT HAS SUCCESSFULLY LOGGED-IN //
+    // INITIALIZE THE USER THAT HAS SUCCESSFULLY LOGGED-IN //
+
     std::cout << "User has successfully logged in or created an account.\n";
     std::cout << "Now need to instatiate user object here - not implmented yet.\n";
     return -1;
@@ -151,6 +148,7 @@ int SystemController::role_selection_menu() {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Invalid role selection.\n";
+        update_usage_log("Invalid role selection attempted");
         return -1;
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
@@ -179,6 +177,7 @@ int SystemController::log_in(int roleChoice) {
         } else {
             std::cout << "Invalid credentials. Attempt " << attempt 
                       << " of " << MAX_ATTEMPTS << ".\n";
+            update_usage_log("Failed login attempt for email: " + email);
         }
     }
 

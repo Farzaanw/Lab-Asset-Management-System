@@ -3,20 +3,20 @@
 // ==========================================
 // Base Asset Implementation
 // ==========================================
-Asset::Asset(int id, std::string name, std::string loc, int access) 
+Assets::Assets(int id, std::string name, std::string loc, int access) 
     : assetID(id), assetName(name), location(loc), assetAccessLevel(access) {}
 
-void Asset::displayInfo() const {
+void Assets::displayInfo() const {
     std::cout << "[ID: " << assetID << "] " << assetName 
               << " | Loc: " << location 
               << " | Access Lvl: " << assetAccessLevel << "\n";
 }
 
-void Asset::addDocument(int id, std::string title) {
+void Assets::addDocument(int id, std::string title) {
     documents.push_back({id, title});
 }
 
-std::vector<Document> Asset::getDocuments() const {
+std::vector<Documents> Assets::getDocuments() const {
     return documents;
 }
 
@@ -24,7 +24,7 @@ std::vector<Document> Asset::getDocuments() const {
 // Equipment Implementation
 // ==========================================
 Equipment::Equipment(int id, std::string name, std::string loc, int access, std::string cond)
-    : Asset(id, name, loc, access), condition(cond), outOfService(false) {}
+    : Assets(id, name, loc, access), condition(cond), outOfService(false) {}
 
 bool Equipment::isAvailable() const {
     // Available if NOT out of service
@@ -38,7 +38,7 @@ void Equipment::setOutOfService(bool status, std::string reason) {
 }
 
 void Equipment::displayInfo() const {
-    Asset::displayInfo();
+    Assets::displayInfo();
     std::cout << "   Type: Equipment | Status: " << (outOfService ? "OUT OF SERVICE" : "Available") 
               << " | Condition: " << condition << "\n";
 }
@@ -47,7 +47,7 @@ void Equipment::displayInfo() const {
 // Consumable Implementation
 // ==========================================
 Consumable::Consumable(int id, std::string name, std::string loc, int access, int qty, int thresh)
-    : Asset(id, name, loc, access), stock(qty), minThreshold(thresh) {}
+    : Assets(id, name, loc, access), stock(qty), minThreshold(thresh) {}
 
 bool Consumable::isAvailable() const {
     // Available if we have at least 1 item
@@ -72,7 +72,7 @@ bool Consumable::isLowStock() const {
 }
 
 void Consumable::displayInfo() const {
-    Asset::displayInfo();
+    Assets::displayInfo();
     std::cout << "   Type: Consumable | Stock: " << stock 
               << (isLowStock() ? " [LOW STOCK]" : "") << "\n";
 }

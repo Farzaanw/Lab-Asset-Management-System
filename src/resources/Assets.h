@@ -9,20 +9,22 @@
 #include <iostream>
 #include <algorithm>
 
+#include "./Documents.h"
+
 // ==========================================
 // 1. Parent asset class
 // ==========================================
-class Asset {
+class Assets {
 protected:
     int assetID;
     std::string assetName;
     std::string location;
     int assetAccessLevel; // e.g., 1=Student, 2=Manager
-    std::vector<Document> documents;
+    std::vector<Documents> documents;
 
 public:
-    Asset(int id, std::string name, std::string loc, int access);
-    virtual ~Asset() {}
+    Assets(int id, std::string name, std::string loc, int access);
+    virtual ~Assets() {}
 
     // Pure virtual function: Children MUST implement this
     virtual std::string getType() const = 0; 
@@ -35,13 +37,13 @@ public:
     
     // Document Management
     void addDocument(int id, std::string title);
-    std::vector<Document> getDocuments() const;
+    std::vector<Documents> getDocuments() const;
 };
 
 // ==========================================
 // 2. Child Class: Equipment (e.g., Microscope)
 // ==========================================
-class Equipment : public Asset {
+class Equipment : public Assets {
 private:
     bool outOfService; // OOS Flag
     std::string condition; // e.g., "Good", "Needs Calibration"
@@ -61,7 +63,7 @@ public:
 // ==========================================
 // 3. Child Class: Consumable (e.g., Gloves)
 // ==========================================
-class Consumable : public Asset {
+class Consumable : public Assets {
 private:
     int stock;
     int minThreshold;

@@ -15,6 +15,10 @@
         {
             "event": "Created account: fdsfsf",
             "timestamp": "2025-12-01 16:43:57"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 19:49:18"
         }
     ]
 }
