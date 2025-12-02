@@ -31,7 +31,12 @@ public:
   //main starting point
   int main();
 
+  //Menus
   void assetManagementMenu();
+  void labGroupManagementMenu();
+  void softwareLicenseMenu();
+  void reportsAndDocumentsMenu();
+  void reservationsMenu();
 
   //Constructor
   FacultyResearcher() = default;
@@ -54,6 +59,13 @@ public:
   std::vector<Assets> viewAssets();
   // view a student's list of assets they have checked out
   std::vector<Assets> viewStudentAssets(int studentID);
+  //reserve multiple assets
+  bool reserveMultipleAssets(std::vector<int> assetIDs, const std::string& startDate, const std::string& endDate);
+  //search and filter assets 
+  std::vector<Assets> searchAssets(const std::string& category, const std::string& status);
+  //view all assets 
+  std::vector<Assets> viewAvailableAssets();
+
 
   //GROUP SECTION
   //view the groups list of assets they have checked out
@@ -79,7 +91,13 @@ public:
   //View Group reservations
   std::vector<Reservations*> viewGroupReservations(int labGroupID);
   //Manage Group reservations
-  bool manageGroupReservations(int labGroupID, int reservationID /*Add Info needed to manage reservation*/);
+  bool cancelGroupReservations(int labGroupID, int reservationID);
+  //view own reservations
+  std::vector<Reservations*> viewMyReservations();
+  //cancel own reservation
+  bool cancelReservation(int reservationID);
+  //make reservation
+  bool makeReservation(int reservationID, int labGroupID);
 
   //DOCUMENTS
 	//produce a usage report for resource usage by a group
