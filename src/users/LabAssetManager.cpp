@@ -303,12 +303,6 @@ bool LabAssetManager::addAsset(){
 		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
 		getline(cin, status);
 	}
-	cout << "Enter asset securty access level (numeric): ";
-	getline(cin, accessLevel);
-	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
-		cout << "Invalid access level entered. Please enter a valid access level from the list:" << endl << "Research student: (1)" << endl << "Faculty researcher: (2)" << endl << "Lab manager: (3)" << endl;
-		getline(cin, accessLevel);
-	}
 	cout << "Enter asset condition: ";
 	getline(cin, condition);
 	cout << "Enter asset location: ";
@@ -333,7 +327,6 @@ bool LabAssetManager::addAsset(){
 	asset["name"] = name;
 	asset["category"] = category;
 	asset["operationalStatus"] = status;
-	asset["accessLevel"] = accessLevel;
 	asset["condition"] = condition;
 	asset["location"] = location;
 	if (category == "consumable") {
@@ -545,7 +538,6 @@ bool LabAssetManager::listAssets(){
 		cout << "Name: " << asset["name"] << endl;
 		cout << "Category: " << asset["category"] << endl;
 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
-		cout << "Access Level: " << asset["accessLevel"] << endl;
 		cout << "Condition: " << asset["condition"] << endl;
 		cout << "Location: " << asset["location"] << endl;
 		if (asset["category"] == "consumable") {
