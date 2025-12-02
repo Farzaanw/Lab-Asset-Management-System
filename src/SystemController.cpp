@@ -1,86 +1,392 @@
 // SystemController.cpp
 // Auth: Farzaan Wadiwalla
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <chrono>
+#include <algorithm>
 #include <sstream>
 #include <limits>
+#include <cctype>
+
+// class includes
 #include "SystemController.h"
-// #include "User.h"
+#include "User.h"
+// #include "./users/ResearchStudent.h"
+// #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
+// #include "./users/LabManager.h"
+// #include "./users/LabAssetManager.h"
 
 #include "./library/nlohmann/json.hpp"
 using json = nlohmann::json;
 
+// Base data directory relative to src/cli (executable working dir)
+static const std::string DATA_DIR = "../../data/";
+static const std::string ROLE_NAMES[] = {
+    "",                     // dummy placeholder so index matches roleChoice (1/2/3/4)
+    "Student Researcher",   // 1
+    "Faculty Researcher",   // 2
+    "Lab Manager",          // 3
+    "Lab Asset Manager"     // 4
+};
+
 /////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////
-SystemController::SystemController()
-    : isOpen(true), currentUser(nullptr)
-{
-    load_login_json();
+SystemController::SystemController() : isOpen(true), currentUser(nullptr) {   
+    // load all persistent data
+    load_usage_log();
+    load_user_logins();
+    load_assets();
+    load_policies();
 
-    // Initialize usage log if empty
-    usage_log = json::object();
-    usage_log["events"] = json::array();
-    static const std::string ROLES[] = {
-        "INVALID",
-        "Student Researcher",
-        "Faculty Researcher",
-        "Lab Manager",
-        "Lab Asset Manager"
-    };
+    // If usage_log.json was empty or failed to load, initialize it
+    if (usage_log.is_null() || !usage_log.contains("events")) {
+        usage_log = nlohmann::json::object();
+        usage_log["events"] = nlohmann::json::array();
+    }
 }
 
 /////////////////////////////////////////////////////////////////
-// load user log-in data
+// Safety checker for/before data loading
 /////////////////////////////////////////////////////////////////
 bool SystemController::load_json_safe(const std::string& path, json& out) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open JSON file: " << path << "\n";
+        update_usage_log("ERROR: Failed to load JSON: " + path);
         return false;
     }
+
     try {
-        file >> out;
+        file >> out; // parse directly from stream
+        if (out.is_null()) {
+            std::cerr << "JSON file is empty: " << path << "\n";
+            return false;
+        }
         std::cout << "JSON loaded successfully from " << path << "\n";
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "JSON parsing error: " << e.what() << "\n";
+        std::cerr << "JSON parsing error in " << path << ": " << e.what() << "\n";
         return false;
     }
 }
 
-// Load login JSON (uses helper)
-void SystemController::load_login_json() {
-    if (!load_json_safe("../../data/user_logins.json", roleLoginJson)) {
-        // fallback default structure
-        roleLoginJson = {
-            {"Student Researcher", json::array()},
-            {"Faculty Researcher", json::array()},
-            {"Lab Manager", json::array()},
-            {"Lab Asset Manager", json::array()}
-        };
-        std::cout << "Initialized roleLoginJson with default values.\n";
+/////////////////////////////////////////////////////////////////
+// CLI Entry Point !!!!
+/////////////////////////////////////////////////////////////////
+void SystemController::run() {
+    std::cout << "Welcome to the Lab Asset Management System!\n";
+    update_usage_log("System started");
+
+    while (isOpen) {
+        int result = homepage();
+        if (result == -1) {
+            update_usage_log("System shutdown");
+            isOpen = false;
+        }
     }
 }
 
 /////////////////////////////////////////////////////////////////
-// Timestamp helper
+// HOMEPAGE MAIN MENU
 /////////////////////////////////////////////////////////////////
-std::string SystemController::get_current_time() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
+int SystemController::homepage() {
+    char choiceChar;
+    while (isOpen) {
+        std::cout << "\n====== MAIN MENU ======\n";
+        std::cout << "1. Login\n";
+        std::cout << "2. Create Account\n";
+        std::cout << "3. Exit\n";
+        std::cout << "Enter choice: ";
 
-    std::ostringstream ss;
-    ss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
-    return ss.str();
+        std::cin >> choiceChar;
+        int roleChoice = -1; 
+        bool userCreated = false;
+
+        switch (choiceChar) {
+            // handles log in
+            case '1': {
+                int roleChoice = role_selection_menu();
+                if (roleChoice != -1){
+                    userCreated = log_in(roleChoice);   // returns bool (T/F) if user successfully created
+                }
+
+                std::cout << "Below should show failure message right now - PLACEHOLDER (uncomment once other User Classes made):\n";
+                if (userCreated) {
+                    std::cout << "User Logged in.\n";
+                    isOpen = false;
+                    break;
+                } else {
+                    std::cout << "Login failed or cancelled.\n";
+                    return -1;
+                }
+            }
+
+            // handles account creation
+            case '2': {
+                int roleChoice = role_selection_menu();
+                if (roleChoice != -1){
+                    userCreated = create_account(roleChoice);
+                }
+
+                std::cout << "Below should show failure message right now - PLACEHOLDER (uncomment once other User Classes made):\n";
+                if (userCreated) {
+                    std::cout << "User Created Account (automatic login).\n";
+                    isOpen = false;
+                    break;
+                } else {
+                    std::cout << "Account creation failed or cancelled.\n";
+                    return -1;
+                }
+            }
+
+            // handles system exit
+            case '3':
+                std::cout << "Exiting system. Goodbye!\n";
+                isOpen = false;
+                return -1;
+
+            // invalid input handler
+            default:
+                std::cout << "Invalid choice, please try again.\n";
+        }
+    }
+
+    // INITIALIZE THE USER THAT HAS SUCCESSFULLY LOGGED-IN //
+    std::cout << "\nUser has been created. Done.\n";
+    return -1;
+}
+
+////////////////////////////////////////////////////////////////
+// Account Creation Handler
+/////////////////////////////////////////////////////////////////
+int SystemController::role_selection_menu() {
+    std::cout << "\nSelect Your Role:\n";
+    std::cout << "1. Student Researcher\n";
+    std::cout << "2. Faculty Researcher\n";
+    std::cout << "3. Lab Manager\n";
+    std::cout << "4. Lab Asset Manager\n";
+    std::cout << "Enter choice (1-4): ";
+
+    int r;
+    std::cin >> r;
+
+    // Invalid numeric or out-of-range                                                                  < ------------ (ASK PROFESSOR IF APPROPRIATE)                         
+    if (std::cin.fail() || r < 1 || r > 4) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid role selection.\n";
+        update_usage_log("Invalid role selection attempted");
+        return -1;
+    }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
+    return r;
 }
 
 /////////////////////////////////////////////////////////////////
-// Usage log writer
+// Log-In Handler
 /////////////////////////////////////////////////////////////////
+bool SystemController::log_in(int roleChoice) {
+    const int MAX_ATTEMPTS = 3;
+    std::string firstName, lastName, email, password;
+
+    for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
+        std::cout << "\nPlease enter your login credentials (" + ROLE_NAMES[roleChoice] + "):\n";
+        std::cout << "First Name: ";
+        std::getline(std::cin, firstName);
+        std::cout << "Last Name: ";
+        std::getline(std::cin, lastName);
+        std::cout << "Email: ";
+        std::getline(std::cin, email);
+        std::cout << "Password: ";
+        std::getline(std::cin, password);
+
+        bool ok = validate_user(email, password, roleChoice);
+        if (ok) {
+            // update usage log
+            update_usage_log("User logged in: " + firstName + " " + lastName + " " + email);
+            userActive = true;
+
+            // --------------- Create User instance -------------- //
+            currentUser = create_user(firstName, lastName, email, roleChoice);
+            return currentUser != nullptr;
+            // ----------------------------------------------------- //
+
+        } else {
+            std::cout << "Invalid credentials. Attempt " << attempt << " of " << MAX_ATTEMPTS << ".\n";
+            update_usage_log("Failed login attempt for email: " + email);
+        }
+    }
+
+    std::cout << "Maximum login attempts reached. Exiting.\n";
+    return false; // failed login after 3 attempts
+}
+
+
+//////////////////////////////////////////////////////////////////
+// Create Account Handler
+//////////////////////////////////////////////////////////////////
+bool SystemController::create_account(int roleChoice) {
+    std::string roleName;
+    if (roleChoice >= 1 && roleChoice <= 4)
+        roleName = ROLE_NAMES[roleChoice]; // ROLE_NAMES defined at the top of SystemController.cpp
+    else {
+        std::cout << "Invalid role selection.\n";
+        return false;
+    }
+
+    // user enters account details
+    std::cout << "\nCreate your account below:\n";
+    std::string firstName, lastName, email, password;
+    std::cout << "First Name: ";
+    std::getline(std::cin, firstName);
+    std::cout << "Last Name: ";
+    std::getline(std::cin, lastName);
+    std::cout << "Email: ";
+    std::getline(std::cin, email);
+    std::cout << "Password: ";
+    std::getline(std::cin, password);
+
+    json userEntry = {
+        {"first_name", firstName},
+        {"last_name", lastName},
+        {"email", email},
+        {"password", password}
+    };
+    roleLoginJson[roleName].push_back(userEntry);
+
+    // Save immediately in json file
+    std::ofstream file(DATA_DIR + "user_logins.json");
+    file << roleLoginJson.dump(4);
+
+    update_usage_log("Created account: " + email);
+
+    // Automatically log in the new user
+    currentUser = create_user(firstName, lastName, email, roleChoice);
+    return currentUser != nullptr;
+}
+
+/////////////////////////////////////////////////////////////////
+// Validate Login Credentials
+/////////////////////////////////////////////////////////////////
+bool SystemController::validate_user(const std::string& email, const std::string& password, int role) {
+    // get user --> string version for json lookup
+    std::string roleName;
+    if (role >= 1 && role <= 4)
+        roleName = ROLE_NAMES[role]; // ROLE_NAMES defined at the top of SystemController.cpp
+    else {
+        std::cout << "Invalid role selection.\n"; // just in case
+        return false;
+    }
+
+    // check if role exists in json
+    if (!roleLoginJson.contains(roleName)) return false; // check role exists
+    std::cout << "User exists!\n";
+
+    // search for matching email/password
+    for (auto& u : roleLoginJson[roleName]) {
+        if (u["email"] == email && u["password"] == password) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/////////////////////////////////////////////////////////////////
+// Create User Instance
+/////////////////////////////////////////////////////////////////
+User* SystemController::create_user(const std::string& first_name, const std::string& last_name, const std::string& email, int role) {
+    // get user --> string version for json lookup
+    std::string roleName;
+    if (role >= 1 && role <= 4)
+        roleName = ROLE_NAMES[role]; // ROLE_NAMES defined at the top of SystemController.cpp
+    else {
+        std::cout << "Invalid role selection.\n"; // just in case
+        return nullptr;
+    }
+
+
+    // ------ !!!!!!!!!!!! WAITING ON IMPLEMENTATION OF USER CLASSES -------- //
+
+
+    // if (role == "student") return new ResearchStudent(name, email, this);
+    // if (role == "faculty") return new FacultyResearcher(name, email, this);
+    // if (role == "manager") return new LabManager(name, email, password, this);
+    // if (role == "assetManager") return new LabAssetManager(name, email, this);
+
+    // ----------------------------------------------------- //
+
+
+    std::cout << "^^PLACEHOLDER (INTATIATING USER HERE -- WAITING ON CLASS IMPLEMENTATION - then uncomment; return null_ptr for now:).\n";
+    return nullptr;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// Load System Data !!
+//////////////////////////////////////////////////////////////////
+void SystemController::load_user_logins() {
+    std::string path = DATA_DIR + std::string("user_logins.json");
+    if (!load_json_safe(path, roleLoginJson)) {
+        // initialize default structure and create the file
+        roleLoginJson = json::object();
+        roleLoginJson["users"] = json::array();
+        std::ofstream out(path);
+        if (out.is_open()) out << roleLoginJson.dump(4);
+    }
+}
+
+void SystemController::load_assets() {
+    // json assetJson;
+
+    // if (!load_json_safe("data/assets.json", assetJson))
+    //     return;
+
+    // for (auto& a : assetJson) {
+    //     Assets* newAsset = new Assets(
+    //         a.value("id", -1),
+    //         a.value("name", "UNKNOWN"),
+    //         a.value("location", "UNKNOWN"),
+    //         std::stoi(a.value("accessLevel", "0"))
+    //     );
+
+    //     assets.push_back(newAsset);
+    // }
+    std::cout << "Currently not loading assets (uncoment method in SystemController.cpp - wwaiting on Asset Intialization!!).\n";
+}
+
+void SystemController::load_policies() {
+    json j;
+    std::string path = DATA_DIR + std::string("policies.json");
+    if (!load_json_safe(path, j)) {
+        // no policies file; leave policies empty and create an empty file
+        std::ofstream out(path);
+        if (out.is_open()) out << json::object().dump(4);
+        return;
+    }
+
+    for (auto& it: j.items()) {
+        systemPolicies[it.key()] = it.value();
+    }
+    std::cout << "................" << std::endl;
+}
+
+void SystemController::load_usage_log() {
+    std::string path = DATA_DIR + std::string("usage_log.json");
+    if (!load_json_safe(path, usage_log)) {
+        // initialize and create file
+        usage_log = json::object();
+        usage_log["events"] = json::array();
+        std::ofstream out(path);
+        if (out.is_open()) out << usage_log.dump(4);
+        return;
+    }
+
+    if (!usage_log.contains("events"))
+        usage_log["events"] = json::array();
+}
+
 void SystemController::update_usage_log(const std::string& message) {
     json entry;
     entry["timestamp"] = get_current_time();
@@ -88,219 +394,16 @@ void SystemController::update_usage_log(const std::string& message) {
 
     usage_log["events"].push_back(entry);
 
-    std::ofstream out("../../data/usage_log.json");
+    std::ofstream out(DATA_DIR + std::string("usage_log.json"));
     out << std::setw(4) << usage_log;
 }
 
-/////////////////////////////////////////////////////////////////
-// CLI Entry Point
-/////////////////////////////////////////////////////////////////
-void SystemController::run() {
-    std::cout << "Welcome to the Lab Asset Management System!\n";
-    homepage();   // This now loops internally until exit
-}
+// Helper to get current time as string (for usage log timestamps)
+std::string SystemController::get_current_time() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
 
-/////////////////////////////////////////////////////////////////
-// Homepage Menu
-/////////////////////////////////////////////////////////////////
-int SystemController::homepage() {
-    int choice = 0;
-    // repeat until proper input 
-    while (true) {
-        std::cout << "\n--- Main Menu ---\n";
-        std::cout << "1. Create Account\n";
-        std::cout << "2. Log In\n";
-        std::cout << "3. Exit\n";
-        std::cout << "Select (enter #): ";
-
-        std::cin >> choice;
-
-        if (std::cin.fail()) {
-            // User entered something that is not a number
-            std::cin.clear(); // clear the fail state
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard bad input
-            std::cout << "Invalid input. Please enter a number between 1 and 3.\n";
-            continue; // prompt again
-        }
-
-        // Valid number, check range
-        if (choice < 1 || choice > 3) {
-            std::cout << "Invalid choice. Please select 1, 2, or 3.\n";
-            continue;
-        }
-
-        // Choice is valid, break loop
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // remove any leftover
-        break;
-    }
-
-    // Process choice
-    while (isOpen) {
-        switch (choice) {
-            // Account Creation Flow
-            case 1:
-                {
-                    int roleChoice = role_selection_menu();
-                    if (roleChoice != -1) {
-                        create_account(roleChoice);
-                    }
-                }
-                isOpen = false; 
-                break;
-            
-            // Log-In Flow
-            case 2:
-                {
-                    int roleChoice = role_selection_menu();
-                    if (roleChoice != -1) {
-                        log_in(roleChoice);
-                    }
-                }
-                isOpen = false; 
-                break;
-
-            // Exit
-            case 3:
-                std::cout << "Exiting system. Goodbye!\n";
-                isOpen = false;
-                break;
-                
-            default:
-                std::cout << "Invalid choice.\n";
-        }
-    }
-
-    return 0;
-}
-
-////////////////////////////////////////////////////////////////
-// Account Creation Handler
-/////////////////////////////////////////////////////////////////
-int SystemController::role_selection_menu() {
-    int roleChoice = 0;
-
-    std::cout << "\nSelect account role to create:\n";
-    std::cout << "1. Student Researcher\n";
-    std::cout << "2. Faculty Researcher\n";
-    std::cout << "3. Lab Manager\n";
-    std::cout << "4. Lab Asset Manager\n";
-    std::cout << "Enter number: ";
-
-    std::cin >> roleChoice;
-
-    // Invalid numeric or out-of-range
-    if (std::cin.fail() || roleChoice < 1 || roleChoice > 4) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid role selection.\n";
-        return -1;
-    }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
-    return roleChoice;
-}
-
-//////////////////////////////////////////////////////////////////
-// Create Account Handler
-//////////////////////////////////////////////////////////////////
-void SystemController::create_account(int roleChoice) {
-    static const std::string ROLES[] = {
-        "INVALID",
-        "Student Researcher",
-        "Faculty Researcher",
-        "Lab Manager",
-        "Lab Asset Manager"
-    };
-    std::string role = ROLES[roleChoice];
-
-    std::string firstName, lastName, email, password, confirmPassword;
-
-    std::cout << "Enter first name: ";
-    std::getline(std::cin, firstName);
-    std::cout << "Enter last name: ";
-    std::getline(std::cin, lastName);
-    std::cout << "Enter email: ";
-    std::getline(std::cin, email);
-    std::cout << "Create password: ";
-    std::getline(std::cin, password);
-    std::cout << "Confirm password: ";
-    std::getline(std::cin, confirmPassword);
-
-    if (password != confirmPassword) {
-        std::cout << "Passwords do not match. Account creation failed.\n";
-        return;
-    }
-
-     // Add user to in-memory JSON
-    json newUser = { {"first_name", firstName}, {"last_name", lastName}, {"email", email}, {"password", password} };
-    roleLoginJson[role].push_back(newUser);
-
-    // Save updated login info to file
-    std::ofstream file("../../data/user_logins.json");
-    if (file.is_open()) {
-        file << roleLoginJson.dump(4);  // pretty print
-        std::cout << "Account created successfully for " << email << "\n";
-    } else {
-        std::cerr << "Failed to save user_logins.json\n";
-    }
-
-    // Update usage log
-    std::string logMessage = email + " created an account as " + role;
-    update_usage_log(logMessage);
-
-    // Optionally, log them in immediately
-    log_in(roleChoice);
-}
-
-/////////////////////////////////////////////////////////////////
-// Log-In Handler
-/////////////////////////////////////////////////////////////////
-int SystemController::log_in(int roleChoice) {
-    static const std::string ROLES[] = {
-        "INVALID",
-        "Student Researcher",      // 1
-        "Faculty Researcher",      // 2
-        "Lab Manager",             // 3
-        "Lab Asset Manager"        // 4
-    };
-
-    std::string role = ROLES[roleChoice];
-    std::cout << "\nLogging in as " << role << ":\n";
-
-    // Attempt login up to 3 times
-    for (int attempts = 3; attempts > 0; attempts--) {
-        std::string email, password;
-
-        std::cout << "Enter email: ";
-        std::getline(std::cin, email);
-
-        std::cout << "Enter password: ";
-        std::getline(std::cin, password);
-
-        if (validate_user(email, password, role)) {
-            update_usage_log(email + " logged in as " + role);
-            return roleChoice;
-        }
-
-        std::cout << "Login failed. Attempts remaining: " << (attempts - 1) << "\n";
-    }
-
-    std::cout << "Too many failed attempts. Exiting.\n";
-    exit(0);
-}
-
-/////////////////////////////////////////////////////////////////
-// Validate Login Credentials
-/////////////////////////////////////////////////////////////////
-bool SystemController::validate_user(const std::string& email, const std::string& password, const std::string& role) {
-    if (!roleLoginJson.contains(role))
-        return false;
-
-    for (const auto& user : roleLoginJson[role]) {
-        if (user["email"] == email && user["password"] == password) {
-            std::cout << "Login successful!\n";
-            return true;
-        }
-    }
-    std::cout << "Invalid email or password.\n";
-    return false;
+    std::ostringstream ss;
+    ss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    return ss.str();
 }

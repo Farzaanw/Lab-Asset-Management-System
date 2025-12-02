@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "firstName": "Daniel",
+        "lastName": "McSandle",
+        "email": "McSandleDaniel@oregonstate.edu",
+        "role": "research student",
+        "password": "ResearchStudent11!"
+    },
+    {
+        "id": 2,
+        "firstName": "Jimmy",
+        "lastName": "Apple",
+        "email": "AppleJimmy@oregonstate.edu",
+        "role": "faculty researcher",
+        "password": "FacultyResearcherSecurepass1432/!"
+    },
+    {
+        "id": 3,
+        "firstName": "Bob",
+        "lastName": "Sanders",
+        "email": "SandersBob@oregonstate.edu",
+        "role": "lab manager",
+        "password": "LabManager3289u!"
+    },
+    {
+        "id": 4,
+        "firstName": "Jeff",
+        "lastName": "Bobs",
+        "email": "BobsJeff@oregonstate.edu",
+        "role": "lab asset manager",
+        "password": "LaManager11!"
+    }
+]

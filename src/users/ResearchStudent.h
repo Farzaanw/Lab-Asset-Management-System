@@ -9,7 +9,7 @@
 #include "Assets.h"
 #pragma once
 
-class ResearchStudent {
+class ResearchStudent: public User {
 private:
     int studentID;
     std::string name;

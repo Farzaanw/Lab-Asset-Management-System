@@ -1,13 +1,30 @@
 // User.cpp
 // Auth: Farzaan Wadiwala
+#ifndef USERS_H
+#define USERS_H
+
+#include <string>
+#include <iostream>
 
 class User {
-private:
-    std::string email;
-    std::string password;
-    std::string role;
 public:
-    std::string getEmail() const { return email; }
-    std::string getPassword() const { return password; }
-    std::string getRole() const { return role; }
+    User(const std::string& firstName,
+         const std::string& lastName,
+         const std::string& email,
+         int role);
+    virtual ~User() = default;
+
+    std::string getFirstName() const;
+    std::string getLastName() const;
+    std::string getEmail() const;
+    int getRole() const;
+    virtual void displayInfo() const;
+
+protected:
+    std::string firstName;
+    std::string lastName;
+    std::string email;
+    int role;
 };
+
+#endif // USERS_H

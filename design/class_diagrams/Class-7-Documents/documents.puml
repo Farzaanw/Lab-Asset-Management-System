@@ -1,0 +1,21 @@
+@startuml
+class Documents {
+
+  -- Attributes --
+  - documentID : int
+  - authorID: int
+  - ZonedDateTime: int
+  - Description: string
+  - title : string
+  - type : string
+  - accessControl : string
+  -- Methods --
+  + display_page() : void
+  + user_actions() : void
+  - uploadDocument(pathToDoc) : boolean
+  - createDocument(title, type, authorID, documentID, description) : boolean
+  - editDocument(documentID, description): boolean
+  - deleteDocument(documentID): boolean
+  - getDocument(documentID): boolean
+}
+@enduml

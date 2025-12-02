@@ -1,0 +1,12 @@
+@startuml
+class Consumable {
+  - Int stock
+  - Int minimumThreshold
+  --
+  + void displayDetails()
+  + boolean isAvailable()
+  + void reduceStock(quantity)
+  + void increaseStock(quantity)
+  + boolean isBelowThreshold()
+}
+@enduml

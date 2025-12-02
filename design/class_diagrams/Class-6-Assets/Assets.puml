@@ -1,0 +1,17 @@
+@startuml
+abstract class Assets {
+  - Int assetID
+  - string assetName
+  - string location
+  - Int assetAccessLevel
+  # vector<Document> documents
+  # vector<Reservation> reservationHistory
+  --
+  + void displayDetails()
+  + {abstract} boolean isAvailable()
+  + vector<Document> getDocuments()
+  + boolean addDocument(docID, title)
+  + boolean removeDocument(docID)
+  + vector<Reservation> getReservationHistory()
+}
+@enduml
