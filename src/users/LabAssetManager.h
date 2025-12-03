@@ -1,5 +1,5 @@
 // CS-4:LabAssetManager.h
-// Auth: Kai
+// Auth: Kai Johnson
 // Supports: UR-400 to UR-431
 // Collaborators:  <Assets>[1..*], <document>[0..*], <PI>[1]
 #include <string>
@@ -9,8 +9,8 @@
 #include <set>
 #include <filesystem>
 #include "../library/nlohmann/json.hpp"
-
 #include "../SystemController.cpp"
+
 using namespace std;
 namespace fs = std::filesystem;
 using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
@@ -18,11 +18,11 @@ using json = nlohmann::ordered_json; // By default json has alphabetical order f
 class LabAssetManager{
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
-	string accountsFile = "../../data/accounts.json";
-	string assetsFile = "../../data/assets.json";
-	string documentsFile = "../../data/documents.json";
-	string documentsFolder = "../../data/documents/";
-	string usageLogFile = "../../data/usage_logs.json";
+	const string accountsFile = "../../data/accounts.json";
+	const string assetsFile = "../../data/assets.json";
+	const string documentsFile = "../../data/documents.json";
+	const string documentsFolder = "../../data/documents/";
+	const string usageLogFile = "../../data/usage_logs.json";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
