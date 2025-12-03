@@ -1,4 +1,67 @@
 #include "LabAssetManager.h"
+int LabAssetManager::main(){
+	while(true){
+		cout << endl << "---Lab Asset Manager Main Menu---" << endl;
+		cout << "1. Create Account" << endl;
+		cout << "2. Update Account" << endl;
+		cout << "3. Delete Account" << endl;
+		cout << "4. List Accounts" << endl;
+		cout << "5. Add Asset" << endl;
+		cout << "6. Update Asset" << endl;
+		cout << "7. Remove Asset" << endl;
+		cout << "8. List Assets" << endl;
+		cout << "9. List Documents" << endl;
+		cout << "10. Upload Document" << endl;
+		cout << "11. View Logs" << endl;
+		cout << "12. Logout" << endl;
+		cout << "Please enter your choice: ";
+		string choice;
+		getline(cin, choice);
+		cout << endl;
+
+		if (choice == "1") {
+			createAccount();
+		}
+		else if (choice == "2") {
+			updateAccount();
+		}
+		else if (choice == "3") {
+			deleteAccount();
+		}
+		else if (choice == "4") {
+			listAccounts();
+		}
+		else if (choice == "5") {
+			addAsset();
+		}
+		else if (choice == "6") {
+			updateAsset();
+		}
+		else if (choice == "7") {
+			removeAsset();
+		}
+		else if (choice == "8") {
+			listAssets();
+		}
+		else if (choice == "9") {
+			listDocuments();
+		}
+		else if (choice == "10") {
+			uploadDocument();
+		}
+		else if (choice == "11") {
+			viewLogs();
+		}
+		else if (choice == "12") {
+			cout << "Exiting Lab Asset Manager." << endl;
+			break;
+		}
+		else {
+			cout << "Invalid choice. Please try again." << endl;
+		}
+	}
+	return 1;
+}
 
 bool LabAssetManager::createAccount() {
 	json j;
@@ -551,12 +614,6 @@ bool LabAssetManager::listAssets(){
 	return true;
 }
 
-
-bool LabAssetManager::trackConsumables(){
-	return true;
-}
-
-
 bool LabAssetManager::uploadDocument() {
 	string filePath;
 	string assetId;
@@ -721,8 +778,6 @@ bool LabAssetManager::uploadDocument() {
 	return true;
 }
 
-
-
 bool LabAssetManager::listDocuments(){
 	json documents;
 
@@ -755,6 +810,34 @@ bool LabAssetManager::listDocuments(){
 		cout << "Uploader: " << doc["uploader"] << endl;
 		cout << "Clearance Level: " << doc["clearanceLevel"] << endl;
 		cout << "Timestamp (UTC): " << doc["timestamp_utc"] << endl;
+		cout << "-----------------------------------" << endl;
+	}
+	return true;
+}
+
+bool LabAssetManager::viewLogs(){
+	json logs;
+	ifstream inFile(usageLogFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << usageLogFile << endl;
+		return false;
+	}
+	try {
+		inFile >> logs;
+	} catch (const std::exception& error) {
+		cerr << "Error reading JSON: " << error.what() << endl;
+		inFile.close();
+		return false;
+	}
+	inFile.close();
+	if (logs.empty()) {
+		cout << "No logs found." << endl;
+		return true;
+	}
+	cout << "Listing all usage logs:\n" << endl;
+	for (const auto& log : logs) {
+		cout << "Event: " << log["event"] << endl;
+		cout << "Timestamp (UTC): " << log["timestamp"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
 	return true;
