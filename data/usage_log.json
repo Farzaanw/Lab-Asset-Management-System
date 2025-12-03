@@ -87,6 +87,26 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-01 22:10:10"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 15:45:46"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 15:45:48"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 15:45:50"
+        },
+        {
+            "event": "Invalid role selection attempted",
+            "timestamp": "2025-12-02 15:45:54"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 15:45:54"
         }
     ]
 }
