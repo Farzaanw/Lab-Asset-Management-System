@@ -25,122 +25,64 @@ ResearchStudent::ResearchStudent(const std::string& firstName,
       system(sys) {}
 
 //Destructor
-ResearchStudent::~ResearchStudent() {
-    cout << "Destructor Called" << endl;
-}
+ResearchStudent::~ResearchStudent() {}
 
-//starting point
+//Main menu
 int ResearchStudent::main() {
     cout << "\n=============================================" << endl;
-    cout << "Welcome " << Fname << " " << Lname << "!" << endl;
+    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "Student ID: " << studentID << endl;
     cout << "=============================================\n" << endl;
 
-    user_actions();
-
-    cout << "Logging out of Research Student" << endl;
-}
-
-//displays the dashboard and the user actions
-void ResearchStudent::display_page() {
-    cout << "\n=============================================" << endl;
-    cout << "Research Student Dashboard" << endl;
-    cout << "=============================================" << endl;
-    cout << "Name: " << getFirstName() << " " << getLastName() << endl;
-    cout << "Email: " << getEmail() << endl;
-    cout << "StudentID: " << studentID << endl;
-    cout << "=============================================\n" << endl;
-
-    cout << "Main Menu: \n" << endl;
-    cout << "1. Asset Management" << endl;
-    cout << "2. Reservations Management" << endl;
-    cout << "3. Profile Settings" << endl;
-    cout << "4. Logout" << endl;
-    cout << "=============================================\n" << endl;
-}
-
-//main actions
-void ResearchStudent::user_actions() {
-    bool loggedIn = true;
-    int choice;
-
-    while(loggedIn) {
-        display_page();
-        do {
-            cout << "Choose an Option: " << endl;
-            cin >> choice;
-            if(choice < 1 || choice > 4) {
-                cout << "Incorrect input, please try again" << endl;
-            }
-        } while(choice < 1 || choice > 4);
-
-        if(choice == 1) {
-            assetManagementMenu();
-        } else if(choice == 2) {
-            reservationsMenu();
-        } else if(choice == 3) {
-            profileMenu();
-        } else {
-            loggedIn = false;
-        }
-    }
-}
-
-//menu to manage assets
-void ResearchStudent::assetManagementMenu() {
-    bool inMenu = true;
-    int choice;
-
-    while (inMenu) {
-        cout << "\n========================================" << endl;
-        cout << "Asset Management" << endl;
-        cout << "========================================" << endl;
+    while(true) {
+        cout << endl << "---Research Student Main Menu---" << endl;
         cout << "1. Reserve Asset" << endl;
         cout << "2. Return Asset" << endl;
         cout << "3. View Available Assets" << endl;
         cout << "4. View My Assets" << endl;
         cout << "5. Search/Filter Assets" << endl;
-        cout << "6. Submit Usage Feedback" << endl;
-        cout << "7. Back to Main Menu" << endl;
-        cout << "========================================\n" << endl;
+        cout << "6. View My Reservations" << endl;
+        cout << "7. Cancel Reservation" << endl;
+        cout << "8. Submit Usage Feedback" << endl;
+        cout << "9. Update Profile" << endl;
+        cout << "10. Logout" << endl;
+        cout << "Please enter your choice: ";
+        
+        string choice;
+        getline(cin, choice);
+        cout << endl;
 
-        do {
-            cout << "Choose an Option: " << endl;
-            cin >> choice;
-            if(choice < 1 || choice > 7) {
-                cout << "Incorrect input, please try again" << endl;
-            }
-        } while(choice < 1 || choice > 7);
-
-        if (choice == 1) {
-            if (reserveAsset()) {
-                cout << "Asset reserved successfully!" << endl;
-            } else {
-                cout << "Failed to reserve asset." << endl;
-            }
+        if (choice == "1") {
+            reserveAsset();
         }
-        else if (choice == 2) {
-            if (return_asset()) {
-                cout << "Asset returned successfully!" << endl;
-            } else {
-                cout << "Failed to return asset." << endl;
-            }
+        else if (choice == "2") {
+            return_asset();
         }
-        else if (choice == 3) {
+        else if (choice == "3") {
             viewAvailableAssets();
         }
-        else if (choice == 4) {
+        else if (choice == "4") {
             viewAssets();
         }
-        else if (choice == 5) {
+        else if (choice == "5") {
             string category, status;
-            cin.ignore();
             cout << "Enter category (or leave blank): ";
             getline(cin, category);
             cout << "Enter status (or leave blank): ";
             getline(cin, status);
             searchAssets(category, status);
         }
-        else if (choice == 6) {
+        else if (choice == "6") {
+            viewMyReservations();
+        }
+        else if (choice == "7") {
+            int reservationID;
+            cout << "Enter Reservation ID to cancel: ";
+            cin >> reservationID;
+            cin.ignore();
+            cancelReservation(reservationID);
+        }
+        else if (choice == "8") {
             int equipmentID, rating;
             string comments;
             cout << "Enter Equipment ID: ";
@@ -150,116 +92,89 @@ void ResearchStudent::assetManagementMenu() {
             getline(cin, comments);
             cout << "Enter rating (1-5): ";
             cin >> rating;
+            cin.ignore();
             submitUsageFeedback(equipmentID, comments, rating);
         }
-        else {
-            inMenu = false;
-        }
-    }
-}
-
-void ResearchStudent::reservationsMenu() {
-    bool inMenu = true;
-    int choice;
-
-    while (inMenu) {
-        cout << "\n========================================" << endl;
-        cout << "Reservations Management" << endl;
-        cout << "========================================" << endl;
-        cout << "1. Make Reservation" << endl;
-        cout << "2. View My Reservations" << endl;
-        cout << "3. Cancel My Reservation" << endl;
-        cout << "4. Back to Main Menu" << endl;
-        cout << "========================================\n" << endl;
-
-        do {
-            cout << "Choose an Option: ";
-            cin >> choice;
-            if(choice < 1 || choice > 4) {
-                cout << "Incorrect input, please try again" << endl;
-            }
-        } while(choice < 1 || choice > 4);
-
-        if (choice == 1) {
-            int reservationID;
-            cout << "\nEnter Reservation ID: ";
-            cin >> reservationID;
-            if (makeReservation(reservationID)) {
-                cout << "Reservation made successfully!" << endl;
-            } else {
-                cout << "Failed to make reservation." << endl;
-            }
-        }
-        else if (choice == 2) {
-            viewMyReservations();
-        }
-        else if (choice == 3) {
-            int reservationID;
-            cout << "\nEnter Reservation ID to cancel: ";
-            cin >> reservationID;
-            if (cancelReservation(reservationID)) {
-                cout << "Reservation cancelled successfully!" << endl;
-            } else {
-                cout << "Failed to cancel reservation." << endl;
-            }
-        }
-        else {
-            inMenu = false;
-        }
-    }
-}
-
-void ResearchStudent::profileMenu() {
-    bool inMenu = true;
-    int choice;
-
-    while (inMenu) {
-        cout << "\n========================================" << endl;
-        cout << "Profile Settings" << endl;
-        cout << "========================================" << endl;
-        cout << "1. Update Profile" << endl;
-        cout << "2. Back to Main Menu" << endl;
-        cout << "========================================\n" << endl;
-
-        do {
-            cout << "Choose an Option: ";
-            cin >> choice;
-            if(choice < 1 || choice > 2) {
-                cout << "Incorrect input, please try again" << endl;
-            }
-        } while(choice < 1 || choice > 2);
-
-        if (choice == 1) {
+        else if (choice == "9") {
             string newName, newEmail;
-            cin.ignore();
             cout << "Enter new name: ";
             getline(cin, newName);
             cout << "Enter new email: ";
             getline(cin, newEmail);
             updateUserProfile(newName, newEmail);
         }
+        else if (choice == "10") {
+            cout << "Logging out of Research Student." << endl;
+            break;
+        }
         else {
-            inMenu = false;
+            cout << "Invalid choice. Please try again." << endl;
         }
     }
+    return 1;
+}
+
+//HELPER FUNCTION - Make Reservation (collects all reservation info)
+bool ResearchStudent::makeReservation(int assetID, const std::string& assetType) {
+    cout << "--- Creating Reservation ---\n" << endl;
+    
+    string startDate, endDate, reason;
+    
+    // Get reservation dates
+    cout << "Enter Start Date (MM-DD-YYYY): ";
+    getline(cin, startDate);
+    cout << "Enter End Date (MM-DD-YYYY): ";
+    getline(cin, endDate);
+    
+    // For certain asset types, may need reason/justification
+    if (assetType == "high-value" || assetType == "restricted") {
+        cout << "Enter reason for reservation: ";
+        getline(cin, reason);
+    }
+    
+    // Validate dates (basic check)
+    if (startDate.empty() || endDate.empty()) {
+        cout << "Error: Invalid date format!" << endl;
+        return false;
+    }
+    
+    // PLACEHOLDER: Create reservation through Reservations class
+    // TODO: This will call Reservations::createReservation(assetID, studentID, startDate, endDate, reason)
+    cout << "[PLACEHOLDER] Creating reservation through Reservations class..." << endl;
+    cout << "Asset ID: " << assetID << endl;
+    cout << "Asset Type: " << assetType << endl;
+    cout << "Student ID: " << studentID << endl;
+    cout << "Start Date: " << startDate << endl;
+    cout << "End Date: " << endDate << endl;
+    if (!reason.empty()) {
+        cout << "Reason: " << reason << endl;
+    }
+    
+    // PLACEHOLDER: Create usage log entry
+    // TODO: UsageLog::createEntry(studentID, assetID, startDate, endDate)
+    cout << "[PLACEHOLDER] Creating usage log entry..." << endl;
+    
+    // PLACEHOLDER: For restricted assets, create approval request
+    // TODO: If asset requires approval, create ApprovalRequest
+    if (assetType == "restricted" || assetType == "high-value") {
+        cout << "[PLACEHOLDER] This asset requires approval. Creating approval request..." << endl;
+        cout << "You will be notified once your request is reviewed." << endl;
+    }
+    
+    cout << "\nReservation request submitted successfully!" << endl;
+    return true;
 }
 
 //ASSETS
 //reserve an asset, returns a bool
 bool ResearchStudent::reserveAsset() {
-    string startDate, endDate;
     int assetID;
     cout << "--- Reserve Asset ---\n" << endl;
-    cout << "Please enter the AssetID you would like to reserve: " << endl;
+    cout << "Please enter the AssetID you would like to reserve: ";
     cin >> assetID;
     cin.ignore();
 
-    //get dates for reservation
-    cout << "Enter Start Date (MM-DD-YYYY): ";
-    getline(cin, startDate);
-    cout << "Enter End Date (MM-DD-YYYY): ";
-    getline(cin, endDate);
-
+    // Load and validate asset
     json assets;
     ifstream inFile("../../data/assets.json");
     if (!inFile.is_open()) {
@@ -291,22 +206,25 @@ bool ResearchStudent::reserveAsset() {
         return false;
     }
 
-    // PLACEHOLDER: Call Reservations class to create reservation
-    // TODO: Implement once Reservations class structure is finalized
-    // Reservations::createReservation(assetID, studentID, startDate, endDate);
-    cout << "\n[PLACEHOLDER] Creating reservation through Reservations class..." << endl;
-    cout << "Asset ID: " << assetID << " | Student: " << studentID << endl;
-    cout << "Dates: " << startDate << " to " << endDate << endl;
-
-    //update to reserved
-    (*targetAsset)["operationalStatus"] = "reserved";
-
-    ofstream outAssetFile("../../data/assets.json");
-    outAssetFile << setw(4) << assets << endl;
-    outAssetFile.close();
-
-    cout << "Asset reserved successfully!" << endl;
-    return true;
+    // Get asset type/category to determine if approval needed
+    string assetCategory = (*targetAsset)["category"].get<string>();
+    
+    // Call makeReservation with asset info
+    bool reservationSuccess = makeReservation(assetID, assetCategory);
+    
+    if (reservationSuccess) {
+        // Update asset status to reserved
+        (*targetAsset)["operationalStatus"] = "reserved";
+        
+        ofstream outAssetFile("../../data/assets.json");
+        outAssetFile << setw(4) << assets << endl;
+        outAssetFile.close();
+        
+        cout << "Asset reserved successfully!" << endl;
+        return true;
+    }
+    
+    return false;
 }
 
 //Return an asset
@@ -322,10 +240,9 @@ bool ResearchStudent::return_asset() {
     int assetID;
     cout << "Enter Asset ID to return: ";
     cin >> assetID;
+    cin.ignore();
 
-    // PLACEHOLDER: Call Reservations class to mark reservation as returned
-    // TODO: Implement once Reservations class structure is finalized
-    // Reservations::returnReservation(assetID, studentID);
+    // PLACEHOLDER: Mark reservation as returned
     cout << "\n[PLACEHOLDER] Marking reservation as returned through Reservations class..." << endl;
     cout << "Asset ID: " << assetID << " | Student: " << studentID << endl;
 
@@ -362,16 +279,18 @@ bool ResearchStudent::return_asset() {
 }
 
 //view own assets
-std::vector<Assets*> ResearchStudent::viewAssets() {
+bool ResearchStudent::viewAssets() {
     cout << "--- My Assets ---\n" << endl;
-    std::vector<Assets*> myAssets;
+    
     //PLACEHOLDER: implement through Reservations/Assets class
     cout << "[PLACEHOLDER] Fetching student assets..." << endl;
-    return myAssets;
+    cout << "Student ID: " << studentID << endl;
+    
+    return true;
 }
 
 //search and filter assets
-std::vector<Assets*> ResearchStudent::searchAssets(const std::string& category, const std::string& status) {
+bool ResearchStudent::searchAssets(const std::string& category, const std::string& status) {
     cout << "--- Search/Filter Assets ---\n" << endl;
     if (!category.empty()) {
         cout << "Category Filter: " << category << endl;
@@ -380,49 +299,83 @@ std::vector<Assets*> ResearchStudent::searchAssets(const std::string& category, 
         cout << "Status Filter: " << status << endl;
     }
 
-    std::vector<Assets*> filteredAssets;
     //PLACEHOLDER: implement
     cout << "Displaying filtered results..." << endl;
 
-    return filteredAssets;
+    return true;
 }
 
 //view all available
-std::vector<Assets*> ResearchStudent::viewAvailableAssets() {
+bool ResearchStudent::viewAvailableAssets() {
     cout << "--- Available Assets ---\n" << endl;
-    std::vector<Assets*> availableAssets;
-    //PLACEHOLDER: implement
-    cout << "Displaying all available assets..." << endl;
+    
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
+    }
 
-    return availableAssets;
+    try {
+        inFile >> assets;
+    } catch (const std::exception& e) {
+        cerr << "Error reading JSON: " << e.what() << endl;
+        inFile.close();
+        return false;
+    }
+    inFile.close();
+
+    if (assets.empty()) {
+        cout << "No assets found." << endl;
+        return true;
+    }
+
+    cout << "Listing all available assets:\n" << endl;
+    for (const auto& asset : assets) {
+        if (asset["operationalStatus"] == "available") {
+            cout << "ID: " << asset["id"] << endl;
+            cout << "Name: " << asset["name"] << endl;
+            cout << "Category: " << asset["category"] << endl;
+            cout << "Condition: " << asset["condition"] << endl;
+            cout << "Location: " << asset["location"] << endl;
+            cout << "Description: " << asset["description"] << endl;
+            cout << "-----------------------------------" << endl;
+        }
+    }
+
+    return true;
 }
 
 //RESERVATIONS
 //view own reservations
-std::vector<Reservations*> ResearchStudent::viewMyReservations() {
+bool ResearchStudent::viewMyReservations() {
     cout << "--- My Reservations ---\n" << endl;
-    std::vector<Reservations*> myReservations;
+    
     //PLACEHOLDER: implement
     cout << "[PLACEHOLDER] Fetching reservations through Reservations class..." << endl;
     cout << "Student ID: " << studentID << endl;
-    return myReservations;
+    
+    return true;
 }
 
 //cancel reservation
 bool ResearchStudent::cancelReservation(int reservationID) {
     cout << "--- Cancel Reservation ---\n" << endl;
     cout << "Reservation ID: " << reservationID << endl;
-    //PLACEHOLDER: implement through Reservations class
+    
+    // PLACEHOLDER: Check if reservation can be cancelled (before start time)
+    // TODO: Reservations::checkIfCancellable(reservationID, studentID)
+    cout << "[PLACEHOLDER] Verifying reservation belongs to student and can be cancelled..." << endl;
+    
+    // PLACEHOLDER: Cancel through Reservations class
+    // TODO: Reservations::cancelReservation(reservationID, studentID)
     cout << "[PLACEHOLDER] Cancelling through Reservations class..." << endl;
-    return true;
-}
-
-//make reservation for self only
-bool ResearchStudent::makeReservation(int reservationID) {
-    cout << "--- Make Reservation ---\n" << endl;
-    cout << "Reservation ID: " << reservationID << endl;
-    //PLACEHOLDER: implement through Reservations class
-    cout << "[PLACEHOLDER] Creating reservation for student..." << endl;
+    
+    // PLACEHOLDER: Update asset status back to available if needed
+    cout << "[PLACEHOLDER] Updating asset status to available..." << endl;
+    
+    cout << "Reservation cancelled successfully!" << endl;
+    
     return true;
 }
 
@@ -434,7 +387,14 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
     cout << "Comments: " << comments << endl;
     cout << "Rating: " << rating << "/5" << endl;
     
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+        cout << "Error: Rating must be between 1 and 5!" << endl;
+        return false;
+    }
+    
     //PLACEHOLDER: Save to feedback.json or similar
+    // TODO: Create feedback entry with timestamp
     cout << "[PLACEHOLDER] Saving feedback to system..." << endl;
     cout << "Feedback submitted successfully!" << endl;
     
@@ -448,6 +408,7 @@ bool ResearchStudent::updateUserProfile(const std::string& newName, const std::s
     cout << "New Email: " << newEmail << endl;
     
     //PLACEHOLDER: Update in user_logins.json
+    // TODO: Update user information in system
     cout << "[PLACEHOLDER] Updating profile in system..." << endl;
     cout << "Profile updated successfully!" << endl;
     

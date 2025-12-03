@@ -1,4 +1,4 @@
-//CS-2: ResearchStudent.cpp
+//CS-2: ResearchStudent.h
 //Author: Jacob Munly
 //Supports: UR-200 to UR-230, UR-303, UR-331
 //Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
@@ -8,27 +8,19 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
 #include "./library/nlohmann/json.hpp"
-#include "Reservations.h"
-#include "Assets.h"
-#include "Documents.h"
 #include "User.h"
-#include "SystemController.h"
 
-using json = nlohmann::json;
+// Forward declarations
+class SystemController;
 
-class ResearchStudent: public User {
+class ResearchStudent : public User {
 private:
     int studentID;
-    std::string Fname;
-    std::string Lname;
-    std::string email;
-    bool permissions;
     SystemController* system;
 
 public:
-    //Constructor
+    // Constructor
     ResearchStudent(const std::string& firstName,
                    const std::string& lastName,
                    const std::string& email,
@@ -36,53 +28,43 @@ public:
                    int studentID,
                    SystemController* sys);
 
-    //Destructor
-    virtual ~ResearchStudent() override;
+    // Destructor
+    virtual ~ResearchStudent();
 
-    //main starting point
+    // Main menu entry point
     int main();
 
-    //Menus
-    void assetManagementMenu();
-    void reservationsMenu();
-    void profileMenu();
+    // Helper function for making reservations
+    bool makeReservation(int assetID, const std::string& assetType);
 
-    //BASIC
-    //Navigation, displays the dashboard and the user actions
-    void display_page();
-    void user_actions();
-
-    //ASSETS
-    //make a reservation for an asset (same as Faculty but student level permissions)
+    // ASSET MANAGEMENT
+    // Reserve an asset for research use
     bool reserveAsset();
     
-    //Return an asset
+    // Return a borrowed asset
     bool return_asset();
     
-    //view own assets
-    std::vector<Assets*> viewAssets();
+    // View assets currently checked out by this student
+    bool viewAssets();
     
-    //search and filter assets 
-    std::vector<Assets*> searchAssets(const std::string& category, const std::string& status);
+    // Search and filter assets by category and status
+    bool searchAssets(const std::string& category, const std::string& status);
     
-    //view all available assets
-    std::vector<Assets*> viewAvailableAssets();
+    // View all available assets in the system
+    bool viewAvailableAssets();
 
-    //RESERVATIONS
-    //view own reservations
-    std::vector<Reservations*> viewMyReservations();
+    // RESERVATION MANAGEMENT
+    // View all reservations made by this student
+    bool viewMyReservations();
     
-    //cancel own reservation
+    // Cancel a reservation by ID
     bool cancelReservation(int reservationID);
-    
-    //make reservation (students can only make for self, no group option)
-    bool makeReservation(int reservationID);
 
-    //STUDENT SPECIFIC FEATURES
-    //record feedback on an asset after use (rating, condition, comments)
+    // STUDENT SPECIFIC FEATURES
+    // Submit feedback after using equipment (rating, comments)
     bool submitUsageFeedback(int equipmentID, const std::string& comments, int rating);
     
-    //update profile information such as name or email
+    // Update student profile information (name, email)
     bool updateUserProfile(const std::string& newName, const std::string& newEmail);
 };
 
