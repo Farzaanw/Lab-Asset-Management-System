@@ -12,6 +12,7 @@
 // class includes
 #include "SystemController.h"
 #include "User.h"
+#include "./users/FacultyResearcher.h"
 // #include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 // #include "./users/LabManager.h"
@@ -306,7 +307,20 @@ User* SystemController::create_user(const std::string& first_name, const std::st
         return nullptr;
     }
 
-
+    if(role == 1) {
+        std::cout << "implement" << std::endl;
+        return nullptr;
+    } else if(role == 2) {
+        //return new FacultyResearcher(first_name, last_name, email, role, facultyID, this);
+        std::cout << "implement" << std::endl;
+        return nullptr;
+    } else if(role == 3) {
+        std::cout << "implement" << std::endl;
+        return nullptr;
+    } else if(role == 4) {
+        std::cout << "implement" << std::endl;
+        return nullptr;
+    }
     // ------ !!!!!!!!!!!! WAITING ON IMPLEMENTATION OF USER CLASSES -------- //
 
 
