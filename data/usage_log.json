@@ -107,6 +107,78 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-02 15:45:54"
+        },
+        {
+            "event": "ERROR: Failed to load JSON: ../../data/policies.json",
+            "timestamp": "2025-12-02 21:44:45"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:44:45"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:46:41"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:48:14"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:48:49"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:52:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:53:53"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:01:47"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:02:43"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:10:09"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:12:35"
+        },
+        {
+            "event": "Created account: a",
+            "timestamp": "2025-12-02 22:12:41"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:12:41"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:13:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:15:22"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:15:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:17:20"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:18:03"
         }
     ]
 }
