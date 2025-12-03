@@ -112,6 +112,10 @@ bool LabAssetManager::createAccount() {
 	account["email"] = email;
 	account["role"] = role;
 	account["password"] = password;
+	// Initialize reservations and notifications as empty arrays so each account
+	// can hold multiple reservation and notification objects later.
+	account["reservations"] = json::array();
+	account["notifications"] = json::array();
 
 	// Add to JSON array
 	j.push_back(account);
