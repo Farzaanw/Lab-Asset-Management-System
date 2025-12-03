@@ -1,12 +1,4 @@
 #include "LabManager.h"
-
-int main(){
-	LabManager lm;
-	lm.changePolicies();
-	system("pause");
-	return 0;
-}
-
 int LabManager::getPolicy(string policyType){
 	json policiesJson;
 	ifstream inFile(policiesFile);
