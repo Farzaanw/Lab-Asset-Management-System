@@ -179,6 +179,42 @@
         {
             "event": "System started",
             "timestamp": "2025-12-02 22:18:03"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:39:10"
+        },
+        {
+            "event": "Failed login attempt for email: f",
+            "timestamp": "2025-12-02 22:39:24"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:39:58"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:40:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:40:37"
+        },
+        {
+            "event": "Failed login attempt for email: AppleJimmy@oregonstate.edu",
+            "timestamp": "2025-12-02 22:41:16"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:42:00"
+        },
+        {
+            "event": "User logged in: Dr. Smith dr.smith@osu.edu",
+            "timestamp": "2025-12-02 22:42:15"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:42:15"
         }
     ]
 }

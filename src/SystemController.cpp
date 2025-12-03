@@ -367,7 +367,7 @@ void SystemController::load_policies() {
     }
 
     for (auto& it: j.items()) {
-        systemPolicies[it.key()] = it.value();
+        systemPolicies[it.key()] = it.value().get<int>();
     }
     std::cout << "................" << std::endl;
 }
