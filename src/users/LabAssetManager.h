@@ -10,12 +10,13 @@
 #include <filesystem>
 #include "../library/nlohmann/json.hpp"
 #include "../SystemController.cpp"
+#include "User.h"
 
 using namespace std;
 namespace fs = std::filesystem;
 using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
 
-class LabAssetManager{
+class LabAssetManager : public User {
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	const string accountsFile = "../../data/accounts.json";
@@ -57,7 +58,11 @@ private:
 	};
 public:
 	//constructor
-	LabAssetManager() = default;
+	LabAssetManager(const std::string& firstName = "",
+			   const std::string& lastName = "",
+			   const std::string& email = "",
+			   int role = 0)
+		: User(firstName, lastName, email, role) {};
 
 	int main();
 
