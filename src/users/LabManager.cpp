@@ -7,6 +7,22 @@ int main(){
 	return 0;
 }
 
+int LabManager::getPolicy(string policyType){
+	json policiesJson;
+	ifstream inFile(policiesFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open policies.json" << endl;
+		return -1;
+	}
+	inFile >> policiesJson;
+	inFile.close();
+	if(policiesJson.contains(policyType)){
+		return (policiesJson[policyType].get<int>());
+	} else {
+		return -1;
+	}
+}
+
 bool LabManager::changePolicies(){
 	//Load current policies from JSON file
 	int newDuration;
@@ -52,18 +68,19 @@ bool LabManager::changePolicies(){
 	return true;
 }
 
-int LabManager::getPolicy(string policyType){
+bool LabManager::listPolicies(){
 	json policiesJson;
 	ifstream inFile(policiesFile);
 	if (!inFile.is_open()) {
 		cerr << "Error: Could not open policies.json" << endl;
-		return -1;
+		return false;
 	}
 	inFile >> policiesJson;
 	inFile.close();
-	if(policiesJson.contains(policyType)){
-		return (policiesJson[policyType].get<int>());
-	} else {
-		return -1;
-	}
+
+	cout << "Current Lab Policies:" << endl;
+	cout << "Max Booking Duration (hours): " << policiesJson["MAXBOOKINGDURATION"] << endl;
+	cout << "Advance Booking Horizon (days): " << policiesJson["ADVANCEBOOKINGHORIZON"] << endl;
+
+	return true;
 }

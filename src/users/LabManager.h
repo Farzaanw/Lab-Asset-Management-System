@@ -23,11 +23,16 @@ public:
 			   const std::string& lastName = "",
 			   const std::string& email = "",
 			   int role = 0)
-		: User(firstName, lastName, email, role) {}
-	//Max booking duration, advance booking horizon, and reservation priority rules.
+		: User(firstName, lastName, email, role) {};
+
+
+	// lists current policies
 	bool listPolicies();
 
+	// only includes max booking duration and advance booking horizon
 	bool changePolicies();
 
+	// Returns the value of a specific policy
+	// policyType can be "MAXBOOKINGDURATION" or "ADVANCEBOOKINGHORIZON"
 	int getPolicy(string policyType);
 };
