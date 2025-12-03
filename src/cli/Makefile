@@ -1,9 +1,7 @@
 CXX = g++
-# Use repo-relative include path from src/cli -> library is ../library
-CXXFLAGS = -std=c++17 -I../library -O2
+CXXFLAGS = -std=c++17 -I.. -I../library -I../users -O2
 
-# Only compile sources that actually exist for the CLI
-SRC = main.cpp ../SystemController.cpp
+SRC = main.cpp ../SystemController.cpp ../users/User.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = TestExecutable.exe
 
