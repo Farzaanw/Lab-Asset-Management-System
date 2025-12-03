@@ -7,19 +7,22 @@
 #include <string>
 #include <fstream>
 #include <set>
-#include <filesystem> // for documents
+#include <filesystem>
 #include "../library/nlohmann/json.hpp"
+
+#include "../SystemController.cpp"
 using namespace std;
 namespace fs = std::filesystem;
 using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
 
-class LabAssetManager: public User {
+class LabAssetManager{
 private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	string accountsFile = "../../data/accounts.json";
 	string assetsFile = "../../data/assets.json";
 	string documentsFile = "../../data/documents.json";
 	string documentsFolder = "../../data/documents/";
+	string usageLogFile = "../../data/usage_logs.json";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
@@ -56,6 +59,9 @@ public:
 	//constructor
 	LabAssetManager() = default;
 
+	int main();
+
+	//accounts
 	bool createAccount();
 
 	bool updateAccount();
@@ -64,6 +70,7 @@ public:
 
 	bool listAccounts();
 
+	//assets
 	bool addAsset();
 
 	bool updateAsset();
@@ -72,10 +79,10 @@ public:
 
 	bool listAssets();
 
-	bool trackConsumables();
-
 	//inventory & Documents
 	bool listDocuments();
 
 	bool uploadDocument();
+	//logs
+	bool viewLogs();
 };
