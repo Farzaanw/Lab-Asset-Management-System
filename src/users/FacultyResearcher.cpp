@@ -18,14 +18,25 @@ FacultyResearcher::~FacultyResearcher() {
   cout << "Destructor Called" << endl;
 }
 
+//Constructor
+FacultyResearcher::FacultyResearcher(const std::string& firstName,
+                                     const std::string& lastName,
+                                     const std::string& email,
+                                     int role,
+                                     int facultyID,
+                                     SystemController* sys) 
+      : User(firstName, lastName, email, role), 
+      FacultyID(facultyID),
+      system(sys) {}
+
 //BASIC
 //displays the dashboard and the user actions
 void FacultyResearcher::display_page() {
   cout << "\n=============================================" << endl;
   cout << "Faculty Researcher Dashboard" << endl;
   cout << "=============================================" << endl;
-  cout << "Name: " << Fname << " " << Lname << endl;
-  cout << "Email: " << email << endl;
+  cout << "Name: " << getFirstName() << " " << getLastName() << endl;
+  cout << "Email: " << getEmail() << endl;
   cout << "FacultyID: " << FacultyID << endl;
   cout << "=============================================\n" << endl;
 
@@ -102,7 +113,7 @@ void FacultyResearcher::assetManagementMenu() {
     if (choice == 1) {
         cout << "Enter Asset ID to reserve: ";
         cin >> assetID;
-        if (reserveAsset(assetID, permissions)) {
+        if (reserveAsset()) {
             cout << "Asset reserved successfully!" << endl;
         } else {
             cout << "Failed to reserve asset." << endl;
@@ -112,7 +123,7 @@ void FacultyResearcher::assetManagementMenu() {
         int reservationID;
         cout << "\nEnter Reservation ID to return: ";
         cin >> reservationID;
-        if (return_asset(reservationID)) {
+        if (return_asset()) {
             cout << "Asset returned successfully!" << endl;
         } else {
             cout << "Failed to return asset." << endl;
@@ -399,42 +410,144 @@ void FacultyResearcher::reportsAndDocumentsMenu() {
 
 //ASSETS
 //reserve an asset, returns a bool
-bool FacultyResearcher::reserveAsset(int assetID, bool permissions) {
+bool FacultyResearcher::reserveAsset() {
+  string startDate, endDate;
+  int assetID;
   cout << "--- Reserve Asset ---\n" << endl;
-  //implement
-  return true; 
+  cout << "Please enter the AssetID you would like to reserve: " << endl;
+  cin >> assetID;
+  cin.ignore();
+
+  //get dates for reservation
+  cout << "Enter Start Date (MM-DD-YYYY): ";
+  getline(cin, startDate);
+  cout << "Enter End Date (MM-DD-YYYY): ";
+  getline(cin, endDate);
+
+  json assets;
+  ifstream inFile("../../data/assets.json");
+  if (!inFile.is_open()) {
+    cerr << "Error: Could not open assets.json" << endl;
+    return false;
+  }
+  inFile >> assets;
+  inFile.close();
+
+  //find the right asset
+  json* targetAsset = nullptr;
+  for (auto& asset : assets) {
+    if (asset["id"].get<int>() == assetID) {
+      targetAsset = &asset;
+      break;
+    }
+  }
+
+  if (!targetAsset) {
+    cout << "Error: Asset ID " << assetID << " not found!" << endl;
+    return false;
+  }
+
+  //check if its available
+  string status = (*targetAsset)["operationalStatus"].get<string>();
+  if (status != "available") {
+    cout << "Error: Asset is not available!" << endl;
+    cout << "Current Status: " << status << endl;
+    return false;
+  }
+
+  // PLACEHOLDER: Call Reservations class to create reservation
+  // TODO: Implement once Reservations class structure is finalized
+  // Reservations::createReservation(assetID, FacultyID, startDate, endDate);
+  cout << "\n[PLACEHOLDER] Creating reservation through Reservations class..." << endl;
+  cout << "Asset ID: " << assetID << " | User: " << FacultyID << endl;
+  cout << "Dates: " << startDate << " to " << endDate << endl;
+  
+  //update to reserved
+  (*targetAsset)["operationalStatus"] = "reserved";
+  
+  ofstream outAssetFile("../../data/assets.json");
+  outAssetFile << setw(4) << assets << endl;
+  outAssetFile.close();
+  
+  cout << "Asset reserved successfully!" << endl;
+  return true;
 }
 
 //Return an asset
-bool FacultyResearcher::return_asset(int reservationID) {
+bool FacultyResearcher::return_asset() {
   cout << "--- Return Asset ---\n" << endl;
-  //implement
-  return true; 
+  
+  // PLACEHOLDER: Call Reservations class to show user's active reservations
+  // TODO: Implement once Reservations class structure is finalized
+  // Reservations::viewUserReservations(FacultyID);
+  cout << "[PLACEHOLDER] Displaying reservations..." << endl;
+  
+  // Ask which asset to return
+  int assetID;
+  cout << "Enter Asset ID to return: ";
+  cin >> assetID;
+  
+  // PLACEHOLDER: Call Reservations class to mark reservation as returned
+  // TODO: Implement once Reservations class structure is finalized
+  // Reservations::returnReservation(assetID, FacultyID);
+  cout << "\n[PLACEHOLDER] Marking reservation as returned through Reservations class..." << endl;
+  cout << "Asset ID: " << assetID << " | User: " << FacultyID << endl;
+  
+  // Update asset status to available
+  json assets;
+  ifstream assetFile("../../data/assets.json");
+  if (!assetFile.is_open()) {
+    cerr << "Error: Could not open assets.json" << endl;
+    return false;
+  }
+  assetFile >> assets;
+  assetFile.close();
+  
+  bool found = false;
+  for (auto& asset : assets) {
+    if (asset["id"].get<int>() == assetID) {
+      asset["operationalStatus"] = "available";
+      found = true;
+      break;
+    }
+  }
+  
+  if (!found) {
+    cout << "Error: Asset ID not found" << endl;
+    return false;
+  }
+  
+  ofstream outAssetFile("../../data/assets.json");
+  outAssetFile << setw(4) << assets << endl;
+  outAssetFile.close();
+  
+  cout << "Asset returned successfully!" << endl;
+  return true;
 }
 
 //view own assets
-std::vector<Assets> FacultyResearcher::viewAssets() {
+std::vector<Assets*> FacultyResearcher::viewAssets() {
   cout << "--- My Assets ---\n" << endl;
-  std::vector<Assets> myAssets;
+  std::vector<Assets*> myAssets;
   //implement
   return myAssets;
 }
 
 // view a student's list of assets they have checked out
-std::vector<Assets> FacultyResearcher::viewStudentAssets(int studentID) {
+std::vector<Assets*> FacultyResearcher::viewStudentAssets(int studentID) {
   cout << "--- Student Assets ---\n" << endl;
   cout << "Student ID: " << studentID << endl;
-  std::vector<Assets> studentAssets;
+  std::vector<Assets*> studentAssets;
   //implement
   return studentAssets;
 }
 
 //GROUPS
 //view the groups list of assets they have checked out
-vector<Assets> FacultyResearcher::viewGroupAssets(int labGroupID) {
+vector<Assets*> FacultyResearcher::viewGroupAssets(int labGroupID) {
   cout << "--- Group Assets ---\n" << endl;
   cout << "Lab Group ID: " << labGroupID << endl;
-  vector<Assets> groupAssets;
+  vector<Assets*> groupAssets;
   //implement
   return groupAssets;
 }
@@ -455,9 +568,9 @@ void FacultyResearcher::viewGroup(int LabGroupID) {
 
 //SOFTWARE LICENSE
 //view available software licenses
-std::vector<Documents> FacultyResearcher::viewAvailableLicenseSeats() {
+std::vector<Documents*> FacultyResearcher::viewAvailableLicenseSeats() {
   cout << "--- Available License Seats ---\n" << endl;
-  std::vector<Documents> licenses;
+  std::vector<Documents*> licenses;
   //implement
   return licenses;
 }
@@ -482,18 +595,18 @@ bool FacultyResearcher::requestSoftwareLicenseGroup(int licenseID, int labGroupI
 }
 
 //view their own licenses
-std::vector<Documents> FacultyResearcher::viewLicenses(){
+std::vector<Documents*> FacultyResearcher::viewLicenses(){
   cout << "--- My Licenses ---\n" << endl;
-  std::vector<Documents> myLicenses;
+  std::vector<Documents*> myLicenses;
   //implement
   return myLicenses;
 }
 
 //view a groups licenses
-std::vector<Documents> FacultyResearcher::viewGroupLicenses(int labGroupID){
+std::vector<Documents*> FacultyResearcher::viewGroupLicenses(int labGroupID){
   cout << "--- Group Licenses ---\n" << endl;
   cout << "Lab Group ID: " << labGroupID << endl;
-  std::vector<Documents> groupLicenses;
+  std::vector<Documents*> groupLicenses;
   //implement
   return groupLicenses;
 }
@@ -543,7 +656,7 @@ bool FacultyResearcher::cancelReservation(int reservationID) {
 
 //DOCUMENTS
 //produce a usage report for resource usage by a group
-Documents FacultyResearcher::generateUsageReport(Assets assetUsed, Documents dataRecords) {
+Documents FacultyResearcher::generateUsageReport(Assets* assetUsed, Documents* dataRecords) {
   cout << "--- Generate Usage Report ---\n" << endl;
   Documents report;
   //implement
@@ -566,7 +679,7 @@ bool FacultyResearcher::reserveMultipleAssets(std::vector<int> assetIDs, const s
 }
 
 //search and filter assets
-std::vector<Assets> FacultyResearcher::searchAssets(const std::string& category, const std::string& status) {
+std::vector<Assets*> FacultyResearcher::searchAssets(const std::string& category, const std::string& status) {
   cout << "--- Search/Filter Assets ---\n" << endl;
   if (!category.empty()) {
     cout << "Category Filter: " << category << endl;
@@ -575,7 +688,7 @@ std::vector<Assets> FacultyResearcher::searchAssets(const std::string& category,
     cout << "Status Filter: " << status << endl;
   }
   
-  std::vector<Assets> filteredAssets;
+  std::vector<Assets*> filteredAssets;
   //implement
   cout << "Displaying filtered results..." << endl;
   
@@ -583,9 +696,9 @@ std::vector<Assets> FacultyResearcher::searchAssets(const std::string& category,
 }
 
 //view all available
-std::vector<Assets> FacultyResearcher::viewAvailableAssets() {
+std::vector<Assets*> FacultyResearcher::viewAvailableAssets() {
   cout << "--- Available Assets ---\n" << endl;
-  std::vector<Assets> availableAssets;
+  std::vector<Assets*> availableAssets;
   //implement
   cout << "Displaying all available assets..." << endl;
   

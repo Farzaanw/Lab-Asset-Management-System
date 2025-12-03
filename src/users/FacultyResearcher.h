@@ -8,11 +8,14 @@
 //test
 #include <string>
 #include <vector>
-#include "Asset.h"
-#include "Document.h"
-#include "Reservation.h"
+#include "Assets.h"
+#include "Documents.h"
+#include "Reservations.h"
 #include "User.h"
-#pragma once
+#include "SystemController.h"
+#include "./library/nlohmann/json.hpp"
+#include <fstream>
+using json = nlohmann::json;
 
 class FacultyResearcher : public User{
 private:
@@ -22,8 +25,10 @@ private:
   std::string Lname;
   std::string email;
   bool permissions;
+  SystemController* system;
 	
 public:
+  //FacultyResearcher(SystemController* sys) : system(sys) {}
   //FacultyResearcher(string email, SystemController* sys) : User(email, sys) {}
   //void showMenu() override;
   //void reserveAsset(int assetID);
@@ -39,10 +44,15 @@ public:
   void reservationsMenu();
 
   //Constructor
-  FacultyResearcher() = default;
+  FacultyResearcher(const std::string& firstName,
+                      const std::string& lastName,
+                      const std::string& email,
+                      int role,
+                      int facultyID,
+                      SystemController* sys);
 
   //Destructor
-  ~FacultyResearcher();
+  virtual ~FacultyResearcher() override;
 
   //BASIC
   //Navigation, displays the dashboard and the user actions
@@ -52,24 +62,24 @@ public:
   //ASSETS
 	//make a reservation for an asset, returns bool - was it successful in making reservation}
   //same as use asset, when they reserve it, we are assuming they are using it
-	bool reserveAsset(int assetID, bool permissions);
+	bool reserveAsset();
   //Return an asser
-  bool return_asset(int reservationID);
+  bool return_asset();
   //view own assets
-  std::vector<Assets> viewAssets();
+  std::vector<Assets*> viewAssets();
   // view a student's list of assets they have checked out
-  std::vector<Assets> viewStudentAssets(int studentID);
+  std::vector<Assets*> viewStudentAssets(int studentID);
   //reserve multiple assets
   bool reserveMultipleAssets(std::vector<int> assetIDs, const std::string& startDate, const std::string& endDate);
   //search and filter assets 
-  std::vector<Assets> searchAssets(const std::string& category, const std::string& status);
+  std::vector<Assets*> searchAssets(const std::string& category, const std::string& status);
   //view all assets 
-  std::vector<Assets> viewAvailableAssets();
+  std::vector<Assets*> viewAvailableAssets();
 
 
   //GROUP SECTION
   //view the groups list of assets they have checked out
-  std::vector<Assets> viewGroupAssets(int labGroupID);
+  std::vector<Assets*> viewGroupAssets(int labGroupID);
   //view group usage records(their usage log)
   void viewGroupUsage(int labGroupID);
   //display a record of the group the faculty is in charge of and their work they have done
@@ -77,15 +87,15 @@ public:
 
   //SOFTWARE LICENSE
   //View the available software licenses
-  std::vector<Documents> viewAvailableLicenseSeats();
+  std::vector<Documents*> viewAvailableLicenseSeats();
   //Request software licenses for self, returns a bool for if its successful or not
   bool requestSoftwareLicense(int licenseID, const std::string& startDate, const std::string& endDate);
   //Request software licesnes for group
   bool requestSoftwareLicenseGroup(int licenseID, int labGroupID, const std::string& startDate, const std::string& endDate);
   //view their own licenses
-  std::vector<Documents> viewLicenses();
+  std::vector<Documents*> viewLicenses();
   //view a groups licenses
-  std::vector<Documents> viewGroupLicenses(int labGroupID);
+  std::vector<Documents*> viewGroupLicenses(int labGroupID);
 
   //Reservations
   //View Group reservations
@@ -101,7 +111,7 @@ public:
 
   //DOCUMENTS
 	//produce a usage report for resource usage by a group
-	Documents generateUsageReport(Assets assetUsed, Documents dataRecords);
+	Documents generateUsageReport(Assets* assetUsed, Documents* dataRecords);
 };
 
 #endif
