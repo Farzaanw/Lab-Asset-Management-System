@@ -8,10 +8,10 @@
 //test
 #include <string>
 #include <vector>
-#include "Assets.h"
-#include "Documents.h"
-#include "Reservations.h"
-#include "User.h"
+#include "./resources/Assets.h"
+#include "./resources/Documents.h"
+#include "./resources/Reservations.h"
+#include "./users/User.h"
 #include "SystemController.h"
 #include "./library/nlohmann/json.hpp"
 #include <fstream>
