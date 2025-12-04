@@ -100,7 +100,8 @@ bool LabManager::changePolicies(){
 			}
 		}
 		if (!input.empty()) {
-			policiesJson["MAXBOOKINGDURATION"] = newDuration;
+			std::string fixedint = std::to_string(newDuration);
+			policiesJson["MAXBOOKINGDURATION"] = fixedint;
 			cout << "Max booking duration updated to " << newDuration << " hours." << endl;
 		} else {
 			cout << "Keeping current max booking duration." << endl;
@@ -128,7 +129,8 @@ bool LabManager::changePolicies(){
 			}
 		}
 		if (!input2.empty()) {
-			policiesJson["ADVANCEBOOKINGHORIZON"] = newHorizon;
+			std::string fixedint = std::to_string(newHorizon);
+			policiesJson["ADVANCEBOOKINGHORIZON"] = fixedint;
 			cout << "Advance booking horizon updated to " << newHorizon << " days." << endl;
 		} else {
 			cout << "Keeping current advance booking horizon." << endl;
