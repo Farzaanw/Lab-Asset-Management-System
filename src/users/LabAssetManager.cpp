@@ -17,7 +17,7 @@ LabAssetManager::LabAssetManager(const std::string& firstName,
 			   const std::string& email,
 			   SystemController* sys)
 	: User(firstName, lastName, email, sys) ,
-      system(sys) {}
+	  system(sys) {}
 
 
 //Destructor
@@ -25,7 +25,7 @@ LabAssetManager::~LabAssetManager() {}
 
 //Override getRole
 std::string LabAssetManager::getRole() const {
-    return "lab asset manager";
+	return "lab asset manager";
 }
 
 void LabAssetManager::main(){
@@ -406,8 +406,8 @@ bool LabAssetManager::addAsset(){
 	getline(cin, condition);
 	cout << "Enter asset access level: ";
 	getline(cin, accessLevel);
-	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
-		cout << "Invalid access level entered. Please enter a valid access level from the list:" << endl << "1" << endl << "2" << endl;
+	while (clearanceLevels.find(accessLevel) == clearanceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
 		getline(cin, accessLevel);
 	}
 	cout << "Enter asset location: ";
@@ -646,6 +646,7 @@ bool LabAssetManager::listAssets(){
 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
 		cout << "Condition: " << asset["condition"] << endl;
 		cout << "Location: " << asset["location"] << endl;
+		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
 			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
 			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
@@ -653,11 +654,13 @@ bool LabAssetManager::listAssets(){
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
+	return true;
 }
 
 bool LabAssetManager::viewLogs() {
 	json logs;
 	ifstream inFile(usageLogFile);
+
 	if (!inFile.is_open()) {
 		cerr << "Error: Could not open " << usageLogFile << endl;
 		return false;
@@ -667,20 +670,30 @@ bool LabAssetManager::viewLogs() {
 		inFile >> logs;
 	} catch (const std::exception& e) {
 		cerr << "Error reading JSON: " << e.what() << endl;
-		inFile.close();
 		return false;
 	}
-	inFile.close();
 
-	if (logs.empty()) {
+	if (!logs.contains("events") || !logs["events"].is_array()) {
+		cerr << "Error: JSON does not contain 'events' array.\n";
+		return false;
+	}
+
+	const auto& events = logs["events"];
+
+	if (events.empty()) {
 		cout << "No logs found." << endl;
 		return true;
 	}
+
 	cout << "Listing all logs:\n" << endl;
-	for (const auto& log : logs) {
-		cout << "Event: " << log["event"] << endl;
-		cout << "Timestamp: " << log["timestamp"] << endl;
+
+	for (const auto& log : events) {
+		cout << "Event: " << log.value("event", "UNKNOWN") << endl;
+		cout << "Timestamp: " << log.value("timestamp", "UNKNOWN") << endl;
+		cout << endl;
 	}
+
 	return true;
 }
+
 
