@@ -11,13 +11,8 @@
 
 // class includes
 #include "SystemController.h"
-<<<<<<< HEAD
-#include "User.h"
-//#include "./users/FacultyResearcher.h"
-=======
 #include "./users/User.h"
->>>>>>> cbe6caa58aa6439ed0ce45040c3be907a4983ca3
-// #include "./users/ResearchStudent.h"
+#include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 // #include "./users/LabManager.h"
 // #include "./users/LabAssetManager.h"
@@ -106,7 +101,7 @@ int SystemController::main() {
 
     // ------ CALL currentUser's main() -------- //
     std::cout << "\nUser has been created. Calling user's main()....\n";
-    // currentUser->main();    // Calls ResearchStudent::main() or LabManager::main() etc based on currentUser's actual type
+    currentUser->main();    // Calls ResearchStudent::main() or LabManager::main() etc based on currentUser's actual type
 
     return -1;
 }
@@ -115,7 +110,7 @@ int SystemController::main() {
 // Log-In Handler
 /////////////////////////////////////////////////////////////////
 bool SystemController::log_in() {
-    const int MAX_ATTEMPTS = 3;
+    const int MAX_ATTEMPTS = 5;
     std::string firstName, lastName, email, password;
 
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
@@ -192,7 +187,8 @@ User* SystemController::create_user(const std::string& firstName, const std::str
 
     if (role == "research student") {
         std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
-        // currentUser = new ResearchStudent(firstName, lastName, email, this);
+        currentUser = new ResearchStudent(firstName, lastName, email, this);
+        return currentUser;
     }
     // else if (role == "faculty researcher") {
     //     currentUser = new FacultyResearcher(firstName, lastName, email, this);

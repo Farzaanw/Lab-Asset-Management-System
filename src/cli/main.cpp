@@ -4,7 +4,7 @@
 // 3. Run the command: ./TestExecutable.exe
 
 #include <iostream>
-// #include "../SystemController.h"
+#include "../SystemController.h"
 
 int main(){
     std::cout << "...starting up system..." << std::endl;
