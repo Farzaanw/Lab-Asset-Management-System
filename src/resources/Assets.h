@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "./Documents.h"
+#include "Documents.h"
 
 // ==========================================
 // 1. Parent asset class

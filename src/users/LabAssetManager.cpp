@@ -1,5 +1,33 @@
 #include "LabAssetManager.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <chrono>
+#include <vector>
+#include <ctime>
+#include "../SystemController.h"
+#include "../library/nlohmann/json.hpp"
 #include "../resources/Documents.h"
+
+using namespace std;
+using json = nlohmann::json;
+
+LabAssetManager::LabAssetManager(const std::string& firstName,
+			   const std::string& lastName,
+			   const std::string& email,
+			   SystemController* sys)
+	: User(firstName, lastName, email, sys) ,
+      system(sys) {}
+
+
+//Destructor
+LabAssetManager::~LabAssetManager() {}
+
+//Override getRole
+std::string LabAssetManager::getRole() const {
+    return "lab asset manager";
+}
+
 void LabAssetManager::main(){
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
@@ -53,7 +81,8 @@ void LabAssetManager::main(){
 			d.uploadDocument();
 		}
 		else if (choice == "11") {
-			viewLogs();
+			// viewLogs();
+			std::cout << "viewLogs() not yet implemented." << std::endl;
 		}
 		else if (choice == "12") {
 			cout << "Exiting Lab Asset Manager." << endl;
@@ -64,6 +93,7 @@ void LabAssetManager::main(){
 		}
 	}
 }
+
 
 bool LabAssetManager::createAccount() {
 	json j;
