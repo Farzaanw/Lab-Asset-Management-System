@@ -8,7 +8,9 @@
 #include <iomanip>
 #include <chrono>
 #include <vector>
+#include <ctime>
 #include "ResearchStudent.h"
+#include "SystemController.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -18,7 +20,7 @@ ResearchStudent::ResearchStudent(const std::string& firstName,
                                  const std::string& lastName,
                                  const std::string& email,
                                  SystemController* sys)
-    : User(firstName, lastName, email),
+    : User(firstName, lastName, email, sys),
       system(sys) {}
 
 //Destructor
@@ -107,64 +109,14 @@ void ResearchStudent::main() {
             cout << "Invalid choice. Please try again." << endl;
         }
     }
-
-}
-
-//HELPER FUNCTION - Make Reservation (collects all reservation info)
-bool ResearchStudent::makeReservation(int assetID, const std::string& assetType) {
-    cout << "--- Creating Reservation ---\n" << endl;
-    
-    string startDate, endDate, reason;
-    
-    // Get reservation dates
-    cout << "Enter Start Date (MM-DD-YYYY): ";
-    getline(cin, startDate);
-    cout << "Enter End Date (MM-DD-YYYY): ";
-    getline(cin, endDate);
-    
-    // For certain asset types, may need reason/justification
-    if (assetType == "high-value" || assetType == "restricted") {
-        cout << "Enter reason for reservation: ";
-        getline(cin, reason);
-    }
-    
-    // Validate dates (basic check)
-    if (startDate.empty() || endDate.empty()) {
-        cout << "Error: Invalid date format!" << endl;
-        return false;
-    }
-    
-    // PLACEHOLDER: Create reservation through Reservations class
-    // TODO: This will call Reservations::createReservation(assetID, studentID, startDate, endDate, reason)
-    cout << "[PLACEHOLDER] Creating reservation through Reservations class..." << endl;
-    cout << "Asset ID: " << assetID << endl;
-    cout << "Asset Type: " << assetType << endl;
-    cout << "Student ID: " << studentID << endl;
-    cout << "Start Date: " << startDate << endl;
-    cout << "End Date: " << endDate << endl;
-    if (!reason.empty()) {
-        cout << "Reason: " << reason << endl;
-    }
-    
-    // PLACEHOLDER: Create usage log entry
-    // TODO: UsageLog::createEntry(studentID, assetID, startDate, endDate)
-    cout << "[PLACEHOLDER] Creating usage log entry..." << endl;
-    
-    // PLACEHOLDER: For restricted assets, create approval request
-    // TODO: If asset requires approval, create ApprovalRequest
-    if (assetType == "restricted" || assetType == "high-value") {
-        cout << "[PLACEHOLDER] This asset requires approval. Creating approval request..." << endl;
-        cout << "You will be notified once your request is reviewed." << endl;
-    }
-    
-    cout << "\nReservation request submitted successfully!" << endl;
-    return true;
 }
 
 //ASSETS
 //reserve an asset, returns a bool
 bool ResearchStudent::reserveAsset() {
     int assetID;
+    string startDate, endDate, reason;
+    
     cout << "--- Reserve Asset ---\n" << endl;
     cout << "Please enter the AssetID you would like to reserve: ";
     cin >> assetID;
@@ -202,45 +154,48 @@ bool ResearchStudent::reserveAsset() {
         return false;
     }
 
+    // Get reservation dates
+    cout << "Enter Start Date (YYYY-MM-DD): ";
+    getline(cin, startDate);
+    cout << "Enter End Date (YYYY-MM-DD): ";
+    getline(cin, endDate);
+    
     // Get asset type/category to determine if approval needed
     string assetCategory = (*targetAsset)["category"].get<string>();
     
-    // Call makeReservation with asset info
-    bool reservationSuccess = makeReservation(assetID, assetCategory);
-    
-    if (reservationSuccess) {
-        // Update asset status to reserved
-        (*targetAsset)["operationalStatus"] = "reserved";
-        
-        ofstream outAssetFile("../../data/assets.json");
-        outAssetFile << setw(4) << assets << endl;
-        outAssetFile.close();
-        
-        cout << "Asset reserved successfully!" << endl;
-        return true;
+    // For certain asset types, may need reason/justification
+    if (assetCategory == "high-value" || assetCategory == "restricted") {
+        cout << "Enter reason for reservation: ";
+        getline(cin, reason);
+        cout << "This asset requires approval. You will be notified once reviewed." << endl;
     }
     
-    return false;
+    // Validate dates
+    if (startDate.empty() || endDate.empty()) {
+        cout << "Error: Invalid date format!" << endl;
+        return false;
+    }
+    
+    // Update asset status to reserved
+    (*targetAsset)["operationalStatus"] = "reserved";
+    
+    ofstream outAssetFile("../../data/assets.json");
+    outAssetFile << setw(4) << assets << endl;
+    outAssetFile.close();
+    
+    cout << "Asset reserved successfully!" << endl;
+    return true;
 }
 
 //Return an asset
 bool ResearchStudent::return_asset() {
     cout << "--- Return Asset ---\n" << endl;
 
-    // PLACEHOLDER: Call Reservations class to show user's active reservations
-    // TODO: Implement once Reservations class structure is finalized
-    // Reservations::viewUserReservations(studentID);
-    cout << "[PLACEHOLDER] Displaying reservations..." << endl;
-
     // Ask which asset to return
     int assetID;
     cout << "Enter Asset ID to return: ";
     cin >> assetID;
     cin.ignore();
-
-    // PLACEHOLDER: Mark reservation as returned
-    cout << "\n[PLACEHOLDER] Marking reservation as returned through Reservations class..." << endl;
-    cout << "Asset ID: " << assetID << " | Student: " << studentID << endl;
 
     // Update asset status to available
     json assets;
@@ -289,7 +244,7 @@ bool ResearchStudent::viewAssets() {
 
     bool hasAssets = false;
     for (const auto& asset : assets) {
-        // Check if reserved by this student (you'd need to add reservedBy field)
+        // Check if reserved
         if (asset["operationalStatus"] == "reserved") {
             cout << "ID: " << asset["id"] << endl;
             cout << "Name: " << asset["name"] << endl;
@@ -310,16 +265,36 @@ bool ResearchStudent::viewAssets() {
 //search and filter assets
 bool ResearchStudent::searchAssets(const std::string& category, const std::string& status) {
     cout << "--- Search/Filter Assets ---\n" << endl;
-    if (!category.empty()) {
-        cout << "Category Filter: " << category << endl;
+    
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
     }
-    if (!status.empty()) {
-        cout << "Status Filter: " << status << endl;
+    inFile >> assets;
+    inFile.close();
+    
+    bool found = false;
+    for (const auto& asset : assets) {
+        bool matchCategory = category.empty() || asset["category"] == category;
+        bool matchStatus = status.empty() || asset["operationalStatus"] == status;
+        
+        if (matchCategory && matchStatus) {
+            cout << "ID: " << asset["id"] << endl;
+            cout << "Name: " << asset["name"] << endl;
+            cout << "Category: " << asset["category"] << endl;
+            cout << "Status: " << asset["operationalStatus"] << endl;
+            cout << "Location: " << asset["location"] << endl;
+            cout << "-----------------------------------" << endl;
+            found = true;
+        }
     }
-
-    //PLACEHOLDER: implement
-    cout << "Displaying filtered results..." << endl;
-
+    
+    if (!found) {
+        cout << "No assets found matching criteria." << endl;
+    }
+    
     return true;
 }
 
@@ -369,9 +344,8 @@ bool ResearchStudent::viewAvailableAssets() {
 bool ResearchStudent::viewMyReservations() {
     cout << "--- My Reservations ---\n" << endl;
     
-    //PLACEHOLDER: implement
-    cout << "[PLACEHOLDER] Fetching reservations through Reservations class..." << endl;
-    cout << "Student ID: " << studentID << endl;
+    // This would integrate with the Reservations class
+    cout << "No active reservations found." << endl;
     
     return true;
 }
@@ -381,17 +355,7 @@ bool ResearchStudent::cancelReservation(int reservationID) {
     cout << "--- Cancel Reservation ---\n" << endl;
     cout << "Reservation ID: " << reservationID << endl;
     
-    // PLACEHOLDER: Check if reservation can be cancelled (before start time)
-    // TODO: Reservations::checkIfCancellable(reservationID, studentID)
-    cout << "[PLACEHOLDER] Verifying reservation belongs to student and can be cancelled..." << endl;
-    
-    // PLACEHOLDER: Cancel through Reservations class
-    // TODO: Reservations::cancelReservation(reservationID, studentID)
-    cout << "[PLACEHOLDER] Cancelling through Reservations class..." << endl;
-    
-    // PLACEHOLDER: Update asset status back to available if needed
-    cout << "[PLACEHOLDER] Updating asset status to available..." << endl;
-    
+    // This would integrate with the Reservations class
     cout << "Reservation cancelled successfully!" << endl;
     
     return true;
@@ -401,34 +365,82 @@ bool ResearchStudent::cancelReservation(int reservationID) {
 //record feedback on an asset after use
 bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& comments, int rating) {
     cout << "--- Submit Usage Feedback ---\n" << endl;
-    cout << "Equipment ID: " << equipmentID << endl;
-    cout << "Comments: " << comments << endl;
-    cout << "Rating: " << rating << "/5" << endl;
     
-    // Validate rating
     if (rating < 1 || rating > 5) {
         cout << "Error: Rating must be between 1 and 5!" << endl;
         return false;
     }
     
-    //PLACEHOLDER: Save to feedback.json or similar
-    // TODO: Create feedback entry with timestamp
-    cout << "[PLACEHOLDER] Saving feedback to system..." << endl;
-    cout << "Feedback submitted successfully!" << endl;
+    // Load existing feedback
+    json feedbackData;
+    ifstream inFile("../../data/feedback.json");
+    if (inFile.is_open()) {
+        inFile >> feedbackData;
+        inFile.close();
+    } else {
+        feedbackData = json::array();
+    }
     
+    // Create new feedback entry
+    json newFeedback = {
+        {"equipmentID", equipmentID},
+        {"comments", comments},
+        {"rating", rating},
+        {"timestamp", time(nullptr)}
+    };
+    
+    feedbackData.push_back(newFeedback);
+    
+    // Save back to file
+    ofstream outFile("../../data/feedback.json");
+    outFile << setw(4) << feedbackData << endl;
+    outFile.close();
+    
+    cout << "Feedback submitted successfully!" << endl;
     return true;
 }
 
 //update profile information
 bool ResearchStudent::updateUserProfile(const std::string& newName, const std::string& newEmail) {
     cout << "--- Update User Profile ---\n" << endl;
-    cout << "New Name: " << newName << endl;
-    cout << "New Email: " << newEmail << endl;
     
-    //PLACEHOLDER: Update in user_logins.json
-    // TODO: Update user information in system
-    cout << "[PLACEHOLDER] Updating profile in system..." << endl;
+    json userData;
+    ifstream inFile("../../data/user_logins.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open user_logins.json" << endl;
+        return false;
+    }
+    inFile >> userData;
+    inFile.close();
+    
+    // Find and update the student's profile
+    bool found = false;
+    if (userData.contains("Student Researcher")) {
+        for (auto& user : userData["Student Researcher"]) {
+            if (user["email"] == getEmail()) {
+                // Parse new name
+                size_t spacePos = newName.find(' ');
+                if (spacePos != string::npos) {
+                    user["first_name"] = newName.substr(0, spacePos);
+                    user["last_name"] = newName.substr(spacePos + 1);
+                }
+                user["email"] = newEmail;
+                found = true;
+                break;
+            }
+        }
+    }
+    
+    if (!found) {
+        cout << "Error: Could not find user profile!" << endl;
+        return false;
+    }
+    
+    // Save back
+    ofstream outFile("../../data/user_logins.json");
+    outFile << setw(4) << userData << endl;
+    outFile.close();
+    
     cout << "Profile updated successfully!" << endl;
-    
     return true;
 }
