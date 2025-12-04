@@ -1,6 +1,7 @@
 // Steps to start up CLI interface //
 // 1. Enter this folder /cli
-// 2. Run the command: g++ main.cpp ../SystemController.cpp -I../library -std=c++17 -o TestExecutable.exe
+// 2. Run the command: git fetch origin main
+
 // 3. Run the command: ./TestExecutable.exe
 
 #include <iostream>
