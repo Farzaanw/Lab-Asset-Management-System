@@ -4,7 +4,6 @@
 // Collaborators:  <Assets>[1..*], <document>[0..*], <PI>[1]
 #include <string>
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <set>
 #include <filesystem>
@@ -21,8 +20,6 @@ private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	const string accountsFile = "../../data/accounts.json";
 	const string assetsFile = "../../data/assets.json";
-	const string documentsFile = "../../data/documents.json";
-	const string documentsFolder = "../../data/documents/";
 	const string usageLogFile = "../../data/usage_logs.json";
 	set<string> validRoles = {
 		"research student",
@@ -85,9 +82,7 @@ public:
 	bool listAssets();
 
 	//inventory & Documents
-	bool listDocuments();
 
-	bool uploadDocument();
 	//logs
 	bool viewLogs();
 };
