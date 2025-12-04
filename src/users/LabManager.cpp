@@ -37,6 +37,7 @@ void LabManager::main(){
 		}
 		else if (choice == "3") {
 			cout << "Exiting Lab Manager." << endl;
+			break;
 		}
 		else {
 			cout << endl << "Invalid choice. Please try again." << endl;
