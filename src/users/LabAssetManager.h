@@ -64,7 +64,7 @@ public:
 			   SystemController* system = nullptr);
 		// : User(firstName, lastName, email, system) {};
 
-	void main();
+	void main() override;
 
 	// Destructor
     virtual ~LabAssetManager();
