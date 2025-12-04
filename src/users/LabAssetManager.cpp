@@ -1,5 +1,5 @@
 #include "LabAssetManager.h"
-#include "./resources/Documents.h"
+#include "../resources/Documents.h"
 void LabAssetManager::main(){
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
