@@ -12,16 +12,16 @@
 #include "../SystemController.cpp"
 #include "User.h"
 #pragma once
+using namespace std;
+namespace fs = std::filesystem;
+using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
 
 class Documents {
 private:
-  int documentID;
-  int authorID;
+
   const string documentsFile = "../../data/documents.json";
 	const string documentsFolder = "../../data/documents/";
-  std::string title;
-  std::string description;
-  std::string type;
+
   	set<string> documentTypes = {
 		"manual",
 		"warranty",
