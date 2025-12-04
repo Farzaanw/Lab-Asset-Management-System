@@ -2,6 +2,249 @@
     "events": [
         {
             "event": "System started",
+<<<<<<< HEAD
+            "timestamp": "2025-12-01 19:49:18"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 21:25:43"
+        },
+        {
+            "event": "Failed login attempt for email: alice123",
+            "timestamp": "2025-12-01 21:26:09"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 21:26:45"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 21:27:54"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 21:59:59"
+        },
+        {
+            "event": "Failed login attempt for email: das",
+            "timestamp": "2025-12-01 22:00:23"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 22:02:30"
+        },
+        {
+            "event": "Failed login attempt for email: aar",
+            "timestamp": "2025-12-01 22:02:43"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 22:03:31"
+        },
+        {
+            "event": "Failed login attempt for email: a",
+            "timestamp": "2025-12-01 22:03:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 22:04:54"
+        },
+        {
+            "event": "User logged in: Lab Admin labadmin@osu.edu",
+            "timestamp": "2025-12-01 22:05:28"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 22:08:39"
+        },
+        {
+            "event": "Created account: farz@gmail.com",
+            "timestamp": "2025-12-01 22:08:55"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-01 22:08:55"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-01 22:10:08"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-01 22:10:10"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 15:45:46"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 15:45:48"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 15:45:50"
+        },
+        {
+            "event": "Invalid role selection attempted",
+            "timestamp": "2025-12-02 15:45:54"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 15:45:54"
+        },
+        {
+            "event": "ERROR: Failed to load JSON: ../../data/policies.json",
+            "timestamp": "2025-12-02 21:44:45"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:44:45"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:46:41"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:48:14"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:48:49"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:52:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 21:53:53"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:01:47"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:02:43"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:10:09"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:12:35"
+        },
+        {
+            "event": "Created account: a",
+            "timestamp": "2025-12-02 22:12:41"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:12:41"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:13:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:15:22"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:15:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:17:20"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:18:03"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:39:10"
+        },
+        {
+            "event": "Failed login attempt for email: f",
+            "timestamp": "2025-12-02 22:39:24"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:39:58"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:40:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:40:37"
+        },
+        {
+            "event": "Failed login attempt for email: AppleJimmy@oregonstate.edu",
+            "timestamp": "2025-12-02 22:41:16"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-02 22:42:00"
+        },
+        {
+            "event": "User logged in: Dr. Smith dr.smith@osu.edu",
+            "timestamp": "2025-12-02 22:42:15"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-02 22:42:15"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 14:29:22"
+        },
+        {
+            "event": "User logged in: Dr. Smith dr.smith@osu.edu",
+            "timestamp": "2025-12-03 14:29:35"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 14:29:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 14:31:00"
+        },
+        {
+            "event": "User logged in: Dr. Smith dr.smith@osu.edu",
+            "timestamp": "2025-12-03 14:31:17"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 14:31:17"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 18:58:28"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 19:08:49"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 19:08:50"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 19:09:16"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 19:09:18"
+=======
             "timestamp": "2025-12-03 16:57:17"
         },
         {
