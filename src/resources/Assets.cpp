@@ -1,4 +1,5 @@
 #include "Assets.h"
+#include "Documents.h"
 
 // ==========================================
 // Base Asset Implementation

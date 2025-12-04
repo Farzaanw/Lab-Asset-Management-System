@@ -27,6 +27,26 @@
         {
             "event": "User logged in: Jimmy Apple AppleJimmy@oregonstate.edu",
             "timestamp": "2025-12-03 21:45:59"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 22:09:15"
+        },
+        {
+            "event": "User logged in: Jeff Bobs BobsJeff@oregonstate.edu",
+            "timestamp": "2025-12-03 22:09:53"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 22:09:53"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 22:30:24"
+        },
+        {
+            "event": "User logged in: Jeff Bobs BobsJeff@oregonstate.edu",
+            "timestamp": "2025-12-03 22:30:54"
         }
     ]
 }
