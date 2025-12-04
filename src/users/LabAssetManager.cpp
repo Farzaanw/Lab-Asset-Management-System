@@ -81,8 +81,7 @@ void LabAssetManager::main(){
 			d.uploadDocument();
 		}
 		else if (choice == "11") {
-			// viewLogs();
-			std::cout << "viewLogs() not yet implemented." << std::endl;
+			viewLogs();
 		}
 		else if (choice == "12") {
 			cout << "Exiting Lab Asset Manager." << endl;
@@ -654,7 +653,34 @@ bool LabAssetManager::listAssets(){
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
+}
 
+bool LabAssetManager::viewLogs() {
+	json logs;
+	ifstream inFile(usageLogFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << usageLogFile << endl;
+		return false;
+	}
+
+	try {
+		inFile >> logs;
+	} catch (const std::exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		inFile.close();
+		return false;
+	}
+	inFile.close();
+
+	if (logs.empty()) {
+		cout << "No logs found." << endl;
+		return true;
+	}
+	cout << "Listing all logs:\n" << endl;
+	for (const auto& log : logs) {
+		cout << "Event: " << log["event"] << endl;
+		cout << "Timestamp: " << log["timestamp"] << endl;
+	}
 	return true;
 }
 

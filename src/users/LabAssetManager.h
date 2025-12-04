@@ -92,7 +92,7 @@ public:
 	//inventory & Documents
 
 	//logs
-	// bool viewLogs();
+	bool viewLogs();
 };
 
 #endif
