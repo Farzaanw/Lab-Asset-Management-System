@@ -246,7 +246,18 @@
             "timestamp": "2025-12-03 19:09:18"
 =======
             "timestamp": "2025-12-03 16:57:17"
->>>>>>> cbe6caa58aa6439ed0ce45040c3be907a4983ca3
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 19:08:45"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-03 19:09:10"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 19:09:10"
         }
     ]
 }
