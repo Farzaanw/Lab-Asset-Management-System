@@ -653,6 +653,8 @@ bool LabAssetManager::listAssets(){
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
+
+	return true;
 }
 
 bool LabAssetManager::viewLogs() {
