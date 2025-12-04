@@ -20,7 +20,7 @@ ResearchStudent::ResearchStudent(const std::string& firstName,
                                  const std::string& lastName,
                                  const std::string& email,
                                  SystemController* sys)
-    : User(firstName, lastName, email),
+    : User(firstName, lastName, email, sys),
       system(sys) {}
 
 //Destructor
