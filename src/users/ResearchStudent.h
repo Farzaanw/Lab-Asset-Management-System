@@ -8,7 +8,7 @@
 
 #include <string>
 #include <vector>
-#include "./library/nlohmann/json.hpp"
+#include "../library/nlohmann/json.hpp"
 #include "User.h"
 
 // Forward declarations
