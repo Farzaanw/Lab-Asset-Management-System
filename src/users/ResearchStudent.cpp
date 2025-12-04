@@ -17,18 +17,15 @@ using json = nlohmann::json;
 ResearchStudent::ResearchStudent(const std::string& firstName,
                                  const std::string& lastName,
                                  const std::string& email,
-                                 int role,
-                                 int studentID,
                                  SystemController* sys)
-    : User(firstName, lastName, email, role),
-      studentID(studentID),
+    : User(firstName, lastName, email, sys),
       system(sys) {}
 
 //Destructor
 ResearchStudent::~ResearchStudent() {}
 
 //Main menu
-int ResearchStudent::main() {
+void ResearchStudent::main() {
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
     cout << "Student ID: " << studentID << endl;

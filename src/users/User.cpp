@@ -1,17 +1,9 @@
 #include "User.h"
+#include <iostream>
 
-// --------------------
-// Base User Constructor
-// --------------------
-User::User(const std::string& firstName,
-           const std::string& lastName,
-           const std::string& email,
-           int role)
-    : firstName(firstName), lastName(lastName), email(email), role(role) {}
+#include "../SystemController.h"
 
-// --------------------
-// Getter methods
-// --------------------
+// Getter functions
 std::string User::getFirstName() const {
     return firstName;
 }
@@ -24,15 +16,10 @@ std::string User::getEmail() const {
     return email;
 }
 
-int User::getRole() const {
-    return role;
-}
-
-// --------------------
-// Generic display info
-// --------------------
+// Default displayInfo() method
 void User::displayInfo() const {
-    std::cout << "Name: " << firstName << " " << lastName
-              << ", Email: " << email
-              << ", Role: " << role << std::endl;
+    std::cout << "User Information:\n";
+    std::cout << "  First Name: " << firstName << "\n";
+    std::cout << "  Last Name: " << lastName << "\n";
+    std::cout << "  Email: " << email << "\n";
 }
