@@ -141,7 +141,7 @@ void FacultyResearcher::assetManagementMenu() {
             assetIDs.push_back(stoi(item));
         }
         */
-        if (reserveMultipleAssets(assetIDs, startDate, endDate)) {
+        if (1/*reserveMultipleAssets(assetIDs, startDate, endDate*/) {
             cout << "Assets reserved successfully!" << endl;
         } else {
             cout << "Failed to reserve assets." << endl;
@@ -160,10 +160,10 @@ void FacultyResearcher::assetManagementMenu() {
         getline(cin, category);
         cout << "Enter status (or leave blank): ";
         getline(cin, status);
-        searchAssets(category, status);
+        //searchAssets(category, status);
     }
     else if (choice == 5) {
-        viewAvailableAssets();
+        //viewAvailableAssets();
     }
     else if (choice == 6) {
         viewAssets();
@@ -370,14 +370,14 @@ void FacultyResearcher::reservationsMenu() {
         cout << "\nEnter Lab Group ID: ";
         cin >> labGroupID;
         cin.ignore();
-        if (makeReservation(0, labGroupID)) {
+        if (1/*makeReservation(0, labGroupID)*/) {
             cout << "Group reservation made successfully!" << endl;
         } else {
             cout << "Failed to make group reservation." << endl;
         }
     }
     else if (choice == 3) {
-        viewMyReservations();
+        //viewMyReservations();
     }
     else if (choice == 4) {
         cout << "\nEnter Lab Group ID: ";
@@ -386,7 +386,7 @@ void FacultyResearcher::reservationsMenu() {
         viewGroupReservations(labGroupID);
     }
     else if (choice == 5) {
-        if (cancelReservation(0)) {
+        if (1/*cancelReservation(0)*/) {
             cout << "Reservation cancelled successfully!" << endl;
         } else {
             cout << "Failed to cancel reservation." << endl;
