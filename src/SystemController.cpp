@@ -13,9 +13,9 @@
 #include "SystemController.h"
 #include "./users/User.h"
 #include "./users/ResearchStudent.h"
-#include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
+#include "./users/FacultyResearcher.h"
 #include "./users/LabManager.h"
-// #include "./users/LabAssetManager.h"
+#include "./users/LabAssetManager.h"
 
 #include "./library/nlohmann/json.hpp"
 using json = nlohmann::json;
@@ -198,11 +198,11 @@ User* SystemController::create_user(const std::string& firstName, const std::str
         currentUser = new LabManager(firstName, lastName, email, this);
         return currentUser;
     }
-    // else if (role == "lab asset manager") {
-    //     std::cout << "Creating LabAssetManager instance for " << firstName << " " << lastName << "\n";
-    //     currentUser = new LabAssetManager(firstName, lastName, email, this);
-    //     return currentUser;
-    // }
+    else if (role == "lab asset manager") {
+        std::cout << "Creating LabAssetManager instance for " << firstName << " " << lastName << "\n";
+        currentUser = new LabAssetManager(firstName, lastName, email, this);
+        return currentUser;
+    }
     else {
         std::cerr << "Unknown role (*UNCOMMENT OTHERS^^): " << role << "\n";
         return nullptr;

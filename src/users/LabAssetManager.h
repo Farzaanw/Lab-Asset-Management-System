@@ -2,21 +2,24 @@
 // Auth: Kai Johnson
 // Supports: UR-400 to UR-431
 // Collaborators:  <Assets>[1..*], <document>[0..*], <PI>[1]
+#ifndef LABASSETMANAGER_H
+#define LABASSETMANAGER_H
+
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <set>
 #include <filesystem>
 #include "../library/nlohmann/json.hpp"
-//#include "../SystemController.cpp"
 #include "User.h"
 
 using namespace std;
 namespace fs = std::filesystem;
-using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
+using json = nlohmann::json; // By default json has alphabetical order for keys this prevents that.
 
 class LabAssetManager : public User {
 private:
+	SystemController* system;
 	chrono::system_clock::time_point lastInventoryCheck;
 	const string accountsFile = "../../data/accounts.json";
 	const string assetsFile = "../../data/assets.json";
@@ -57,10 +60,16 @@ public:
 	LabAssetManager(const std::string& firstName = "",
 			   const std::string& lastName = "",
 			   const std::string& email = "",
-			   SystemController* system)
-		: User(firstName, lastName, email, system) {};
+			   SystemController* system = nullptr);
+		// : User(firstName, lastName, email, system) {};
 
 	void main();
+
+	// Destructor
+    virtual ~LabAssetManager();
+
+	// Override pure virtual function from User
+    std::string getRole() const override;
 
 	//accounts
 	bool createAccount();
@@ -83,5 +92,7 @@ public:
 	//inventory & Documents
 
 	//logs
-	bool viewLogs();
+	// bool viewLogs();
 };
+
+#endif
