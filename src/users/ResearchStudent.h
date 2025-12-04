@@ -24,15 +24,13 @@ public:
     ResearchStudent(const std::string& firstName,
                    const std::string& lastName,
                    const std::string& email,
-                   int role,
-                   int studentID,
                    SystemController* sys);
 
     // Destructor
     virtual ~ResearchStudent();
 
     // Main menu entry point
-    int main();
+    void main();
 
     // Helper function for making reservations
     bool makeReservation(int assetID, const std::string& assetType);
