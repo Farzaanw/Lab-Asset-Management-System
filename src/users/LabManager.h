@@ -1,32 +1,34 @@
 //Author: Kai Johnson
+#ifndef LABMANAGER_H
+#define LABMANAGER_H
 
 #include <string>
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <set>
-#include <filesystem>
-#include "User.h"
+#include <vector>
 #include "../library/nlohmann/json.hpp"
-
+#include "User.h"
 using namespace std;
-
-namespace fs = std::filesystem;
-using json = nlohmann::ordered_json;
+// Forward declarations
+class SystemController;
 
 class LabManager : public User {
 private:
-	const string policiesFile = "../../data/policies.json";
+	const std::string policiesFile = "../../data/policies.json";
+    SystemController* system;
 	
 public:
 	LabManager(const std::string& firstName = "",
 			   const std::string& lastName = "",
 			   const std::string& email = "",
-			   SystemController* system)
-		: User(firstName, lastName, email, system) {};
-
+			   SystemController* sys = nullptr);
 
 	void main();
+
+	// Destructor
+    virtual ~LabManager();
+
+	// Override pure virtual function from User
+    std::string getRole() const override;
+
 	// lists current policies
 	bool listPolicies();
 
@@ -37,3 +39,5 @@ public:
 	// policyType can be "MAXBOOKINGDURATION" or "ADVANCEBOOKINGHORIZON"
 	int getPolicy(string policyType);
 };
+
+#endif

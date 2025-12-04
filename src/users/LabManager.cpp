@@ -1,4 +1,23 @@
 #include "LabManager.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <chrono>
+#include <vector>
+#include <ctime>
+#include "../SystemController.h"
+#include "../library/nlohmann/json.hpp"
+
+using namespace std;
+using json = nlohmann::json;
+
+LabManager::LabManager(const std::string& firstName,
+			   const std::string& lastName,
+			   const std::string& email,
+			   SystemController* sys)
+	: User(firstName, lastName, email, sys) ,
+      system(sys) {}
+
 void LabManager::main(){
 	while(true){
 		cout << endl << "---Lab Manager Main Menu---" << endl;
@@ -24,6 +43,15 @@ void LabManager::main(){
 		}
 	}
 }
+
+//Destructor
+LabManager::~LabManager() {}
+
+//Override getRole
+std::string LabManager::getRole() const {
+    return "lab manager";
+}
+
 
 int LabManager::getPolicy(string policyType){
 	json policiesJson;
