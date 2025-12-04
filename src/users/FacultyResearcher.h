@@ -15,16 +15,13 @@
 #include "SystemController.h"
 #include "./library/nlohmann/json.hpp"
 #include <fstream>
-using json = nlohmann::json;
 
 class FacultyResearcher : public User{
 private:
-  int FacultyID;
   int labGroupID;
   std::string Fname;
   std::string Lname;
   std::string email;
-  bool permissions;
   SystemController* system;
 	
 public:
@@ -34,7 +31,7 @@ public:
   //void reserveAsset(int assetID);
   
   //main starting point
-  int main();
+  void main() override;
 
   //Menus
   void assetManagementMenu();
@@ -47,8 +44,6 @@ public:
   FacultyResearcher(const std::string& firstName,
                       const std::string& lastName,
                       const std::string& email,
-                      int role,
-                      int facultyID,
                       SystemController* sys);
 
   //Destructor
@@ -68,7 +63,7 @@ public:
   //view own assets
   std::vector<Assets*> viewAssets();
   // view a student's list of assets they have checked out
-  std::vector<Assets*> viewStudentAssets(int studentID);
+  std::vector<Assets*> viewStudentAssets(const std::string& studentEmail);
   //reserve multiple assets
   bool reserveMultipleAssets(std::vector<int> assetIDs, const std::string& startDate, const std::string& endDate);
   //search and filter assets 
