@@ -57,16 +57,6 @@ public:
     // View all available assets in the system
     bool viewAvailableAssets();
 
-    // LAB GROUP MANAGEMENT
-    // View the group's list of checked-out assets
-    bool viewGroupAssets(int labGroupID);
-    
-    // View group usage records/log
-    void viewGroupUsage(int labGroupID);
-    
-    // Display group information and their work
-    void viewGroup(int labGroupID);
-
     // SOFTWARE LICENSE MANAGEMENT
     // View available software license seats
     bool viewAvailableLicenseSeats();
@@ -90,15 +80,13 @@ public:
     // Cancel own reservation
     bool cancelReservation(int reservationID);
     
-    // Make reservation (for self or group)
-    bool makeReservation(int reservationID, int labGroupID);
-    
+    // LAB GROUP MANAGEMENT
+    // Display group information and their work/ displays group assets and displays the usage log for that group
+    void viewGroup(int labGroupID);
     // View group reservations
     bool viewGroupReservations(int labGroupID);
-    
     // Cancel group reservation
     bool cancelGroupReservations(int labGroupID, int reservationID);
-
     // DOCUMENTS/REPORTS
     // Generate usage report for resource usage by a group
     bool generateUsageReport(int labGroupID);
