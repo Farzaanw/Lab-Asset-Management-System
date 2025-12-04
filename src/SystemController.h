@@ -11,7 +11,6 @@
 
 class User;
 
-
 /*
 High-Level Overview of SystemController Class:
 - Constructor: loads persistent JSON (usage log, user logins, assets, policies).
@@ -36,11 +35,11 @@ private:
     // ================
     // CORE UI METHODS
     // ================
-    int homepage();
-    int role_selection_menu();   
-    bool create_account(int roleChoice); 
-    bool log_in(int roleChoice);        
-    User* create_user(const std::string& first_name, const std::string& last_name, const std::string& email, int role);  // create instance of CurrentUser
+    int main();
+    // int role_selection_menu();   
+    // bool create_account();  // removed arg: int roleChoice) 
+    bool log_in();  // removed arg: int roleChoice)        
+    User* create_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& role);    // create instance of CurrentUser
 
     // ==============================
     // PERSISTENT DATA LOAD 
@@ -54,7 +53,7 @@ private:
     // HELPER FUNCTIONS
     // ================
     void update_usage_log(const std::string& message);
-    bool validate_user(const std::string& email, const std::string& password, int role);
+    std::string validate_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& password);
     bool load_json_safe(const std::string& path, nlohmann::json& out);
     std::string get_current_time();
 

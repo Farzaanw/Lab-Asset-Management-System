@@ -22,10 +22,11 @@ public:
 	LabManager(const std::string& firstName = "",
 			   const std::string& lastName = "",
 			   const std::string& email = "",
-			   int role = 0)
-		: User(firstName, lastName, email, role) {};
+			   SystemController* system)
+		: User(firstName, lastName, email, system) {};
 
 
+	void main();
 	// lists current policies
 	bool listPolicies();
 

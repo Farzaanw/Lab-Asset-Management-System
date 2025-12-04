@@ -1,24 +1,33 @@
+# Compiler
 CXX = g++
-# Use repo-relative include path from src/cli -> library is ../library
-CXXFLAGS = -std=c++17 -I../library -O2
+CXXFLAGS = -std=c++17 -I.. -I../library -I../users -O2
 
-# Only compile sources that actually exist for the CLI
-SRC = main.cpp ../SystemController.cpp
+# Source files
+SRC = main.cpp ../SystemController.cpp ../users/User.cpp # ../resources/Assets.cpp
 OBJ = $(SRC:.cpp=.o)
-TARGET = TestExecutable.exe
+TARGET = MicroCat.exe
 
-all: $(TARGET)
+# Phony targets to always run
+.PHONY: all clean rebuild run
 
+# Default: rebuild everything
+all: rebuild
+
+# Full rebuild: clean then build
+rebuild: clean $(TARGET)
+
+# Build executable from object files
 $(TARGET): $(OBJ)
 	$(CXX) $(OBJ) -o $(TARGET)
 
+# Compile object files from source
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Remove all compiled files
 clean:
 	rm -f $(TARGET) $(OBJ)
 
-.PHONY: all clean run
-
+# Run the program
 run: $(TARGET)
 	./$(TARGET)

@@ -1,5 +1,5 @@
 #include "LabAssetManager.h"
-int LabAssetManager::main(){
+void LabAssetManager::main(){
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl;
 		cout << "1. Create Account" << endl;
@@ -60,7 +60,6 @@ int LabAssetManager::main(){
 			cout << "Invalid choice. Please try again." << endl;
 		}
 	}
-	return 1;
 }
 
 bool LabAssetManager::createAccount() {
@@ -112,6 +111,10 @@ bool LabAssetManager::createAccount() {
 	account["email"] = email;
 	account["role"] = role;
 	account["password"] = password;
+	// Initialize reservations and notifications as empty arrays so each account
+	// can hold multiple reservation and notification objects later.
+	account["reservations"] = json::array();
+	account["notifications"] = json::array();
 
 	// Add to JSON array
 	j.push_back(account);

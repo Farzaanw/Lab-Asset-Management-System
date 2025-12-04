@@ -11,7 +11,12 @@
 
 // class includes
 #include "SystemController.h"
+<<<<<<< HEAD
 #include "User.h"
+//#include "./users/FacultyResearcher.h"
+=======
+#include "./users/User.h"
+>>>>>>> cbe6caa58aa6439ed0ce45040c3be907a4983ca3
 // #include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 // #include "./users/LabManager.h"
@@ -22,19 +27,11 @@ using json = nlohmann::json;
 
 // Base data directory relative to src/cli (executable working dir)
 static const std::string DATA_DIR = "../../data/";
-static const std::string ROLE_NAMES[] = {
-    "",                     // dummy placeholder so index matches roleChoice (1/2/3/4)
-    "Student Researcher",   // 1
-    "Faculty Researcher",   // 2
-    "Lab Manager",          // 3
-    "Lab Asset Manager"     // 4
-};
 
 /////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////
 SystemController::SystemController() : isOpen(true), currentUser(nullptr) {   
-    // load all persistent data
     load_usage_log();
     load_user_logins();
     load_assets();
@@ -48,31 +45,6 @@ SystemController::SystemController() : isOpen(true), currentUser(nullptr) {
 }
 
 /////////////////////////////////////////////////////////////////
-// Safety checker for/before data loading
-/////////////////////////////////////////////////////////////////
-bool SystemController::load_json_safe(const std::string& path, json& out) {
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open JSON file: " << path << "\n";
-        update_usage_log("ERROR: Failed to load JSON: " + path);
-        return false;
-    }
-
-    try {
-        file >> out; // parse directly from stream
-        if (out.is_null()) {
-            std::cerr << "JSON file is empty: " << path << "\n";
-            return false;
-        }
-        std::cout << "JSON loaded successfully from " << path << "\n";
-        return true;
-    } catch (const std::exception& e) {
-        std::cerr << "JSON parsing error in " << path << ": " << e.what() << "\n";
-        return false;
-    }
-}
-
-/////////////////////////////////////////////////////////////////
 // CLI Entry Point !!!!
 /////////////////////////////////////////////////////////////////
 void SystemController::run() {
@@ -80,7 +52,7 @@ void SystemController::run() {
     update_usage_log("System started");
 
     while (isOpen) {
-        int result = homepage();
+        int result = main();
         if (result == -1) {
             update_usage_log("System shutdown");
             isOpen = false;
@@ -91,58 +63,37 @@ void SystemController::run() {
 /////////////////////////////////////////////////////////////////
 // HOMEPAGE MAIN MENU
 /////////////////////////////////////////////////////////////////
-int SystemController::homepage() {
+int SystemController::main() {
     char choiceChar;
     while (isOpen) {
         std::cout << "\n====== MAIN MENU ======\n";
         std::cout << "1. Login\n";
-        std::cout << "2. Create Account\n";
-        std::cout << "3. Exit\n";
+        // std::cout << "2. Create Account\n"; 
+        std::cout << "2. Exit\n";
         std::cout << "Enter choice: ";
-
         std::cin >> choiceChar;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         int roleChoice = -1; 
         bool userCreated = false;
 
         switch (choiceChar) {
             // handles log in
             case '1': {
-                int roleChoice = role_selection_menu();
-                if (roleChoice != -1){
-                    userCreated = log_in(roleChoice);   // returns bool (T/F) if user successfully created
-                }
+                userCreated = log_in();          // <------ returns bool (T/F) if user successfully created
 
-                std::cout << "Below should show failure message right now - PLACEHOLDER (uncomment once other User Classes made):\n";
+                std::cout << "PLACEHOLDER (uncomment once other User Classes made and uncomment in create_user()):\n";
                 if (userCreated) {
                     std::cout << "User Logged in.\n";
                     isOpen = false;
-                    break;
+                    break;  // exit switch
                 } else {
                     std::cout << "Login failed or cancelled.\n";
                     return -1;
                 }
             }
 
-            // handles account creation
-            case '2': {
-                int roleChoice = role_selection_menu();
-                if (roleChoice != -1){
-                    userCreated = create_account(roleChoice);
-                }
-
-                std::cout << "Below should show failure message right now - PLACEHOLDER (uncomment once other User Classes made):\n";
-                if (userCreated) {
-                    std::cout << "User Created Account (automatic login).\n";
-                    isOpen = false;
-                    break;
-                } else {
-                    std::cout << "Account creation failed or cancelled.\n";
-                    return -1;
-                }
-            }
-
             // handles system exit
-            case '3':
+            case '2':
                 std::cout << "Exiting system. Goodbye!\n";
                 isOpen = false;
                 return -1;
@@ -153,46 +104,22 @@ int SystemController::homepage() {
         }
     }
 
-    // INITIALIZE THE USER THAT HAS SUCCESSFULLY LOGGED-IN //
-    std::cout << "\nUser has been created. Done.\n";
+    // ------ CALL currentUser's main() -------- //
+    std::cout << "\nUser has been created. Calling user's main()....\n";
+    // currentUser->main();    // Calls ResearchStudent::main() or LabManager::main() etc based on currentUser's actual type
+
     return -1;
-}
-
-////////////////////////////////////////////////////////////////
-// Account Creation Handler
-/////////////////////////////////////////////////////////////////
-int SystemController::role_selection_menu() {
-    std::cout << "\nSelect Your Role:\n";
-    std::cout << "1. Student Researcher\n";
-    std::cout << "2. Faculty Researcher\n";
-    std::cout << "3. Lab Manager\n";
-    std::cout << "4. Lab Asset Manager\n";
-    std::cout << "Enter choice (1-4): ";
-
-    int r;
-    std::cin >> r;
-
-    // Invalid numeric or out-of-range                                                                  < ------------ (ASK PROFESSOR IF APPROPRIATE)                         
-    if (std::cin.fail() || r < 1 || r > 4) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid role selection.\n";
-        update_usage_log("Invalid role selection attempted");
-        return -1;
-    }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
-    return r;
 }
 
 /////////////////////////////////////////////////////////////////
 // Log-In Handler
 /////////////////////////////////////////////////////////////////
-bool SystemController::log_in(int roleChoice) {
+bool SystemController::log_in() {
     const int MAX_ATTEMPTS = 3;
     std::string firstName, lastName, email, password;
 
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
-        std::cout << "\nPlease enter your login credentials (" + ROLE_NAMES[roleChoice] + "):\n";
+        std::cout << "\nPlease enter your login credentials:\n";             // had before ... (" + ROLE_NAMES[roleChoice] + "):\n";
         std::cout << "First Name: ";
         std::getline(std::cin, firstName);
         std::cout << "Last Name: ";
@@ -202,14 +129,17 @@ bool SystemController::log_in(int roleChoice) {
         std::cout << "Password: ";
         std::getline(std::cin, password);
 
-        bool ok = validate_user(email, password, roleChoice);
-        if (ok) {
+        std::string role = validate_user(firstName, lastName, email, password);   // validate user step (check accounts.json for user existence)
+        
+        if (role != "") {
             // update usage log
             update_usage_log("User logged in: " + firstName + " " + lastName + " " + email);
             userActive = true;
 
+            std::cout << "CHECK:: User is a " << role << std::endl;
+
             // --------------- Create User instance -------------- //
-            currentUser = create_user(firstName, lastName, email, roleChoice);
+            currentUser = create_user(firstName, lastName, email, role);
             return currentUser != nullptr;
             // ----------------------------------------------------- //
 
@@ -223,86 +153,58 @@ bool SystemController::log_in(int roleChoice) {
     return false; // failed login after 3 attempts
 }
 
-
-//////////////////////////////////////////////////////////////////
-// Create Account Handler
-//////////////////////////////////////////////////////////////////
-bool SystemController::create_account(int roleChoice) {
-    std::string roleName;
-    if (roleChoice >= 1 && roleChoice <= 4)
-        roleName = ROLE_NAMES[roleChoice]; // ROLE_NAMES defined at the top of SystemController.cpp
-    else {
-        std::cout << "Invalid role selection.\n";
-        return false;
-    }
-
-    // user enters account details
-    std::cout << "\nCreate your account below:\n";
-    std::string firstName, lastName, email, password;
-    std::cout << "First Name: ";
-    std::getline(std::cin, firstName);
-    std::cout << "Last Name: ";
-    std::getline(std::cin, lastName);
-    std::cout << "Email: ";
-    std::getline(std::cin, email);
-    std::cout << "Password: ";
-    std::getline(std::cin, password);
-
-    json userEntry = {
-        {"first_name", firstName},
-        {"last_name", lastName},
-        {"email", email},
-        {"password", password}
-    };
-    roleLoginJson[roleName].push_back(userEntry);
-
-    // Save immediately in json file
-    std::ofstream file(DATA_DIR + "user_logins.json");
-    file << roleLoginJson.dump(4);
-
-    update_usage_log("Created account: " + email);
-
-    // Automatically log in the new user
-    currentUser = create_user(firstName, lastName, email, roleChoice);
-    return currentUser != nullptr;
-}
-
 /////////////////////////////////////////////////////////////////
 // Validate Login Credentials
 /////////////////////////////////////////////////////////////////
-bool SystemController::validate_user(const std::string& email, const std::string& password, int role) {
-    // get user --> string version for json lookup
-    std::string roleName;
-    if (role >= 1 && role <= 4)
-        roleName = ROLE_NAMES[role]; // ROLE_NAMES defined at the top of SystemController.cpp
-    else {
-        std::cout << "Invalid role selection.\n"; // just in case
-        return false;
+std::string SystemController::validate_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& password) {
+  
+    // roleLoginJson is assumed to be a JSON array
+    if (!roleLoginJson.is_array()) {
+        std::cerr << "Error: login JSON is not an array.\n";
+        return "";
     }
 
-    // check if role exists in json
-    if (!roleLoginJson.contains(roleName)) return false; // check role exists
-    std::cout << "User exists!\n";
+    for (const auto& user : roleLoginJson) {
+        // Safely check all fields
+        if (!user.contains("firstName") || !user.contains("lastName") ||
+            !user.contains("email")     || !user.contains("password") ||
+            !user.contains("role"))
+            continue;
 
-    // search for matching email/password
-    for (auto& u : roleLoginJson[roleName]) {
-        if (u["email"] == email && u["password"] == password) {
-            return true;
+        if (user["firstName"].get<std::string>() == firstName &&
+            user["lastName"].get<std::string>() == lastName &&
+            user["email"].get<std::string>() == email &&
+            user["password"].get<std::string>() == password)
+        {
+            return user["role"].get<std::string>();          // <--- changed to return a string that gets the users assigned role
         }
     }
-    return false;
+
+    return "";
 }
 
 /////////////////////////////////////////////////////////////////
 // Create User Instance
 /////////////////////////////////////////////////////////////////
-User* SystemController::create_user(const std::string& first_name, const std::string& last_name, const std::string& email, int role) {
-    // get user --> string version for json lookup
-    std::string roleName;
-    if (role >= 1 && role <= 4)
-        roleName = ROLE_NAMES[role]; // ROLE_NAMES defined at the top of SystemController.cpp
+User* SystemController::create_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& role) {
+
+    // ------ !!!!!!!!!!!! WAITING ON IMPLEMENTATION OF USER CLASSES -------- //
+
+    if (role == "research student") {
+        std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
+        // currentUser = new ResearchStudent(firstName, lastName, email, this);
+    }
+    // else if (role == "faculty researcher") {
+    //     currentUser = new FacultyResearcher(firstName, lastName, email, this);
+    // }
+    // else if (role == "lab manager") {
+    //     currentUser = new LabManager(firstName, lastName, email, this);
+    // }
+    // else if (role == "lab asset manager") {
+    //     currentUser = new LabAssetManager(firstName, lastName, email, this);
+    // }
     else {
-        std::cout << "Invalid role selection.\n"; // just in case
+        std::cerr << "Unknown role (*UNCOMMENT OTHERS^^): " << role << "\n";
         return nullptr;
     }
 
@@ -326,37 +228,99 @@ User* SystemController::create_user(const std::string& first_name, const std::st
 //////////////////////////////////////////////////////////////////
 // Load System Data !!
 //////////////////////////////////////////////////////////////////
+// Safety checker for/before data loading
+// This function safely loads and parses a JSON file from 
+// a given path, logging errors if the file cannot be opened, is empty, or contains invalid JSON.
+bool SystemController::load_json_safe(const std::string& path, json& out) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open JSON file: " << path << "\n";
+        update_usage_log("ERROR: Failed to load JSON: " + path);
+        return false;
+    }
+
+    try {
+        file >> out; // parse directly from stream
+        if (out.is_null()) {
+            std::cerr << "JSON file is empty: " << path << "\n";
+            return false;
+        }
+        std::cout << "JSON loaded successfully from " << path << "\n";
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "JSON parsing error in " << path << ": " << e.what() << "\n";
+        return false;
+    }
+}
+
 void SystemController::load_user_logins() {
-    std::string path = DATA_DIR + std::string("user_logins.json");
+    std::string path = DATA_DIR + "accounts.json";
     if (!load_json_safe(path, roleLoginJson)) {
-        // initialize default structure and create the file
-        roleLoginJson = json::object();
-        roleLoginJson["users"] = json::array();
+        // initialize as empty array, not object
+        roleLoginJson = json::array();
         std::ofstream out(path);
         if (out.is_open()) out << roleLoginJson.dump(4);
     }
 }
 
 void SystemController::load_assets() {
-    // json assetJson;
+//     json assetJson;
+//     std::string path = DATA_DIR + "assets.json";
 
-    // if (!load_json_safe("data/assets.json", assetJson))
-    //     return;
+//     if (!load_json_safe(path, assetJson))
+//         return;
 
-    // for (auto& a : assetJson) {
-    //     Assets* newAsset = new Assets(
-    //         a.value("id", -1),
-    //         a.value("name", "UNKNOWN"),
-    //         a.value("location", "UNKNOWN"),
-    //         std::stoi(a.value("accessLevel", "0"))
-    //     );
+//     for (auto& a : assetJson) {
+//         int id = a.value("id", -1);
+//         std::string name = a.value("name", "UNKNOWN");
+//         std::string location = a.value("location", "UNKNOWN");
+//         std::string category = a.value("category", "equipment");
+//         int accessLevel = a.value("accessLevel", 1);
 
-    //     assets.push_back(newAsset);
-    // }
-    std::cout << "Currently not loading assets (uncoment method in SystemController.cpp - wwaiting on Asset Intialization!!).\n";
+//         Assets* newAsset = nullptr;
+
+//         if (category == "consumable") {
+//             // Safely parse quantities (string or int)
+//             int quantity = 0;
+//             int threshold = 0;
+
+//             if (a.contains("quantityOnHand(grams)")) {
+//                 quantity = std::stoi(a["quantityOnHand(grams)"].get<std::string>());
+//             } else {
+//                 quantity = a.value("quantityOnHand", 0);
+//             }
+
+//             if (a.contains("minimumThreshold(grams)")) {
+//                 threshold = std::stoi(a["minimumThreshold(grams)"].get<std::string>());
+//             } else {
+//                 threshold = a.value("minimumThreshold", 0);
+//             }
+
+//             newAsset = new Consumable(id, name, location, accessLevel, quantity, threshold);
+//         }
+//         else {
+//             // Default = Equipment
+//             std::string condition = a.value("condition", "good");
+//             std::string status = a.value("operationalStatus", "available");
+
+//             Equipment* e = new Equipment(id, name, location, accessLevel, condition);
+
+//             if (status == "maintenance" || status == "out-of-service") {
+//                 e->setOutOfService(true, "Loaded as " + status);
+//             }
+
+//             newAsset = e;
+//         }
+
+//         assets.push_back(newAsset);
+//     }
+
+//     std::cout << "Loaded " << assets.size() << " assets from assets.json\n";
+    std::cout << "LOAD ASSETS: Function not implemented yet (waiting on Asset classes)\n";
 }
 
 void SystemController::load_policies() {
+    // std::cerr << "DEBUG: load_policies() called\n";
     json j;
     std::string path = DATA_DIR + std::string("policies.json");
     if (!load_json_safe(path, j)) {
@@ -366,10 +330,10 @@ void SystemController::load_policies() {
         return;
     }
 
+    
     for (auto& it: j.items()) {
         systemPolicies[it.key()] = it.value();
     }
-    std::cout << "................" << std::endl;
 }
 
 void SystemController::load_usage_log() {
