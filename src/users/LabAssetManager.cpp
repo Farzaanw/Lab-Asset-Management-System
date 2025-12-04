@@ -1,7 +1,7 @@
 #include "LabAssetManager.h"
 void LabAssetManager::main(){
 	while(true){
-		cout << endl << "---Lab Asset Manager Main Menu---" << endl;
+		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
 		cout << "1. Create Account" << endl;
 		cout << "2. Update Account" << endl;
 		cout << "3. Delete Account" << endl;
@@ -109,6 +109,7 @@ bool LabAssetManager::createAccount() {
 	account["firstName"] = firstName;
 	account["lastName"] = lastName;
 	account["email"] = email;
+	account["clearanceLevel"] = "1"; // Default clearance level, can be updated later
 	account["role"] = role;
 	account["password"] = password;
 	// Initialize reservations and notifications as empty arrays so each account
@@ -371,6 +372,12 @@ bool LabAssetManager::addAsset(){
 	}
 	cout << "Enter asset condition: ";
 	getline(cin, condition);
+	cout << "Enter asset access level: ";
+	getline(cin, accessLevel);
+	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list:" << endl << "1" << endl << "2" << endl;
+		getline(cin, accessLevel);
+	}
 	cout << "Enter asset location: ";
 	getline(cin, location);
 	cout << "Enter asset description: ";
@@ -395,6 +402,7 @@ bool LabAssetManager::addAsset(){
 	asset["operationalStatus"] = status;
 	asset["condition"] = condition;
 	asset["location"] = location;
+	asset["clearanceLevel"] = accessLevel;
 	if (category == "consumable") {
 		asset["quantityOnHand(grams)"] = quantityOnHand;
 		asset["minimumThreshold(grams)"] = minimumThreshold;

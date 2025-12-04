@@ -33,9 +33,8 @@ private:
 
 	//the level of clearence needed to obtain each asset
 	set<string> clearenceLevels = {
-		"1", // Research Student
-		"2", // Facutly Researcher
-		"3"  // Lab Manager
+		"1", //base clearance level
+		"2"  //higher clearance
 	};
 
 	set<string> assetTypes = {
