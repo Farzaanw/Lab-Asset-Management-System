@@ -26,6 +26,7 @@ public:
 		: User(firstName, lastName, email, role) {};
 
 
+	bool main();
 	// lists current policies
 	bool listPolicies();
 
