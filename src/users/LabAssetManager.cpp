@@ -1,5 +1,5 @@
 #include "LabAssetManager.h"
-int LabAssetManager::main(){
+void LabAssetManager::main(){
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl;
 		cout << "1. Create Account" << endl;
@@ -60,7 +60,6 @@ int LabAssetManager::main(){
 			cout << "Invalid choice. Please try again." << endl;
 		}
 	}
-	return 1;
 }
 
 bool LabAssetManager::createAccount() {

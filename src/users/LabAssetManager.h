@@ -9,7 +9,7 @@
 #include <set>
 #include <filesystem>
 #include "../library/nlohmann/json.hpp"
-#include "../SystemController.cpp"
+//#include "../SystemController.cpp"
 #include "User.h"
 
 using namespace std;
@@ -61,10 +61,10 @@ public:
 	LabAssetManager(const std::string& firstName = "",
 			   const std::string& lastName = "",
 			   const std::string& email = "",
-			   int role = 0)
-		: User(firstName, lastName, email, role) {};
+			   SystemController* system)
+		: User(firstName, lastName, email, system) {};
 
-	int main();
+	void main();
 
 	//accounts
 	bool createAccount();

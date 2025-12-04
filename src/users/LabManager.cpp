@@ -1,5 +1,5 @@
 #include "LabManager.h"
-bool LabManager::main(){
+void LabManager::main(){
 	while(true){
 		cout << endl << "---Lab Manager Main Menu---" << endl;
 		cout << "1. List Policies" << endl;
@@ -18,7 +18,6 @@ bool LabManager::main(){
 		}
 		else if (choice == "3") {
 			cout << "Exiting Lab Manager." << endl;
-			return true;
 		}
 		else {
 			cout << endl << "Invalid choice. Please try again." << endl;
