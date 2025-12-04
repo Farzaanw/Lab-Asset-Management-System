@@ -14,7 +14,7 @@
 #include "./users/User.h"
 #include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
-// #include "./users/LabManager.h"
+#include "./users/LabManager.h"
 // #include "./users/LabAssetManager.h"
 
 #include "./library/nlohmann/json.hpp"
@@ -191,11 +191,16 @@ User* SystemController::create_user(const std::string& firstName, const std::str
         return currentUser;
     }
     // else if (role == "faculty researcher") {
+    //     // std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
+
     //     currentUser = new FacultyResearcher(firstName, lastName, email, this);
+    //     r
     // }
-    // else if (role == "lab manager") {
-    //     currentUser = new LabManager(firstName, lastName, email, this);
-    // }
+    else if (role == "lab manager") {
+        std::cout << "Creating LabManager instance for " << firstName << " " << lastName << "\n";
+        currentUser = new LabManager(firstName, lastName, email, this);
+        return currentUser;
+    }
     // else if (role == "lab asset manager") {
     //     currentUser = new LabAssetManager(firstName, lastName, email, this);
     // }
