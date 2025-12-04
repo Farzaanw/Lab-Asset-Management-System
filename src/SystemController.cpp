@@ -12,7 +12,7 @@
 // class includes
 #include "SystemController.h"
 #include "User.h"
-#include "./users/FacultyResearcher.h"
+//#include "./users/FacultyResearcher.h"
 // #include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 // #include "./users/LabManager.h"
