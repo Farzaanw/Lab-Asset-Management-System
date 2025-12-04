@@ -29,7 +29,7 @@ public:
     virtual ~ResearchStudent();
 
     // Main menu entry point
-    void main();
+    void main() override;
 
     // Override pure virtual function from User
     std::string getRole() const override;
