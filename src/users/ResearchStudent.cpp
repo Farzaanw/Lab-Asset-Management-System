@@ -18,7 +18,7 @@ ResearchStudent::ResearchStudent(const std::string& firstName,
                                  const std::string& lastName,
                                  const std::string& email,
                                  SystemController* sys)
-    : User(firstName, lastName, email, sys),
+    : User(firstName, lastName, email),
       system(sys) {}
 
 //Destructor
@@ -28,7 +28,6 @@ ResearchStudent::~ResearchStudent() {}
 void ResearchStudent::main() {
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
-    cout << "Student ID: " << studentID << endl;
     cout << "=============================================\n" << endl;
 
     while(true) {
@@ -108,7 +107,7 @@ void ResearchStudent::main() {
             cout << "Invalid choice. Please try again." << endl;
         }
     }
-    return 1;
+
 }
 
 //HELPER FUNCTION - Make Reservation (collects all reservation info)
@@ -278,11 +277,33 @@ bool ResearchStudent::return_asset() {
 //view own assets
 bool ResearchStudent::viewAssets() {
     cout << "--- My Assets ---\n" << endl;
-    
-    //PLACEHOLDER: implement through Reservations/Assets class
-    cout << "[PLACEHOLDER] Fetching student assets..." << endl;
-    cout << "Student ID: " << studentID << endl;
-    
+
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
+    }
+    inFile >> assets;
+    inFile.close();
+
+    bool hasAssets = false;
+    for (const auto& asset : assets) {
+        // Check if reserved by this student (you'd need to add reservedBy field)
+        if (asset["operationalStatus"] == "reserved") {
+            cout << "ID: " << asset["id"] << endl;
+            cout << "Name: " << asset["name"] << endl;
+            cout << "Category: " << asset["category"] << endl;
+            cout << "Location: " << asset["location"] << endl;
+            cout << "-----------------------------------" << endl;
+            hasAssets = true;
+        }
+    }
+
+    if (!hasAssets) {
+        cout << "You have no assets checked out." << endl;
+    }
+
     return true;
 }
 

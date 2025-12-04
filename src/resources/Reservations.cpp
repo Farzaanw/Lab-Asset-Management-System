@@ -13,6 +13,36 @@
 #include <iomanip>   
 #include <vector>
 
+// Constructors 
+Reservations::Reservations() {
+    reservationID = 0;
+    assetID = 0;
+    User = "";
+    description = "";
+    startDate = "";
+    endDate = "";
+    permissionApproved = false;
+    confirmed = false;
+    overdueFlag = false;
+    status = PENDING;
+}
+
+// Parameterized constructor
+Reservations::Reservations(int resID, int assetID_, const std::string& user,
+                           const std::string& desc, const std::string& start,
+                           const std::string& end, bool permission)
+    : reservationID(resID),
+      assetID(assetID_),
+      User(user),
+      description(desc),
+      startDate(start),
+      endDate(end),
+      permissionApproved(permission),
+      confirmed(false),
+      overdueFlag(false),
+      status(permission ? APPROVED : PENDING)
+{}
+
 using json = nlohmann::json;
 
 static std::vector<Reservations> reservationsDB;
