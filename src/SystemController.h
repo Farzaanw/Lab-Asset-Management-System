@@ -29,7 +29,7 @@ public:
     void run();    // CLI entry point
 
     // variables
-    std::vector<Assets*> assets;     // Stores all the assets available in the system
+    // std::vector<Assets*> assets;     // Stores all the assets available in the system
 
 private:
     // ================

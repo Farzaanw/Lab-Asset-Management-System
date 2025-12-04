@@ -876,4 +876,20 @@ bool FacultyResearcher::cancelGroupReservations(int labGroupID, int reservationI
   cout << "Reservation ID: " << reservationID << endl;
   
   // TODO: Implement with lab groups data structure
+  cout << "[PLACEHOLDER] Cancel group reservation functionality - requires lab groups implementation" << endl;
+  
+  return false;
+}
+
+//DOCUMENTS
+//produce a usage report for resource usage by a group
+Documents FacultyResearcher::generateUsageReport(Assets* assetUsed, Documents* dataRecords) {
+  cout << "--- Generate Usage Report ---\n" << endl;
+  
+  // TODO: Implement with documents data structure
+  cout << "[PLACEHOLDER] Generate usage report functionality - requires documents implementation" << endl;
+  
+  // Return empty/default Documents object
+  Documents emptyDoc;
+  return emptyDoc;
 }

@@ -13,7 +13,8 @@ void Assets::displayInfo() const {
 }
 
 void Assets::addDocument(int id, std::string title) {
-    documents.push_back({id, title});
+    // documents.push_back({id, title});
+    std::cout << "PLACEHOLDER -- fix this" << std::endl;
 }
 
 std::vector<Documents> Assets::getDocuments() const {
