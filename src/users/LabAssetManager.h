@@ -23,7 +23,7 @@ private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	const string accountsFile = "../../data/accounts.json";
 	const string assetsFile = "../../data/assets.json";
-	const string usageLogFile = "../../data/usage_logs.json";
+	const string usageLogFile = "../../data/usage_log.json";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
@@ -31,10 +31,11 @@ private:
 		"lab asset manager"
 	};
 
-	//the level of clearence needed to obtain each asset
-	set<string> clearenceLevels = {
-		"1", //base clearance level
-		"2"  //higher clearance
+	//the level of clearance needed to obtain each asset
+	set<string> clearanceLevels = {
+		"1", //low clearance level (base clearance)
+		"2",  //Medium clearance level
+		"3"  //High clearance level
 	};
 
 	set<string> assetTypes = {
