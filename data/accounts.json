@@ -40,5 +40,16 @@
         "password": "LaManager11!",
         "reservations": [],
         "notifications": []
+    },
+    {
+        "id": 5,
+        "firstName": "Mc",
+        "lastName": "Toodle",
+        "email": "McToodle@oregonstate.edu",
+        "clearanceLevel": "1",
+        "role": "research student",
+        "password": "ResearchStudent22!",
+        "reservations": [],
+        "notifications": []
     }
 ]
