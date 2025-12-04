@@ -9,12 +9,12 @@
 #include <set>
 #include <filesystem>
 #include "../library/nlohmann/json.hpp"
-#include "../SystemController.cpp"
-#include "User.h"
+#include "../SystemController.h"
+#include "../users/User.h"
 #pragma once
 using namespace std;
 namespace fs = std::filesystem;
-using json = nlohmann::ordered_json; // By default json has alphabetical order for keys this prevents that.
+using json = nlohmann::json; // By default json has alphabetical order for keys this prevents that.
 
 class Documents {
 private:

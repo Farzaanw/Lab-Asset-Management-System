@@ -31,6 +31,9 @@ public:
     // Main menu entry point
     void main();
 
+    // Override pure virtual function from User
+    std::string getRole() const override;
+
     // ASSET MANAGEMENT
     // Reserve an asset for research use
     bool reserveAsset();

@@ -10,7 +10,8 @@
 #include <vector>
 #include <ctime>
 #include "ResearchStudent.h"
-#include "SystemController.h"
+#include "../SystemController.h"
+#include "../library/nlohmann/json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -25,6 +26,11 @@ ResearchStudent::ResearchStudent(const std::string& firstName,
 
 //Destructor
 ResearchStudent::~ResearchStudent() {}
+
+//Override getRole
+std::string ResearchStudent::getRole() const {
+    return "research student";
+}
 
 //Main menu
 void ResearchStudent::main() {
