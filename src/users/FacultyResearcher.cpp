@@ -51,17 +51,18 @@ void FacultyResearcher::main() {
         cout << "7. Cancel Reservation" << endl;
 
         cout << "Software Licenses: " << endl;
-        cout << "8. View Available License Seats" << endl;
-        cout << "9. Request Software License" << endl;
-        cout << "10. View My Licenses" << endl;
+        cout << "8. View Available License Seats" << endl; // move to view aavailable ssets
+        cout << "9. Request Software License" << endl; //move to reserve asset, chaneg to reserv/request
+        cout << "10. View My Licenses" << endl; //move to view my reservations
 
         cout << "Student/Group Work: " << endl;
-        cout << "11. View Student Assets" << endl;
-        cout << "12. View Group Licenses" << endl;
-        cout << "13. Request Group Software License" << endl;
-        cout << "14. View Lab Group" << endl;
-        cout << "15. View Group Reservations" << endl;
-        cout << "16. Cancel Group Reservation" << endl;
+        cout << "11. View Student Assets" << endl; //change to view group/student assets
+        //when ^ this runs, input either the group ID or student ID, this will show their assets
+        cout << "12. View Group Licenses" << endl; //move to above^
+        cout << "13. Request Group Software License" << endl; //need to keep
+        cout << "14. View Lab Group" << endl; //keep, views students in the group
+        cout << "15. View Group Reservations" << endl; //this should be changed to the firsy very one, view student/group assets
+        cout << "16. Cancel Group Reservation" << endl; //keep, add student cancelation too
 
         cout << "Additonal Options: " << endl;
         cout << "17. Generate Usage Report" << endl;
