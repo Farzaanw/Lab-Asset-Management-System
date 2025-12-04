@@ -7,6 +7,14 @@
         {
             "event": "User logged in: Bob Sanders SandersBob@oregonstate.edu",
             "timestamp": "2025-12-03 20:46:24"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 20:53:52"
+        },
+        {
+            "event": "User logged in: Bob Sanders SandersBob@oregonstate.edu",
+            "timestamp": "2025-12-03 20:54:14"
         }
     ]
 }
