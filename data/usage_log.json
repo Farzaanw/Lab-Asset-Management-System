@@ -251,6 +251,14 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-03 19:08:50"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-03 19:09:16"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-03 19:09:18"
         }
     ]
 }
