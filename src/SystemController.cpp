@@ -11,13 +11,8 @@
 
 // class includes
 #include "SystemController.h"
-<<<<<<< HEAD
-#include "User.h"
-//#include "./users/FacultyResearcher.h"
-=======
 #include "./users/User.h"
->>>>>>> cbe6caa58aa6439ed0ce45040c3be907a4983ca3
-// #include "./users/ResearchStudent.h"
+#include "./users/ResearchStudent.h"
 // #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 // #include "./users/LabManager.h"
 // #include "./users/LabAssetManager.h"

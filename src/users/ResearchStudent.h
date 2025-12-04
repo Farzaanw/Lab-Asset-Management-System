@@ -16,7 +16,6 @@ class SystemController;
 
 class ResearchStudent : public User {
 private:
-    int studentID;
     SystemController* system;
 
 public:
@@ -31,9 +30,6 @@ public:
 
     // Main menu entry point
     void main();
-
-    // Helper function for making reservations
-    bool makeReservation(int assetID, const std::string& assetType);
 
     // ASSET MANAGEMENT
     // Reserve an asset for research use
