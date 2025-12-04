@@ -13,7 +13,7 @@
 #include "SystemController.h"
 #include "./users/User.h"
 #include "./users/ResearchStudent.h"
-// #include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
+#include "./users/FacultyResearcher.h"                                   // <--- WAITING ON THESE CLASS IMPLEMENTATIONS
 #include "./users/LabManager.h"
 // #include "./users/LabAssetManager.h"
 
@@ -183,43 +183,30 @@ std::string SystemController::validate_user(const std::string& firstName, const 
 /////////////////////////////////////////////////////////////////
 User* SystemController::create_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& role) {
 
-    // ------ !!!!!!!!!!!! WAITING ON IMPLEMENTATION OF USER CLASSES -------- //
-
     if (role == "research student") {
         std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
         currentUser = new ResearchStudent(firstName, lastName, email, this);
         return currentUser;
     }
-    // else if (role == "faculty researcher") {
-    //     // std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
-
-    //     currentUser = new FacultyResearcher(firstName, lastName, email, this);
-    //     r
-    // }
+    else if (role == "faculty researcher") {
+        std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
+        currentUser = new FacultyResearcher(firstName, lastName, email, this);
+        return currentUser;
+    }
     else if (role == "lab manager") {
         std::cout << "Creating LabManager instance for " << firstName << " " << lastName << "\n";
         currentUser = new LabManager(firstName, lastName, email, this);
         return currentUser;
     }
     // else if (role == "lab asset manager") {
+    //     std::cout << "Creating LabAssetManager instance for " << firstName << " " << lastName << "\n";
     //     currentUser = new LabAssetManager(firstName, lastName, email, this);
+    //     return currentUser;
     // }
     else {
         std::cerr << "Unknown role (*UNCOMMENT OTHERS^^): " << role << "\n";
         return nullptr;
     }
-
-
-    // ------ !!!!!!!!!!!! WAITING ON IMPLEMENTATION OF USER CLASSES -------- //
-
-
-    // if (role == "student") return new ResearchStudent(name, email, this);
-    // if (role == "faculty") return new FacultyResearcher(name, email, this);
-    // if (role == "manager") return new LabManager(name, email, password, this);
-    // if (role == "assetManager") return new LabAssetManager(name, email, this);
-
-    // ----------------------------------------------------- //
-
 
     std::cout << "^^PLACEHOLDER (INTATIATING USER HERE -- WAITING ON CLASS IMPLEMENTATION - then uncomment; return null_ptr for now:).\n";
     return nullptr;

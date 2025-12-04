@@ -30,6 +30,12 @@ FacultyResearcher::FacultyResearcher(const std::string& firstName,
       : User(firstName, lastName, email, sys), 
       system(sys) {}
 
+//Override getRole
+std::string FacultyResearcher::getRole() const {
+    return "faculty researcher";
+}
+
+
 //BASIC
 //displays the dashboard and the user actions
 void FacultyResearcher::display_page() {

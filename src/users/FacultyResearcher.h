@@ -11,7 +11,7 @@
 #include "./resources/Assets.h"
 #include "./resources/Documents.h"
 #include "./resources/Reservations.h"
-#include "./users/User.h"
+#include "User.h"
 #include "SystemController.h"
 #include "./library/nlohmann/json.hpp"
 #include <fstream>
@@ -29,16 +29,6 @@ public:
   //FacultyResearcher(string email, SystemController* sys) : User(email, sys) {}
   //void showMenu() override;
   //void reserveAsset(int assetID);
-  
-  //main starting point
-  void main() override;
-
-  //Menus
-  void assetManagementMenu();
-  void labGroupManagementMenu();
-  void softwareLicenseMenu();
-  void reportsAndDocumentsMenu();
-  void reservationsMenu();
 
   //Constructor
   FacultyResearcher(const std::string& firstName,
@@ -47,7 +37,20 @@ public:
                       SystemController* sys);
 
   //Destructor
-  virtual ~FacultyResearcher() override;
+  virtual ~FacultyResearcher();
+  
+  //main starting point
+  void main() override;
+
+  // Override pure virtual function from User
+  std::string getRole() const override;
+
+  //Menus
+  void assetManagementMenu();
+  void labGroupManagementMenu();
+  void softwareLicenseMenu();
+  void reportsAndDocumentsMenu();
+  void reservationsMenu();
 
   //BASIC
   //Navigation, displays the dashboard and the user actions
@@ -65,11 +68,13 @@ public:
   // view a student's list of assets they have checked out
   std::vector<Assets*> viewStudentAssets(const std::string& studentEmail);
   //reserve multiple assets
-  bool reserveMultipleAssets(std::vector<int> assetIDs, const std::string& startDate, const std::string& endDate);
+
+  // bool reserveMultipleAssets(std::vector<int> assetIDs, const std::string& startDate, const std::string& endDate);
+  
   //search and filter assets 
-  std::vector<Assets*> searchAssets(const std::string& category, const std::string& status);
+  // std::vector<Assets*> searchAssets(const std::string& category, const std::string& status);
   //view all assets 
-  std::vector<Assets*> viewAvailableAssets();
+  // std::vector<Assets*> viewAvailableAssets();
 
 
   //GROUP SECTION
@@ -98,11 +103,11 @@ public:
   //Manage Group reservations
   bool cancelGroupReservations(int labGroupID, int reservationID);
   //view own reservations
-  std::vector<Reservations*> viewMyReservations();
+  // std::vector<Reservations*> viewMyReservations();
   //cancel own reservation
-  bool cancelReservation(int reservationID);
+  // bool cancelReservation(int reservationID);
   //make reservation
-  bool makeReservation(int reservationID, int labGroupID);
+  // bool makeReservation(int reservationID, int labGroupID);
 
   //DOCUMENTS
 	//produce a usage report for resource usage by a group
