@@ -1,55 +1,55 @@
 [
     {
-        "id": 1,
-        "firstName": "Daniel",
-        "lastName": "McSandle",
-        "email": "McSandleDaniel@oregonstate.edu",
         "clearanceLevel": "1",
-        "role": "research student",
+        "email": "McSandleDaniel@oregonstate.edu",
+        "firstName": "Daniel",
+        "id": 1,
+        "lastName": "McSandle",
+        "notifications": [],
         "password": "ResearchStudent11!",
         "reservations": [],
-        "notifications": []
+        "role": "research student"
     },
     {
-        "id": 2,
-        "firstName": "Jimmy",
-        "lastName": "Apple",
-        "email": "AppleJimmy@oregonstate.edu",
         "clearanceLevel": "2",
-        "role": "faculty researcher",
+        "email": "AppleJimmy@oregonstate.edu",
+        "firstName": "Jimmy",
+        "id": 2,
+        "lastName": "Apple",
+        "notifications": [],
         "password": "FacultyResearcherSecurepass1432/!",
         "reservations": [],
-        "notifications": []
+        "role": "faculty researcher"
     },
     {
-        "id": 3,
-        "firstName": "Bob",
-        "lastName": "Sanders",
         "email": "SandersBob@oregonstate.edu",
-        "role": "lab manager",
+        "firstName": "Bob",
+        "id": 3,
+        "lastName": "Sanders",
+        "notifications": [],
         "password": "LabManager3289u!",
         "reservations": [],
-        "notifications": []
+        "role": "lab manager"
     },
     {
-        "id": 4,
-        "firstName": "Jeff",
-        "lastName": "Bobs",
         "email": "BobsJeff@oregonstate.edu",
-        "role": "lab asset manager",
+        "firstName": "Jeff",
+        "id": 4,
+        "lastName": "Bobs",
+        "notifications": [],
         "password": "LaManager11!",
         "reservations": [],
-        "notifications": []
+        "role": "lab asset manager"
     },
     {
-        "id": 5,
-        "firstName": "Mc",
-        "lastName": "Toodle",
-        "email": "McToodle@oregonstate.edu",
         "clearanceLevel": "1",
-        "role": "research student",
+        "email": "McToodle@oregonstate.edu",
+        "firstName": "Mc",
+        "id": 5,
+        "lastName": "Toodle",
+        "notifications": [],
         "password": "ResearchStudent22!",
         "reservations": [],
-        "notifications": []
+        "role": "research student"
     }
 ]

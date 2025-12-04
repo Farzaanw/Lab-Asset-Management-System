@@ -39,6 +39,110 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-03 22:36:27"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:36:32"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 13:39:34"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:46:09"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 13:46:33"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:48:40"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 13:49:00"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:53:43"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:54:15"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 13:54:34"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 13:56:44"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 13:57:50"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 14:15:06"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 14:15:21"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 14:17:10"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 14:26:59"
+        },
+        {
+            "event": "Failed login attempt for email: ResearchStudent11!",
+            "timestamp": "2025-12-04 14:27:47"
+        },
+        {
+            "event": "Failed login attempt for email: McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 14:28:04"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 14:28:27"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 15:14:39"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 15:15:03"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 15:20:41"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 15:21:08"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-04 15:28:35"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 15:32:32"
+        },
+        {
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 15:32:51"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-04 15:33:19"
         }
     ]
 }

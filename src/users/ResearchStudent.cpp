@@ -57,7 +57,14 @@ void ResearchStudent::main() {
         cout << endl;
 
         if (choice == "1") {
-            reserveAsset();
+            ///////////////////
+            if (reserveAsset()){
+                cout << "Asset officially reserved." << endl;
+            } else {
+                cout << "Asset reservation failed or request sent to Lab Manager for approval." << endl;
+                cout << "^Check which one true ---- Implment SEND NOTIFICATION TO LAB MANAGER in reserveAsset() function." << endl;
+            }
+            ///////////////////////////
         }
         else if (choice == "2") {
             return_asset();
@@ -118,7 +125,7 @@ void ResearchStudent::main() {
 bool ResearchStudent::reserveAsset() {
     cout << "--- Reserve Asset ---\n" << endl;
     
-    // First, show available assets
+    // Get all available assets
     json assets;
     ifstream inFile("../../data/assets.json");
     if (!inFile.is_open()) {
@@ -128,6 +135,18 @@ bool ResearchStudent::reserveAsset() {
     inFile >> assets;
     inFile.close();
 
+    // ---------- get all accounts ----------
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) {
+        cerr << "Error: Could not open accounts.json" << endl;
+        return false;
+    }
+    accountsIn >> accounts;
+    accountsIn.close();
+    // --------------------------------------------------
+
+    // First, show available assets
     cout << "Available Assets:\n" << endl;
     bool hasAvailable = false;
     for (const auto& asset : assets) {
@@ -160,7 +179,6 @@ bool ResearchStudent::reserveAsset() {
             break;
         }
     }
-
     if (!targetAsset) {
         cout << "Error: Asset ID " << assetID << " not found!" << endl;
         return false;
@@ -179,43 +197,79 @@ bool ResearchStudent::reserveAsset() {
     getline(cin, startDate);
     cout << "Enter End Date (YYYY-MM-DD): ";
     getline(cin, endDate);
-    
-    // Get asset type/category to determine if approval needed
-    string assetCategory = (*targetAsset)["category"].get<string>();
-    
-    // For certain asset types, may need reason/justification
-    if (assetCategory == "high-value" || assetCategory == "restricted") {
-        cout << "Enter reason for reservation: ";
-        getline(cin, reason);
-        cout << "This asset requires approval. You will be notified once reviewed." << endl;
-    }
-    
     // Validate dates
     if (startDate.empty() || endDate.empty()) {
         cout << "Error: Invalid date format!" << endl;
         return false;
     }
+
+    // --------- find the user's account info
+    json* targetUser = nullptr;
+    for (auto& account : accounts) {
+        if (account["email"].get<string>() == getEmail()) {
+            targetUser = &account;
+            break;
+        }
+    }
+    // -----------------------------------------
     
-    // Create reservation entry
+    // Get user's clerance level (ADDED HERE)
+    string userClearanceLevel = (*targetUser)["clearanceLevel"].get<string>();
+
+    // Get asset clearance level
+    string assetClearanceLevel = (*targetAsset)["clearanceLevel"].get<string>();
+    
+    // If user's clerance is lower than asset's, require reason (SEND REQUEST TO LAB MANAGER!!!!!!!!!1)
+    if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel)) {
+        cout << "Enter reason for reservation: ";
+        getline(cin, reason);
+        cout << "This asset requires approval. You will be notified once reviewed." << endl;
+
+        // Create reservation entry with "pending" status
+        json reservation = {
+            {"assetID", assetID},
+            {"assetName", (*targetAsset)["name"]},
+            {"startDate", startDate},
+            {"endDate", endDate},
+            {"status", "pending"},
+            {"reason", reason}
+        };
+
+        // Update user's reservations in accounts.json
+        bool userFound = false;
+        for (auto& account : accounts) {
+            if (account["email"].get<string>() == getEmail()) {
+                account["reservations"].push_back(reservation);
+                userFound = true;
+                break;
+            }
+        }
+        if (!userFound) {
+            cout << "Error: User account not found!" << endl;
+            return false;
+        }
+
+        // Save updated accounts
+        ofstream accountsOut("../../data/accounts.json");
+        accountsOut << setw(4) << accounts << endl;
+        accountsOut.close();
+
+        // Notify Lab Manager (TODO: implement notification system)
+        cout << "NEED TO IMPLMENT ---- Notification sent to Lab Manager for approval." << endl;
+        return false; // Indicate that approval is needed
+    }
+    
+    // ELSE --- Create reservation entry
     json reservation = {
         {"assetID", assetID},
         {"assetName", (*targetAsset)["name"]},
         {"startDate", startDate},
         {"endDate", endDate},
-        {"status", "pending"},
+        {"status", "approved"},
         {"reason", reason}
     };
 
-    // Update user's reservations in accounts.json
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
+    // Update user's reservations (reuse already loaded accounts)
     bool userFound = false;
     for (auto& account : accounts) {
         if (account["email"].get<string>() == getEmail()) {
@@ -260,6 +314,7 @@ bool ResearchStudent::return_asset() {
     accountsIn >> accounts;
     accountsIn.close();
 
+    // get user's account
     json* userAccount = nullptr;
     for (auto& account : accounts) {
         if (account["email"].get<string>() == getEmail()) {
@@ -267,7 +322,6 @@ bool ResearchStudent::return_asset() {
             break;
         }
     }
-
     if (!userAccount || (*userAccount)["reservations"].empty()) {
         cout << "You have no assets to return." << endl;
         return false;
