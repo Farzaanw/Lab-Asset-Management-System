@@ -40,22 +40,30 @@ void FacultyResearcher::main() {
 
     while(true) {
         cout << endl << "---Faculty Researcher Main Menu---" << endl;
+
+        cout << "Assets: " << endl;
         cout << "1. Reserve Asset" << endl;
         cout << "2. Reserve Multiple Assets" << endl;
         cout << "3. Return Asset" << endl;
         cout << "4. View Available Assets" << endl;
         cout << "5. Search/Filter Assets" << endl;
-        cout << "6. View Student Assets" << endl;
-        cout << "7. View My Reservations" << endl;
-        cout << "8. Cancel Reservation" << endl;
-        cout << "9. View Available License Seats" << endl;
-        cout << "10. Request Software License" << endl;
-        cout << "11. Request Group Software License" << endl;
-        cout << "12. View My Licenses" << endl;
-        cout << "13. View Group Licenses" << endl;
+        cout << "6. View My Reservations" << endl;
+        cout << "7. Cancel Reservation" << endl;
+
+        cout << "Software Licenses: " << endl;
+        cout << "8. View Available License Seats" << endl;
+        cout << "9. Request Software License" << endl;
+        cout << "10. View My Licenses" << endl;
+
+        cout << "Student/Group Work: " << endl;
+        cout << "11. View Student Assets" << endl;
+        cout << "12. View Group Licenses" << endl;
+        cout << "13. Request Group Software License" << endl;
         cout << "14. View Lab Group" << endl;
         cout << "15. View Group Reservations" << endl;
         cout << "16. Cancel Group Reservation" << endl;
+
+        cout << "Additonal Options: " << endl;
         cout << "17. Generate Usage Report" << endl;
         cout << "18. Logout" << endl;
         cout << "Please enter your choice: ";
@@ -80,28 +88,32 @@ void FacultyResearcher::main() {
             searchAssets("", "");
         }
         else if (choice == "6") {
-            viewStudentAssets("");
-        }
-        else if (choice == "7") {
             viewMyReservations();
         }
-        else if (choice == "8") {
+        else if (choice == "7") {
             cancelReservation(0);
         }
-        else if (choice == "9") {
+        else if (choice == "8") {
             viewAvailableLicenseSeats();
         }
-        else if (choice == "10") {
+        else if (choice == "9") {
             requestSoftwareLicense(0, "", "");
         }
+        else if (choice == "10") {
+            viewLicenses();
+            
+        }
         else if (choice == "11") {
-            requestSoftwareLicenseGroup(0, 0, "", "");
+            viewStudentAssets("");
+            
         }
         else if (choice == "12") {
-            viewLicenses();
+            viewGroupLicenses(0);
+            
         }
         else if (choice == "13") {
-            viewGroupLicenses(0);
+            requestSoftwareLicenseGroup(0, 0, "", "");
+            
         }
         else if (choice == "14") {
             viewGroup(0);
