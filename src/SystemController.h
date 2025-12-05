@@ -27,6 +27,8 @@ public:
     // methods
     SystemController();     // Loads all data from /data    
     void run();    // CLI entry point
+    // Append a usage entry (reservation) to the in-memory log and persist to disk
+    bool appendUsageEntry(const nlohmann::json& entry);
 
     // variables
     // std::vector<Assets*> assets;     // Stores all the assets available in the system

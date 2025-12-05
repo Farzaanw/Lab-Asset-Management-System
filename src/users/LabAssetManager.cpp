@@ -676,10 +676,68 @@ bool LabAssetManager::viewLogs() {
 		cout << "No logs found." << endl;
 		return true;
 	}
-	cout << "Listing all logs:\n" << endl;
-	for (const auto& log : logs) {
-		cout << "Event: " << log["event"] << endl;
-		cout << "Timestamp: " << log["timestamp"] << endl;
+
+	// We'll display two kinds of entries if present:
+	// - system events (key: "events" or a top-level array of event objects)
+	// - usage entries (key: "usage") created when reservations are made
+
+	// Helper to find an array by key or top-level
+	auto find_array_by_key = [&](const json& j, const std::string& key) -> const json* {
+		if (j.is_object() && j.contains(key) && j[key].is_array()) return &j[key];
+		if (j.is_object()) {
+			for (auto it = j.begin(); it != j.end(); ++it) {
+				if (it.key() == key && it.value().is_array()) return &it.value();
+			}
+		}
+		return nullptr;
+	};
+
+	const json* eventsPtr = nullptr;
+	// Prefer explicit "events" array
+	eventsPtr = find_array_by_key(logs, "events");
+	// If no explicit events array, and the file itself is an array, treat it as events
+	if (!eventsPtr && logs.is_array()) eventsPtr = &logs;
+	// If still no events found, try to pick the first array value as events
+	if (!eventsPtr && logs.is_object()) {
+		for (auto it = logs.begin(); it != logs.end(); ++it) {
+			if (it.value().is_array()) { eventsPtr = &it.value(); break; }
+		}
+	}
+
+	// Print events if found
+	if (eventsPtr) {
+		cout << "Listing system events:\n" << endl;
+		for (const auto& ev : *eventsPtr) {
+			std::string e = ev.contains("event") ? ev["event"].get<std::string>() : "(no event)";
+			std::string ts = ev.contains("timestamp") ? ev["timestamp"].get<std::string>() : "(no timestamp)";
+			cout << "Event: " << e << endl;
+			cout << "Timestamp: " << ts << endl;
+		}
+	} else {
+		cout << "No system events found." << endl;
+	}
+
+	// Now display usage logs (reservations)
+	const json* usagePtr = find_array_by_key(logs, "usage");
+	if (!usagePtr && logs.is_object() && logs.contains("usage") && logs["usage"].is_array()) usagePtr = &logs["usage"];
+
+	if (usagePtr && !usagePtr->empty()) {
+		cout << "\nListing usage logs (reservations):\n" << endl;
+		for (const auto& u : *usagePtr) {
+			std::string email = u.contains("email") ? u["email"].get<std::string>() : "(no email)";
+			std::string start = u.contains("start") ? u["start"].get<std::string>() : "(no start)";
+			std::string end = u.contains("end") ? u["end"].get<std::string>() : "(no end)";
+			std::string logged = u.contains("loggedAt") ? u["loggedAt"].get<std::string>() : "(no loggedAt)";
+			std::string assetid = u.contains("assetID") ? std::to_string(u["assetID"].get<int>()) : "(no assetID)";
+			cout << "User Email: " << email << endl;
+			cout << "Asset ID: " << assetid << endl;
+			cout << "Start: " << start << endl;
+			cout << "End: " << end << endl;
+			cout << "Logged At: " << logged << endl;
+			cout << "-----------------------------------" << endl;
+		}
+	} else {
+		cout << "\nNo usage logs found." << endl;
 	}
 	return true;
 }

@@ -17,6 +17,8 @@ class SystemController;
 class ResearchStudent : public User {
 private:
     SystemController* system;
+    // Append a usage log entry when a reservation is created
+    bool appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime);
 
 public:
     // Constructor

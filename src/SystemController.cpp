@@ -346,8 +346,46 @@ void SystemController::update_usage_log(const std::string& message) {
 
     usage_log["events"].push_back(entry);
 
-    std::ofstream out(DATA_DIR + std::string("usage_log.json"));
-    out << std::setw(4) << usage_log;
+    // Write in-memory usage_log (includes both "events" and "usage" arrays)
+    try {
+        std::string path = DATA_DIR + std::string("usage_log.json");
+        std::ofstream out(path);
+        if (!out.is_open()) {
+            std::cerr << "Warning: Could not open usage_log.json for writing: " << path << std::endl;
+            return;
+        }
+        out << std::setw(4) << usage_log;
+        out.close();
+    } catch (const std::exception& e) {
+        std::cerr << "Exception while updating usage log: " << e.what() << std::endl;
+    }
+}
+
+// Append a usage entry (reservation) into the central usage_log and persist it.
+bool SystemController::appendUsageEntry(const nlohmann::json& entry) {
+    // Ensure events exists (update_usage_log already does this on startup)
+    if (!usage_log.is_object()) usage_log = json::object();
+
+    if (!usage_log.contains("usage") || !usage_log["usage"].is_array())
+        usage_log["usage"] = json::array();
+
+    usage_log["usage"].push_back(entry);
+
+    // Write back to disk, preserving events (usage_log already contains events)
+    try {
+        std::string path = DATA_DIR + std::string("usage_log.json");
+        std::ofstream out(path);
+        if (!out.is_open()) {
+            std::cerr << "Error: Could not open usage_log.json for appending usage entry: " << path << std::endl;
+            return false;
+        }
+        out << std::setw(4) << usage_log;
+        out.close();
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception writing usage log: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 // Helper to get current time as string (for usage log timestamps)

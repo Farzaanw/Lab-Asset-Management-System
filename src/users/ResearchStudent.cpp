@@ -9,6 +9,8 @@
 #include <chrono>
 #include <vector>
 #include <ctime>
+#include <sstream>
+#include <filesystem>
 #include "ResearchStudent.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
@@ -242,7 +244,93 @@ bool ResearchStudent::reserveAsset() {
     outAssetFile << setw(4) << assets << endl;
     outAssetFile.close();
     
+    // Append usage log entry for this reservation
+    if (!appendUsageLog(getEmail(), assetID, startDate, endDate)) {
+        cerr << "Warning: Failed to write usage log entry." << endl;
+    }
+
     cout << "Asset reserved successfully!" << endl;
+    return true;
+}
+
+// Append a usage log entry describing the reservation
+bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime) {
+    const std::string path = "../../data/usage_log.json";
+    json doc;
+
+    // Debug: print current working directory and resolved path to help diagnose write failures
+    try {
+        auto cwd = std::filesystem::current_path();
+        std::cerr << "[appendUsageLog] CWD=" << cwd.string() << "; resolving '" << path << "' -> "
+                  << std::filesystem::absolute(path).string() << std::endl;
+        std::cerr << "[appendUsageLog] target exists=" << (std::filesystem::exists(path) ? "yes" : "no") << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[appendUsageLog] filesystem error: " << e.what() << std::endl;
+    }
+
+    // Load existing file (if any)
+    std::ifstream in(path);
+    if (in.is_open()) {
+        try {
+            in >> doc;
+        } catch (const std::exception& e) {
+            // malformed file: start fresh
+            doc = json::object();
+        }
+        in.close();
+    } else {
+        doc = json::object();
+    }
+
+    // Ensure we have an array to store usage entries. Use key "usage" so we don't clobber existing "events".
+    if (!doc.contains("usage") || !doc["usage"].is_array()) {
+        doc["usage"] = json::array();
+    }
+
+    // Create entry
+    json entry;
+    entry["email"] = email;
+    entry["assetID"] = assetID;
+    entry["start"] = startTime;
+    entry["end"] = endTime;
+
+    // add a timestamp
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::ostringstream ss;
+    ss << std::put_time(std::localtime(&now_c), "%Y-%m-%d %H:%M:%S");
+    entry["loggedAt"] = ss.str();
+
+    doc["usage"].push_back(entry);
+
+    // If we have a SystemController pointer, prefer using it so the in-memory
+    // usage_log is updated as well; this prevents later overwrites from removing
+    // usage entries.
+    if (system != nullptr) {
+        try {
+            return system->appendUsageEntry(entry);
+        } catch (const std::exception& e) {
+            cerr << "Error: system->appendUsageEntry threw: " << e.what() << endl;
+            // fall through to direct write
+        }
+    }
+
+    // Fallback: write directly to file (legacy behavior)
+    std::ofstream out(path);
+    if (!out.is_open()) {
+        cerr << "Error: Could not open usage log for writing: " << path << endl;
+        return false;
+    }
+
+    try {
+        out << setw(4) << doc << endl;
+        out.close();
+    } catch (const std::exception& e) {
+        cerr << "Error writing usage log: " << e.what() << endl;
+        if (out.is_open()) out.close();
+        return false;
+    }
+
     return true;
 }
 

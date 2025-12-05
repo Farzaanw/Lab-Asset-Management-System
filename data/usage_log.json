@@ -2,43 +2,52 @@
     "events": [
         {
             "event": "System started",
-            "timestamp": "2025-12-03 20:46:04"
+            "timestamp": "2025-12-04 16:17:22"
         },
         {
-            "event": "User logged in: Bob Sanders SandersBob@oregonstate.edu",
-            "timestamp": "2025-12-03 20:46:24"
-        },
-        {
-            "event": "System started",
-            "timestamp": "2025-12-03 20:53:52"
-        },
-        {
-            "event": "User logged in: Bob Sanders SandersBob@oregonstate.edu",
-            "timestamp": "2025-12-03 20:54:14"
-        },
-        {
-            "event": "System started",
-            "timestamp": "2025-12-03 21:14:09"
-        },
-        {
-            "event": "System started",
-            "timestamp": "2025-12-03 21:45:28"
-        },
-        {
-            "event": "User logged in: Jimmy Apple AppleJimmy@oregonstate.edu",
-            "timestamp": "2025-12-03 21:45:59"
-        },
-        {
-            "event": "System started",
-            "timestamp": "2025-12-03 22:34:22"
-        },
-        {
-            "event": "User logged in: Jimmy Apple AppleJimmy@oregonstate.edu",
-            "timestamp": "2025-12-03 22:34:49"
+            "event": "User logged in: Daniel McSandle McSandleDaniel@oregonstate.edu",
+            "timestamp": "2025-12-04 16:18:18"
         },
         {
             "event": "System shutdown",
-            "timestamp": "2025-12-03 22:36:27"
+            "timestamp": "2025-12-04 16:19:20"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 16:19:26"
+        },
+        {
+            "event": "Failed login attempt for email: BobsJeff@oregonstate.edu",
+            "timestamp": "2025-12-04 16:19:49"
+        },
+        {
+            "event": "User logged in: Jeff Bobs BobsJeff@oregonstate.edu",
+            "timestamp": "2025-12-04 16:20:12"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-04 16:32:41"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 16:32:42"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-04 16:32:47"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-04 16:33:10"
+        }
+    ],
+    "usage": [
+        {
+            "assetID": 1,
+            "email": "McSandleDaniel@oregonstate.edu",
+            "end": "03-06-2026",
+            "loggedAt": "2025-12-04 16:19:11",
+            "start": "03-05-2026"
         }
     ]
 }

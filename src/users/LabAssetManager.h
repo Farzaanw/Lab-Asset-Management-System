@@ -23,7 +23,7 @@ private:
 	chrono::system_clock::time_point lastInventoryCheck;
 	const string accountsFile = "../../data/accounts.json";
 	const string assetsFile = "../../data/assets.json";
-	const string usageLogFile = "../../data/usage_logs.json";
+	const string usageLogFile = "../../data/usage_log.json";
 	set<string> validRoles = {
 		"research student",
 		"faculty researcher",
