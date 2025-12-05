@@ -76,13 +76,13 @@ int SystemController::main() {
             case '1': {
                 userCreated = log_in();          // <------ returns bool (T/F) if user successfully created
 
-                std::cout << "PLACEHOLDER (uncomment once other User Classes made and uncomment in create_user()):\n";
+                // std::cout << "PLACEHOLDER (uncomment once other User Classes made and uncomment in create_user()):\n";
                 if (userCreated) {
                     std::cout << "User Logged in.\n";
                     isOpen = false;
                     break;  // exit switch
                 } else {
-                    std::cout << "Login failed or cancelled.\n";
+                    std::cout << "...Login failed or cancelled....\n";
                     return -1;
                 }
             }
@@ -100,7 +100,7 @@ int SystemController::main() {
     }
 
     // ------ CALL currentUser's main() -------- //
-    std::cout << "\nUser has been created. Calling user's main()....\n";
+    std::cout << "...User has been created. Calling user's main()...\n";
     currentUser->main();    // Calls ResearchStudent::main() or LabManager::main() etc based on currentUser's actual type
 
     return -1;

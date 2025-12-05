@@ -23,7 +23,7 @@ public:
 			   const std::string& email = "",
 			   SystemController* sys = nullptr);
 
-	void main();
+	void main() override;
 
 	// Destructor
     virtual ~LabManager();

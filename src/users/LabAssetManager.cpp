@@ -17,7 +17,7 @@ LabAssetManager::LabAssetManager(const std::string& firstName,
 			   const std::string& email,
 			   SystemController* sys)
 	: User(firstName, lastName, email, sys) ,
-      system(sys) {}
+	  system(sys) {}
 
 
 //Destructor
@@ -25,10 +25,13 @@ LabAssetManager::~LabAssetManager() {}
 
 //Override getRole
 std::string LabAssetManager::getRole() const {
-    return "lab asset manager";
+	return "lab asset manager";
 }
 
 void LabAssetManager::main(){
+	cout << "\n=============================================" << endl;
+    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "=============================================\n" << endl;
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
 		cout << "1. Create Account" << endl;
@@ -49,28 +52,61 @@ void LabAssetManager::main(){
 		cout << endl;
 
 		if (choice == "1") {
-			createAccount();
+			if(createAccount()) {
+				cout << "Account created successfully." << endl;
+				
+			} else {
+				cout << "Failed to create account." << endl;
+			}
 		}
 		else if (choice == "2") {
-			updateAccount();
+			if(updateAccount()) {
+				cout << "Account updated successfully." << endl;
+			} else {
+				cout << "Failed to update account." << endl;
+			}
 		}
 		else if (choice == "3") {
-			deleteAccount();
+			if(deleteAccount()) {
+				cout << "Account deleted successfully." << endl;
+			} else {
+				cout << "Failed to delete account." << endl;
+			}
 		}
 		else if (choice == "4") {
-			listAccounts();
+			if(listAccounts()) {
+				cout << "Accounts listed successfully." << endl;
+			} else {
+				cout << "Failed to list accounts." << endl;
+			}
 		}
 		else if (choice == "5") {
-			addAsset();
+			if(addAsset()) {
+				cout << "Asset added successfully." << endl;
+			} else {
+				cout << "Failed to add asset." << endl;
+			}
 		}
 		else if (choice == "6") {
-			updateAsset();
+			if(updateAsset()) {
+				cout << "Asset updated successfully." << endl;
+			} else {
+				cout << "Failed to update asset." << endl;
+			}
 		}
 		else if (choice == "7") {
-			removeAsset();
+			if(removeAsset()) {
+				cout << "Asset removed successfully." << endl;
+			} else {
+				cout << "Failed to remove asset." << endl;
+			}
 		}
 		else if (choice == "8") {
-			listAssets();
+			if(listAssets()) {
+				cout << "Assets listed successfully." << endl;
+			} else {
+				cout << "Failed to list assets." << endl;
+			}
 		}
 		else if (choice == "9") {
 			Documents d;
@@ -117,7 +153,7 @@ bool LabAssetManager::createAccount() {
 
 	//role validation
 	while (validRoles.find(role) == validRoles.end()) {
-		cout << "Invalid role entered. Please enter a valid role from the list:" << endl << "research student" << endl << "faculty researcher" << endl << "lab manager" << endl << "lab asset manager" << endl;
+		cout << "Invalid role entered. Please enter a valid role from the list (research student, faculty researcher, lab manager, lab asset manager):" << endl;
 		getline(cin, role);
 	}
 
@@ -226,10 +262,7 @@ bool LabAssetManager::updateAccount() {
 		// Role validation
 		if (key == "role") {
 			while (validRoles.find(input) == validRoles.end()) {
-				cout << "Invalid role. Please enter one of the following:\n";
-				for (const auto& role : validRoles) {
-					cout << " - " << role << endl;
-				}
+				cout << "Invalid role. Please enter one of the following (research student, faculty researcher, lab manager, lab asset manager): ";
 				getline(cin, input);
 			}
 		}
@@ -383,7 +416,7 @@ bool LabAssetManager::addAsset(){
 	cout << "Creating a new asset." << endl;
 	cout << "Enter asset name: ";
 	getline(cin, name);
-	cout << "Enter asset category: ";// equipment, consumable, software.
+	cout << "Enter asset category (equipment, consumable, software): ";
 	getline(cin, category);
 	while (assetTypes.find(category) == assetTypes.end()) {
 		cout << "Invalid asset category entered. Please enter a valid asset category from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
@@ -396,7 +429,7 @@ bool LabAssetManager::addAsset(){
 		cout << "minimum threshold (grams): ";
 		getline(cin, minimumThreshold);
 	}
-	cout << "Enter asset status: ";
+	cout << "Enter asset status (available, reserved, out of service): ";
 	getline(cin, status);
 	while (assetStatus.find(status) == assetStatus.end()) {
 		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
@@ -404,10 +437,10 @@ bool LabAssetManager::addAsset(){
 	}
 	cout << "Enter asset condition: ";
 	getline(cin, condition);
-	cout << "Enter asset access level: ";
+	cout << "Enter asset access level (1, 2, or 3): ";
 	getline(cin, accessLevel);
-	while (clearenceLevels.find(accessLevel) == clearenceLevels.end()) {
-		cout << "Invalid access level entered. Please enter a valid access level from the list:" << endl << "1" << endl << "2" << endl;
+	while (clearanceLevels.find(accessLevel) == clearanceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
 		getline(cin, accessLevel);
 	}
 	cout << "Enter asset location: ";
@@ -500,13 +533,13 @@ bool LabAssetManager::updateAsset(){
 	for (auto& [key, value] : assetToUpdate->items()) {
 		cout << key << ": " << value << endl;
 	}
-
+	cout << endl << "Please note that the asset category and asset ID cannot be changed once created." << endl;
 	cout << "\nEnter new information (leave blank to keep current value):\n";
 
 	// Update fields (ID is NOT updated)
 	for (auto& [key, value] : assetToUpdate->items()) {
 		if (key == "id") continue;
-
+		if (key == "category") continue;
 		string input;
 		cout << key << " (" << value << "): ";
 		getline(cin, input);
@@ -514,7 +547,18 @@ bool LabAssetManager::updateAsset(){
 		if (input.empty()) {
 			continue;
 		}
-
+		if (key == "operationalStatus") {
+			while (assetStatus.find(input) == assetStatus.end()) {
+				cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
+				getline(cin, input);
+			}
+		}
+		if (key == "clearanceLevel") {
+			while (clearanceLevels.find(input) == clearanceLevels.end()) {
+				cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+				getline(cin, input);
+			}
+		}
 
 		// Update JSON value
 		(*assetToUpdate)[key] = input;
@@ -646,6 +690,7 @@ bool LabAssetManager::listAssets(){
 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
 		cout << "Condition: " << asset["condition"] << endl;
 		cout << "Location: " << asset["location"] << endl;
+		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
 			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
 			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
@@ -653,11 +698,13 @@ bool LabAssetManager::listAssets(){
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
+	return true;
 }
 
 bool LabAssetManager::viewLogs() {
 	json logs;
 	ifstream inFile(usageLogFile);
+
 	if (!inFile.is_open()) {
 		cerr << "Error: Could not open " << usageLogFile << endl;
 		return false;
@@ -667,12 +714,17 @@ bool LabAssetManager::viewLogs() {
 		inFile >> logs;
 	} catch (const std::exception& e) {
 		cerr << "Error reading JSON: " << e.what() << endl;
-		inFile.close();
 		return false;
 	}
-	inFile.close();
 
-	if (logs.empty()) {
+	if (!logs.contains("events") || !logs["events"].is_array()) {
+		cerr << "Error: JSON does not contain 'events' array.\n";
+		return false;
+	}
+
+	const auto& events = logs["events"];
+
+	if (events.empty()) {
 		cout << "No logs found." << endl;
 		return true;
 	}
@@ -695,14 +747,6 @@ bool LabAssetManager::viewLogs() {
 	const json* eventsPtr = nullptr;
 	// Prefer explicit "events" array
 	eventsPtr = find_array_by_key(logs, "events");
-	// If no explicit events array, and the file itself is an array, treat it as events
-	if (!eventsPtr && logs.is_array()) eventsPtr = &logs;
-	// If still no events found, try to pick the first array value as events
-	if (!eventsPtr && logs.is_object()) {
-		for (auto it = logs.begin(); it != logs.end(); ++it) {
-			if (it.value().is_array()) { eventsPtr = &it.value(); break; }
-		}
-	}
 
 	// Print events if found
 	if (eventsPtr) {
@@ -739,6 +783,8 @@ bool LabAssetManager::viewLogs() {
 	} else {
 		cout << "\nNo usage logs found." << endl;
 	}
+
 	return true;
 }
+
 

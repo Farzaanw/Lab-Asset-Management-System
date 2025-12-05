@@ -60,3 +60,4 @@ dkms.conf
 #   with testing data
 .vscode/
 data/usage_log.json
+usage_log.json

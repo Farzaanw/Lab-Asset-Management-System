@@ -31,10 +31,11 @@ private:
 		"lab asset manager"
 	};
 
-	//the level of clearence needed to obtain each asset
-	set<string> clearenceLevels = {
-		"1", //base clearance level
-		"2"  //higher clearance
+	//the level of clearance needed to obtain each asset
+	set<string> clearanceLevels = {
+		"1", //low clearance level (base clearance)
+		"2",  //Medium clearance level
+		"3"  //High clearance level
 	};
 
 	set<string> assetTypes = {
@@ -63,7 +64,7 @@ public:
 			   SystemController* system = nullptr);
 		// : User(firstName, lastName, email, system) {};
 
-	void main();
+	void main() override;
 
 	// Destructor
     virtual ~LabAssetManager();

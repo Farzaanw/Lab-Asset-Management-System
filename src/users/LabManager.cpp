@@ -19,6 +19,9 @@ LabManager::LabManager(const std::string& firstName,
       system(sys) {}
 
 void LabManager::main(){
+	cout << "\n=============================================" << endl;
+    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "=============================================\n" << endl;
 	while(true){
 		cout << endl << "---Lab Manager Main Menu---" << endl;
 		cout << "1. List Policies" << endl;
