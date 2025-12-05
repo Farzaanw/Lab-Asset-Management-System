@@ -117,7 +117,7 @@ bool LabAssetManager::createAccount() {
 
 	//role validation
 	while (validRoles.find(role) == validRoles.end()) {
-		cout << "Invalid role entered. Please enter a valid role from the list:" << endl << "research student" << endl << "faculty researcher" << endl << "lab manager" << endl << "lab asset manager" << endl;
+		cout << "Invalid role entered. Please enter a valid role from the list (research student, faculty researcher, lab manager, lab asset manager):" << endl;
 		getline(cin, role);
 	}
 
@@ -226,10 +226,7 @@ bool LabAssetManager::updateAccount() {
 		// Role validation
 		if (key == "role") {
 			while (validRoles.find(input) == validRoles.end()) {
-				cout << "Invalid role. Please enter one of the following:\n";
-				for (const auto& role : validRoles) {
-					cout << " - " << role << endl;
-				}
+				cout << "Invalid role. Please enter one of the following (research student, faculty researcher, lab manager, lab asset manager): ";
 				getline(cin, input);
 			}
 		}
@@ -383,7 +380,7 @@ bool LabAssetManager::addAsset(){
 	cout << "Creating a new asset." << endl;
 	cout << "Enter asset name: ";
 	getline(cin, name);
-	cout << "Enter asset category: ";// equipment, consumable, software.
+	cout << "Enter asset category (equipment, consumable, software): ";
 	getline(cin, category);
 	while (assetTypes.find(category) == assetTypes.end()) {
 		cout << "Invalid asset category entered. Please enter a valid asset category from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
@@ -396,7 +393,7 @@ bool LabAssetManager::addAsset(){
 		cout << "minimum threshold (grams): ";
 		getline(cin, minimumThreshold);
 	}
-	cout << "Enter asset status: ";
+	cout << "Enter asset status (available, reserved, out of service): ";
 	getline(cin, status);
 	while (assetStatus.find(status) == assetStatus.end()) {
 		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
@@ -404,7 +401,7 @@ bool LabAssetManager::addAsset(){
 	}
 	cout << "Enter asset condition: ";
 	getline(cin, condition);
-	cout << "Enter asset access level: ";
+	cout << "Enter asset access level (1, 2, or 3): ";
 	getline(cin, accessLevel);
 	while (clearanceLevels.find(accessLevel) == clearanceLevels.end()) {
 		cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
@@ -500,13 +497,13 @@ bool LabAssetManager::updateAsset(){
 	for (auto& [key, value] : assetToUpdate->items()) {
 		cout << key << ": " << value << endl;
 	}
-
+	cout << endl << "Please note that the asset category and asset ID cannot be changed once created." << endl;
 	cout << "\nEnter new information (leave blank to keep current value):\n";
 
 	// Update fields (ID is NOT updated)
 	for (auto& [key, value] : assetToUpdate->items()) {
 		if (key == "id") continue;
-
+		if (key == "category") continue;
 		string input;
 		cout << key << " (" << value << "): ";
 		getline(cin, input);
@@ -514,7 +511,18 @@ bool LabAssetManager::updateAsset(){
 		if (input.empty()) {
 			continue;
 		}
-
+		if (key == "operationalStatus") {
+			while (assetStatus.find(input) == assetStatus.end()) {
+				cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
+				getline(cin, input);
+			}
+		}
+		if (key == "clearanceLevel") {
+			while (clearanceLevels.find(input) == clearanceLevels.end()) {
+				cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+				getline(cin, input);
+			}
+		}
 
 		// Update JSON value
 		(*assetToUpdate)[key] = input;
