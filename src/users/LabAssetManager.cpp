@@ -49,28 +49,61 @@ void LabAssetManager::main(){
 		cout << endl;
 
 		if (choice == "1") {
-			createAccount();
+			if(createAccount()) {
+				cout << "Account created successfully." << endl;
+				
+			} else {
+				cout << "Failed to create account." << endl;
+			}
 		}
 		else if (choice == "2") {
-			updateAccount();
+			if(updateAccount()) {
+				cout << "Account updated successfully." << endl;
+			} else {
+				cout << "Failed to update account." << endl;
+			}
 		}
 		else if (choice == "3") {
-			deleteAccount();
+			if(deleteAccount()) {
+				cout << "Account deleted successfully." << endl;
+			} else {
+				cout << "Failed to delete account." << endl;
+			}
 		}
 		else if (choice == "4") {
-			listAccounts();
+			if(listAccounts()) {
+				cout << "Accounts listed successfully." << endl;
+			} else {
+				cout << "Failed to list accounts." << endl;
+			}
 		}
 		else if (choice == "5") {
-			addAsset();
+			if(addAsset()) {
+				cout << "Asset added successfully." << endl;
+			} else {
+				cout << "Failed to add asset." << endl;
+			}
 		}
 		else if (choice == "6") {
-			updateAsset();
+			if(updateAsset()) {
+				cout << "Asset updated successfully." << endl;
+			} else {
+				cout << "Failed to update asset." << endl;
+			}
 		}
 		else if (choice == "7") {
-			removeAsset();
+			if(removeAsset()) {
+				cout << "Asset removed successfully." << endl;
+			} else {
+				cout << "Failed to remove asset." << endl;
+			}
 		}
 		else if (choice == "8") {
-			listAssets();
+			if(listAssets()) {
+				cout << "Assets listed successfully." << endl;
+			} else {
+				cout << "Failed to list assets." << endl;
+			}
 		}
 		else if (choice == "9") {
 			Documents d;
