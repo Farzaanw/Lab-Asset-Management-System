@@ -244,7 +244,7 @@ bool Assets::listAssets(){
 		cout << "Location: " << asset["location"] << endl;
 		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
-			if (asset.contains("stock")) cout << "Quantity On Hand: " << asset["stock"] << endl;
+			if (asset.contains("stock")) cout << "stock: " << asset["stock"] << endl;
 			if (asset.contains("minimumThreshold")) cout << "Low Stock Threshold: " << asset["minimumThreshold"] << endl;
 			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << (asset["lowStock"].get<bool>() ? "YES" : "NO") << endl;
 		}
