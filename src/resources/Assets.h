@@ -74,6 +74,8 @@ public:
 
     bool addAsset();
 
+    bool return_asset(const std::string& email);
+
 };
 
 

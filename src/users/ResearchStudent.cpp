@@ -69,7 +69,8 @@ void ResearchStudent::main() {
             ///////////////////////////
         }
         else if (choice == "2") {
-            return_asset();
+            string email = getEmail();
+            a.return_asset(email);
         }
         else if (choice == "3") {
             a.viewAvailableAssets();
@@ -383,96 +384,6 @@ bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, cons
 
     return true;
 }
-
-//Return an asset
-bool ResearchStudent::return_asset() {
-    cout << "--- Return Asset ---\n" << endl;
-
-    // First, show user's checked-out assets
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    // get user's account
-    json* userAccount = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            userAccount = &account;
-            break;
-        }
-    }
-    if (!userAccount || (*userAccount)["reservations"].empty()) {
-        cout << "You have no assets to return." << endl;
-        return false;
-    }
-
-    cout << "Your Reserved Assets:\n" << endl;
-    for (const auto& res : (*userAccount)["reservations"]) {
-        if (res["status"] == "confirmed" || res["status"] == "approved") {
-            cout << "Asset ID: " << res["assetID"] << " | Name: " << res["assetName"] 
-                 << " | Start: " << res["startDate"] << " | End: " << res["endDate"] << endl;
-        }
-    }
-
-    cout << "\n-----------------------------------\n" << endl;
-
-    // Ask which asset to return
-    int assetID;
-    cout << "Enter Asset ID to return: ";
-    cin >> assetID;
-    cin.ignore();
-
-    // Update asset status to available
-    json assets;
-    ifstream assetFile("../../data/assets.json");
-    if (!assetFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-    assetFile >> assets;
-    assetFile.close();
-
-    bool found = false;
-    for (auto& asset : assets) {
-        if (asset["id"].get<int>() == assetID) {
-            asset["operationalStatus"] = "available";
-            found = true;
-            break;
-        }
-    }
-
-    if (!found) {
-        cout << "Error: Asset ID not found" << endl;
-        return false;
-    }
-
-    // Remove reservation from user's account
-    auto& reservations = (*userAccount)["reservations"];
-    for (auto it = reservations.begin(); it != reservations.end(); ++it) {
-        if ((*it)["assetID"].get<int>() == assetID) {
-            reservations.erase(it);
-            break;
-        }
-    }
-
-    // Save updated accounts
-    ofstream accountsOut("../../data/accounts.json");
-    accountsOut << setw(4) << accounts << endl;
-    accountsOut.close();
-
-    ofstream outAssetFile("../../data/assets.json");
-    outAssetFile << setw(4) << assets << endl;
-    outAssetFile.close();
-
-    cout << "Asset returned successfully!" << endl;
-    return true;
-}
-
 
 
 //RESERVATIONS
