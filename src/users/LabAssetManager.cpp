@@ -508,7 +508,10 @@ bool LabAssetManager::viewLogs() {
 			cout << "End: " << end << endl;
 			cout << "Logged At: " << logged << endl;
 			cout << "-----------------------------------" << endl;
+			
 		}
+			cout << "Press Enter to continue...";
+			cin.ignore();
 	} else {
 		cout << "\nNo usage logs found." << endl;
 	}

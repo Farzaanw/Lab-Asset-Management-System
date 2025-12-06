@@ -16,10 +16,11 @@
         "description": "used for 3D printers",
         "id": 2,
         "location": "lab",
-        "minimumThreshold(grams)": "20",
+        "lowStock": false,
+        "minimumThreshold": 20,
         "name": "Fillament",
         "operationalStatus": "reserved",
-        "quantityOnHand(grams)": "350"
+        "stock": 349
     },
     {
         "category": "Magnifying Glass",
@@ -30,5 +31,17 @@
         "location": "Henry Building, Lab 4005 Extensive Research",
         "name": "V2.0 ViewMagnifier",
         "operationalStatus": "available"
+    },
+    {
+        "category": "consumable",
+        "clearanceLevel": "1",
+        "condition": "perfect",
+        "description": "latex gloves",
+        "id": 4,
+        "location": "lab2",
+        "minimumThreshold": 9,
+        "name": "gloves",
+        "operationalStatus": "available",
+        "stock": 10
     }
 ]
