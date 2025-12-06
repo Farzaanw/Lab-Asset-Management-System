@@ -3,6 +3,8 @@
 
 #include "./library/nlohmann/json.hpp"
 #include "./resources/Assets.h"
+#include "./resources/Reservations.h"
+
 
 #include <string>
 #include <map>

@@ -38,10 +38,6 @@ public:
     void display_page();
     void user_actions();
 
-    // ASSET MANAGEMENT
-    // Reserve a single asset
-    bool reserveAsset();
-    
     // Reserve multiple assets at once
     bool reserveMultipleAssets();
     

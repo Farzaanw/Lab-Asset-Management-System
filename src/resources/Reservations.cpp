@@ -1,145 +1,133 @@
-// CS-7: Reservations.cpp
-// Auth: Dunlap, Jack, Rustic
-// Supports: US-101, UR-201, UR-310
-// Collaborators: FacultyResearcher[*], ResearchStudent[*], Asset[1], Documents[*]
-
 #include "Reservations.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <ctime>
-#include <iomanip>   
-#include <vector>
 
-// Constructors 
-Reservations::Reservations() {
-    reservationID = 0;
-    assetID = 0;
-    User = "";
-    description = "";
-    startDate = "";
-    endDate = "";
-    permissionApproved = false;
-    confirmed = false;
-    overdueFlag = false;
-    status = PENDING;
-}
+//ASSET MANAGEMENT
+//Reserve a single asset
+bool Reservations::reserveAsset(const std::string& email) {
+    cout << "--- Reserve Asset ---\n" << endl;
+    
+    // First, show available assets
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
+    }
+    inFile >> assets;
+    inFile.close();
 
-// Parameterized constructor
-Reservations::Reservations(int resID, int assetID_, const std::string& user,
-                           const std::string& desc, const std::string& start,
-                           const std::string& end, bool permission)
-    : reservationID(resID),
-      assetID(assetID_),
-      User(user),
-      description(desc),
-      startDate(start),
-      endDate(end),
-      permissionApproved(permission),
-      confirmed(false),
-      overdueFlag(false),
-      status(permission ? APPROVED : PENDING)
-{}
-
-static std::vector<Reservations> reservationsDB;
-static int nextReservationID = 1;
-
-static bool parseDate(const std::string& dateStr, std::tm& out) {
-    std::istringstream ss(dateStr);
-    ss >> std::get_time(&out, "%Y-%m-%d %H:%M");
-    return !ss.fail();
-}
-
-static bool overlaps(const std::string& aStart, const std::string& aEnd,
-                     const std::string& bStart, const std::string& bEnd) {
-    std::tm as{}, ae{}, bs{}, be{};
-    if (!parseDate(aStart, as) || !parseDate(aEnd, ae)) return true;
-    if (!parseDate(bStart, bs) || !parseDate(bEnd, be)) return false;
-
-    time_t aS = mktime(&as), aE = mktime(&ae);
-    time_t bS = mktime(&bs), bE = mktime(&be);
-    return (aS < bE) && (aE > bS);
-}
-
-static bool hasAssetOverlap(int assetID,
-                            const std::string& start,
-                            const std::string& end) {
-    for (const auto& r : reservationsDB) {
-        if (r.assetID == assetID && r.status != ReservationStatus::CANCELLED) {
-            if (overlaps(start, end, r.startDate, r.endDate)) return true;
+    cout << "Available Assets:\n" << endl;
+    bool hasAvailable = false;
+    for (const auto& asset : assets) {
+        if (asset["operationalStatus"] == "available") {
+            cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
+                 << " | Category: " << asset["category"] << endl;
+            hasAvailable = true;
         }
     }
-    return false;
-}
 
-static const char* statusName(ReservationStatus s) {
-    switch (s) {
-        case PENDING:   return "PENDING";
-        case APPROVED:  return "APPROVED";
-        case CONFIRMED: return "CONFIRMED";
-        case CANCELLED: return "CANCELLED";
-        default:        return "UNKNOWN";
-    }
-}
-
-bool Reservations::makeReservation(bool permissionApproved_,
-                                   std::string description_,
-                                   std::string startDate_,
-                                   std::string endDate_,
-                                   std::string User_) {
-    this->reservationID     = nextReservationID++;
-    this->permissionApproved = permissionApproved_;
-    this->description        = std::move(description_);
-    this->startDate          = std::move(startDate_);
-    this->endDate            = std::move(endDate_);
-    this->User               = std::move(User_);
-    this->overdueFlag        = false;
-
-    this->status = permissionApproved ? APPROVED : PENDING;
-
-    if (permissionApproved && !hasAssetOverlap(this->assetID, this->startDate, this->endDate)) {
-        this->status = CONFIRMED;
-        this->confirmed = true;
-        update_asset_stock_count(std::to_string(this->assetID), -1);
-    } else {
-        this->confirmed = false;
+    if (!hasAvailable) {
+        cout << "No assets currently available for reservation." << endl;
+        return false;
     }
 
-    reservationsDB.push_back(*this);
+    cout << "\n-----------------------------------\n" << endl;
+    
+    int assetID;
+    string startDate, endDate, reason;
+    
+    cout << "Please enter the AssetID you would like to reserve: ";
+    cin >> assetID;
+    cin.ignore();
+
+    //find the right asset
+    json* targetAsset = nullptr;
+    for (auto& asset : assets) {
+        if (asset["id"].get<int>() == assetID) {
+            targetAsset = &asset;
+            break;
+        }
+    }
+
+    if (!targetAsset) {
+        cout << "Error: Asset ID " << assetID << " not found!" << endl;
+        return false;
+    }
+
+    //check if its available
+    string status = (*targetAsset)["operationalStatus"].get<string>();
+    if (status != "available") {
+        cout << "Error: Asset is not available!" << endl;
+        cout << "Current Status: " << status << endl;
+        return false;
+    }
+
+    // Get reservation dates
+    cout << "Enter Start Date (YYYY-MM-DD): ";
+    getline(cin, startDate);
+    cout << "Enter End Date (YYYY-MM-DD): ";
+    getline(cin, endDate);
+    
+    // Get asset type/category to determine if approval needed
+    string assetCategory = (*targetAsset)["category"].get<string>();
+    
+    // For certain asset types, may need reason/justification
+    if (assetCategory == "high-value" || assetCategory == "restricted") {
+        cout << "Enter reason for reservation: ";
+        getline(cin, reason);
+    }
+    
+    // Validate dates
+    if (startDate.empty() || endDate.empty()) {
+        cout << "Error: Invalid date format!" << endl;
+        return false;
+    }
+    
+    // Create reservation entry
+    json reservation = {
+        {"assetID", assetID},
+        {"assetName", (*targetAsset)["name"]},
+        {"startDate", startDate},
+        {"endDate", endDate},
+        {"status", "confirmed"},
+        {"reason", reason}
+    };
+
+    // Update user's reservations in accounts.json
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) {
+        cerr << "Error: Could not open accounts.json" << endl;
+        return false;
+    }
+    accountsIn >> accounts;
+    accountsIn.close();
+
+    bool userFound = false;
+    for (auto& account : accounts) {
+        if (account["email"].get<string>() == email) {
+            account["reservations"].push_back(reservation);
+            userFound = true;
+            break;
+        }
+    }
+
+    if (!userFound) {
+        cout << "Error: User account not found!" << endl;
+        return false;
+    }
+
+    // Save updated accounts
+    ofstream accountsOut("../../data/accounts.json");
+    accountsOut << setw(4) << accounts << endl;
+    accountsOut.close();
+    
+    // Update asset status to reserved
+    (*targetAsset)["operationalStatus"] = "reserved";
+    
+    ofstream outAssetFile("../../data/assets.json");
+    outAssetFile << setw(4) << assets << endl;
+    outAssetFile.close();
+    
+    cout << "Asset reserved successfully!" << endl;
     return true;
-}
-
-bool Reservations::cancelReservation(int reservationID_) {
-    for (auto& r : reservationsDB) {
-        if (r.reservationID == reservationID_ && r.status != CANCELLED) {
-            r.status = CANCELLED;
-            r.confirmed = false;
-            update_asset_stock_count(std::to_string(r.assetID), +1);
-            return true;
-        }
-    }
-    return false;
-}
-
-std::string Reservations::getReservation(int reservationID_) {
-    for (const auto& r : reservationsDB) {
-        if (r.reservationID == reservationID_) {
-            std::ostringstream ss;
-            ss << "Reservation ID: " << r.reservationID << "\n"
-               << "Asset ID     : " << r.assetID << "\n"
-               << "User         : " << r.User << "\n"
-               << "Description  : " << r.description << "\n"
-               << "Start        : " << r.startDate << "\n"
-               << "End          : " << r.endDate << "\n"
-               << "Status       : " << statusName(r.status) << "\n"
-               << "Confirmed    : " << (r.confirmed ? "Yes" : "No") << "\n"
-               << "Overdue      : " << (r.overdueFlag ? "Yes" : "No") << "\n";
-            return ss.str();
-        }
-    }
-    return "Reservation not found.";
-}
-
-void Reservations::update_asset_stock_count(std::string assetID, int quantity) {
-    std::cout << "[Stock Update] Asset " << assetID << " adjusted by " << quantity << "\n";
 }
