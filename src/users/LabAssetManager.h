@@ -68,6 +68,8 @@ public:
 
 	//logs
 	bool viewLogs();
+
+	bool setConsumableThreshold();
 };
 
 #endif
