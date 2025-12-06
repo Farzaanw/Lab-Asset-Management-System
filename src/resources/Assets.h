@@ -45,8 +45,9 @@ public:
       // View group licenses
     bool viewGroupLicenses(int labGroupID);
 
-    bool viewAssets(const std::string& email);
+    bool viewAssets(const std::string& email); // view reserved assets by the student
 
+    bool listAssets();
 
 };
 

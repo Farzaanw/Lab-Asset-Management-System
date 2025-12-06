@@ -214,3 +214,41 @@ bool Assets::viewAssets(const std::string& email) {
 
     return true;
 }
+
+bool Assets::listAssets(){
+	json assets;
+
+	ifstream inFile("../../data/assets.json");
+
+	try {
+		inFile >> assets;
+	} catch (const std::exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		inFile.close();
+		return false;
+	}
+	inFile.close();
+
+	if (assets.empty()) {
+		cout << "No assets found." << endl;
+		return true;
+	}
+
+	cout << "Listing all assets:\n" << endl;
+	for (const auto& asset : assets) {
+		cout << "ID: " << asset["id"] << endl;
+		cout << "Name: " << asset["name"] << endl;
+		cout << "Category: " << asset["category"] << endl;
+		cout << "Operational Status: " << asset["operationalStatus"] << endl;
+		cout << "Condition: " << asset["condition"] << endl;
+		cout << "Location: " << asset["location"] << endl;
+		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
+		if (asset["category"] == "consumable") {
+			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
+			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
+		}
+		cout << "Description: " << asset["description"] << endl;
+		cout << "-----------------------------------" << endl;
+	}
+	return true;
+}
