@@ -15,6 +15,7 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 static Assets a;
+static Reservations r;
 using namespace std;
 using json = nlohmann::json;
 
@@ -60,7 +61,8 @@ void ResearchStudent::main() {
 
         if (choice == "1") {
             ///////////////////
-            if (reserveAsset()){
+            string email = getEmail();
+            if (r.reserveAsset(email)){
                 cout << "Asset officially reserved." << endl;
             } else {
                 cout << "Asset reservation failed or request sent to Lab Manager for approval." << endl;
@@ -83,10 +85,12 @@ void ResearchStudent::main() {
             a.searchAssets("", ""); // Will prompt inside function
         }
         else if (choice == "6") {
-            viewMyReservations();
+            string email = getEmail();
+            r.viewMyReservations(email);
         }
         else if (choice == "7") {
-            cancelReservation(0); // Will prompt inside function
+            string email = getEmail();
+            r.cancelReservation(email); // Will prompt inside function
         }
         else if (choice == "8") {
             int equipmentID, rating;
@@ -119,190 +123,7 @@ void ResearchStudent::main() {
     }
 }
 
-//ASSETS
-//reserve an asset, returns a bool
-bool ResearchStudent::reserveAsset() {
-    cout << "--- Reserve Asset ---\n" << endl;
-    
-    // Get all available assets
-    json assets;
-    ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-    inFile >> assets;
-    inFile.close();
 
-    // ---------- get all accounts ----------
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-    // --------------------------------------------------
-
-    // First, show available assets
-    cout << "Available Assets:\n" << endl;
-    bool hasAvailable = false;
-    for (const auto& asset : assets) {
-        if (asset["operationalStatus"] == "available") {
-            cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
-                 << " | Category: " << asset["category"] << endl;
-            hasAvailable = true;
-        }
-    }
-
-    if (!hasAvailable) {
-        cout << "No assets currently available for reservation." << endl;
-        return false;
-    }
-
-    cout << "\n-----------------------------------\n" << endl;
-    
-    int assetID;
-    string startDate, endDate, reason;
-    
-    cout << "Please enter the AssetID you would like to reserve: ";
-    cin >> assetID;
-    cin.ignore();
-
-    //find the right asset
-    json* targetAsset = nullptr;
-    for (auto& asset : assets) {
-        if (asset["id"].get<int>() == assetID) {
-            targetAsset = &asset;
-            break;
-        }
-    }
-    if (!targetAsset) {
-        cout << "Error: Asset ID " << assetID << " not found!" << endl;
-        return false;
-    }
-
-    //check if its available
-    string status = (*targetAsset)["operationalStatus"].get<string>();
-    if (status != "available") {
-        cout << "Error: Asset is not available!" << endl;
-        cout << "Current Status: " << status << endl;
-        return false;
-    }
-
-    // Get reservation dates
-    cout << "Enter Start Date (YYYY-MM-DD): ";
-    getline(cin, startDate);
-    cout << "Enter End Date (YYYY-MM-DD): ";
-    getline(cin, endDate);
-    // Validate dates
-    if (startDate.empty() || endDate.empty()) {
-        cout << "Error: Invalid date format!" << endl;
-        return false;
-    }
-
-    // --------- find the user's account info
-    json* targetUser = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            targetUser = &account;
-            break;
-        }
-    }
-    // -----------------------------------------
-    
-    // Get user's clerance level (ADDED HERE)
-    string userClearanceLevel = (*targetUser)["clearanceLevel"].get<string>();
-
-    // Get asset clearance level
-    string assetClearanceLevel = (*targetAsset)["clearanceLevel"].get<string>();
-    
-    // If user's clerance is lower than asset's, require reason (SEND REQUEST TO LAB MANAGER!!!!!!!!!1)
-    if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel)) {
-        cout << "Enter reason for reservation: ";
-        getline(cin, reason);
-        cout << "This asset requires approval. You will be notified once reviewed." << endl;
-
-        // Create reservation entry with "pending" status
-        json reservation = {
-            {"assetID", assetID},
-            {"assetName", (*targetAsset)["name"]},
-            {"startDate", startDate},
-            {"endDate", endDate},
-            {"status", "pending"},
-            {"reason", reason}
-        };
-
-        // Update user's reservations in accounts.json
-        bool userFound = false;
-        for (auto& account : accounts) {
-            if (account["email"].get<string>() == getEmail()) {
-                account["reservations"].push_back(reservation);
-                userFound = true;
-                break;
-            }
-        }
-        if (!userFound) {
-            cout << "Error: User account not found!" << endl;
-            return false;
-        }
-
-        // Save updated accounts
-        ofstream accountsOut("../../data/accounts.json");
-        accountsOut << setw(4) << accounts << endl;
-        accountsOut.close();
-
-        // Notify Lab Manager (TODO: implement notification system)
-        cout << "NEED TO IMPLMENT ---- Notification sent to Lab Manager for approval." << endl;
-        return false; // Indicate that approval is needed
-    }
-    
-    // ELSE --- Create reservation entry
-    json reservation = {
-        {"assetID", assetID},
-        {"assetName", (*targetAsset)["name"]},
-        {"startDate", startDate},
-        {"endDate", endDate},
-        {"status", "approved"},
-        {"reason", reason}
-    };
-
-    // Update user's reservations (reuse already loaded accounts)
-    bool userFound = false;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            account["reservations"].push_back(reservation);
-            userFound = true;
-            break;
-        }
-    }
-
-    if (!userFound) {
-        cout << "Error: User account not found!" << endl;
-        return false;
-    }
-
-    // Save updated accounts
-    ofstream accountsOut("../../data/accounts.json");
-    accountsOut << setw(4) << accounts << endl;
-    accountsOut.close();
-    
-    // Update asset status to reserved
-    (*targetAsset)["operationalStatus"] = "reserved";
-    
-    ofstream outAssetFile("../../data/assets.json");
-    outAssetFile << setw(4) << assets << endl;
-    outAssetFile.close();
-    
-    // Append usage log entry for this reservation
-    if (!appendUsageLog(getEmail(), assetID, startDate, endDate)) {
-        cerr << "Warning: Failed to write usage log entry." << endl;
-    }
-
-    cout << "Asset reserved successfully!" << endl;
-    return true;
-}
 
 // Append a usage log entry describing the reservation
 bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime) {
@@ -357,14 +178,14 @@ bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, cons
     // If we have a SystemController pointer, prefer using it so the in-memory
     // usage_log is updated as well; this prevents later overwrites from removing
     // usage entries.
-    if (system != nullptr) {
-        try {
-            return system->appendUsageEntry(entry);
-        } catch (const std::exception& e) {
-            cerr << "Error: system->appendUsageEntry threw: " << e.what() << endl;
-            // fall through to direct write
-        }
-    }
+    // if (system != nullptr) {
+    //     try {
+    //         return system->appendUsageEntry(entry);
+    //     } catch (const std::exception& e) {
+    //         cerr << "Error: system->appendUsageEntry threw: " << e.what() << endl;
+    //         // fall through to direct write
+    //     }
+    // }
 
     // Fallback: write directly to file (legacy behavior)
     std::ofstream out(path);
@@ -385,136 +206,6 @@ bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, cons
     return true;
 }
 
-
-//RESERVATIONS
-//view own reservations
-bool ResearchStudent::viewMyReservations() {
-    cout << "--- My Reservations ---\n" << endl;
-    
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    bool hasReservations = false;
-    for (const auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            if (account["reservations"].empty()) {
-                cout << "No active reservations found." << endl;
-                return true;
-            }
-
-            int index = 1;
-            for (const auto& res : account["reservations"]) {
-                cout << "Reservation #" << index << endl;
-                cout << "Asset ID: " << res["assetID"] << endl;
-                cout << "Asset Name: " << res["assetName"] << endl;
-                cout << "Start Date: " << res["startDate"] << endl;
-                cout << "End Date: " << res["endDate"] << endl;
-                cout << "Status: " << res["status"] << endl;
-                if (res.contains("reason") && !res["reason"].get<string>().empty()) {
-                    cout << "Reason: " << res["reason"] << endl;
-                }
-                cout << "-----------------------------------" << endl;
-                hasReservations = true;
-                index++;
-            }
-            break;
-        }
-    }
-
-    if (!hasReservations) {
-        cout << "No active reservations found." << endl;
-    }
-    
-    return true;
-}
-
-//cancel reservation
-bool ResearchStudent::cancelReservation(int reservationID) {
-    cout << "--- Cancel Reservation ---\n" << endl;
-    
-    // Load accounts
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    // Find user and list their reservations
-    json* userAccount = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            userAccount = &account;
-            break;
-        }
-    }
-
-    if (!userAccount || (*userAccount)["reservations"].empty()) {
-        cout << "You have no reservations to cancel." << endl;
-        return false;
-    }
-
-    cout << "Your Reservations:\n" << endl;
-    int index = 1;
-    for (const auto& res : (*userAccount)["reservations"]) {
-        cout << index << ". Asset ID: " << res["assetID"] << " | Name: " << res["assetName"] 
-             << " | Status: " << res["status"] << endl;
-        index++;
-    }
-
-    cout << "\nEnter the number of the reservation to cancel: ";
-    int choice;
-    cin >> choice;
-    cin.ignore();
-
-    if (choice < 1 || choice > (*userAccount)["reservations"].size()) {
-        cout << "Invalid selection." << endl;
-        return false;
-    }
-
-    // Get the asset ID before removing
-    int assetID = (*userAccount)["reservations"][choice - 1]["assetID"].get<int>();
-
-    // Remove reservation
-    auto& reservations = (*userAccount)["reservations"];
-    reservations.erase(reservations.begin() + (choice - 1));
-
-    // Update asset status back to available
-    json assets;
-    ifstream assetFile("../../data/assets.json");
-    if (assetFile.is_open()) {
-        assetFile >> assets;
-        assetFile.close();
-
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID) {
-                asset["operationalStatus"] = "available";
-                break;
-            }
-        }
-
-        ofstream outAssetFile("../../data/assets.json");
-        outAssetFile << setw(4) << assets << endl;
-        outAssetFile.close();
-    }
-
-    // Save updated accounts
-    ofstream accountsOut("../../data/accounts.json");
-    accountsOut << setw(4) << accounts << endl;
-    accountsOut.close();
-    
-    cout << "Reservation cancelled successfully!" << endl;
-    
-    return true;
-}
 
 //STUDENT SPECIFIC FEATURES
 //record feedback on an asset after use

@@ -79,7 +79,8 @@ void FacultyResearcher::main() {
             r.reserveAsset(email);
         }
         else if (choice == "2") {
-            reserveMultipleAssets();
+            string email = getEmail();
+            r.reserveMultipleAssets(email);
         }
         else if (choice == "3") {
             string email = getEmail();
@@ -92,10 +93,12 @@ void FacultyResearcher::main() {
             a.searchAssets("", "");
         }
         else if (choice == "6") {
-            viewMyReservations();
+            string email = getEmail();
+            r.viewMyReservations(email);
         }
         else if (choice == "7") {
-            cancelReservation(0);
+            string email = getEmail();
+            r.cancelReservation(email);
         }
         else if (choice == "8") {
             a.viewAvailableLicenseSeats();
@@ -155,131 +158,6 @@ void FacultyResearcher::user_actions() {
 
 
 
-//Reserve multiple assets at once
-bool FacultyResearcher::reserveMultipleAssets() {
-    cout << "--- Reserve Multiple Assets ---\n" << endl;
-    
-    // Show available assets
-    json assets;
-    ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-    inFile >> assets;
-    inFile.close();
-
-    cout << "Available Assets:\n" << endl;
-    bool hasAvailable = false;
-    for (const auto& asset : assets) {
-        if (asset["operationalStatus"] == "available") {
-            cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
-                 << " | Category: " << asset["category"] << endl;
-            hasAvailable = true;
-        }
-    }
-
-    if (!hasAvailable) {
-        cout << "No assets currently available for reservation." << endl;
-        return false;
-    }
-
-    cout << "\n-----------------------------------\n" << endl;
-    
-    cout << "How many assets would you like to reserve? ";
-    int numAssets;
-    cin >> numAssets;
-    cin.ignore();
-    
-    if (numAssets <= 0) {
-        cout << "Invalid number of assets." << endl;
-        return false;
-    }
-
-    string startDate, endDate;
-    cout << "Enter Start Date (YYYY-MM-DD) for all assets: ";
-    getline(cin, startDate);
-    cout << "Enter End Date (YYYY-MM-DD) for all assets: ";
-    getline(cin, endDate);
-
-    // Load accounts
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    vector<int> assetIDs;
-    for (int i = 0; i < numAssets; i++) {
-        int assetID;
-        cout << "Enter Asset ID #" << (i + 1) << ": ";
-        cin >> assetID;
-        cin.ignore();
-        
-        // Verify asset exists and is available
-        bool found = false;
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID && 
-                asset["operationalStatus"] == "available") {
-                assetIDs.push_back(assetID);
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found) {
-            cout << "Asset ID " << assetID << " not found or unavailable!" << endl;
-            return false;
-        }
-    }
-
-    // Reserve all assets
-    for (int assetID : assetIDs) {
-        // Find asset
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID) {
-                // Create reservation
-                json reservation = {
-                    {"assetID", assetID},
-                    {"assetName", asset["name"]},
-                    {"startDate", startDate},
-                    {"endDate", endDate},
-                    {"status", "confirmed"},
-                    {"reason", ""}
-                };
-
-                // Add to user's reservations
-                for (auto& account : accounts) {
-                    if (account["email"].get<string>() == getEmail()) {
-                        account["reservations"].push_back(reservation);
-                        break;
-                    }
-                }
-
-                // Update asset status
-                asset["operationalStatus"] = "reserved";
-                break;
-            }
-        }
-    }
-
-    // Save files
-    ofstream accountsOut("../../data/accounts.json");
-    accountsOut << setw(4) << accounts << endl;
-    accountsOut.close();
-
-    ofstream outAssetFile("../../data/assets.json");
-    outAssetFile << setw(4) << assets << endl;
-    outAssetFile.close();
-
-    cout << "All " << numAssets << " assets reserved successfully!" << endl;
-    return true;
-}
-
-
 //Request software license for self
 bool FacultyResearcher::requestSoftwareLicense(int licenseID, const std::string& startDate, const std::string& endDate) {
     cout << "--- Request Software License ---\n" << endl;
@@ -294,136 +172,6 @@ bool FacultyResearcher::requestSoftwareLicenseGroup(int licenseID, int labGroupI
     return true;
 }
 
-
-//RESERVATION MANAGEMENT
-//View all reservations made by this faculty member
-bool FacultyResearcher::viewMyReservations() {
-    cout << "--- My Reservations ---\n" << endl;
-    
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    bool hasReservations = false;
-    for (const auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            if (account["reservations"].empty()) {
-                cout << "No active reservations found." << endl;
-                return true;
-            }
-
-            int index = 1;
-            for (const auto& res : account["reservations"]) {
-                cout << "Reservation #" << index << endl;
-                cout << "Asset ID: " << res["assetID"] << endl;
-                cout << "Asset Name: " << res["assetName"] << endl;
-                cout << "Start Date: " << res["startDate"] << endl;
-                cout << "End Date: " << res["endDate"] << endl;
-                cout << "Status: " << res["status"] << endl;
-                if (res.contains("reason") && !res["reason"].get<string>().empty()) {
-                    cout << "Reason: " << res["reason"] << endl;
-                }
-                cout << "-----------------------------------" << endl;
-                hasReservations = true;
-                index++;
-            }
-            break;
-        }
-    }
-
-    if (!hasReservations) {
-        cout << "No active reservations found." << endl;
-    }
-    
-    return true;
-}
-
-//Cancel own reservation
-bool FacultyResearcher::cancelReservation(int reservationID) {
-    cout << "--- Cancel Reservation ---\n" << endl;
-    
-    // Load accounts
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    // Find user and list their reservations
-    json* userAccount = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            userAccount = &account;
-            break;
-        }
-    }
-
-    if (!userAccount || (*userAccount)["reservations"].empty()) {
-        cout << "You have no reservations to cancel." << endl;
-        return false;
-    }
-
-    cout << "Your Reservations:\n" << endl;
-    int index = 1;
-    for (const auto& res : (*userAccount)["reservations"]) {
-        cout << index << ". Asset ID: " << res["assetID"] << " | Name: " << res["assetName"] 
-             << " | Status: " << res["status"] << endl;
-        index++;
-    }
-
-    cout << "\nEnter the number of the reservation to cancel: ";
-    int choice;
-    cin >> choice;
-    cin.ignore();
-
-    if (choice < 1 || choice > (*userAccount)["reservations"].size()) {
-        cout << "Invalid selection." << endl;
-        return false;
-    }
-
-    // Get the asset ID before removing
-    int assetID = (*userAccount)["reservations"][choice - 1]["assetID"].get<int>();
-
-    // Remove reservation
-    auto& reservations = (*userAccount)["reservations"];
-    reservations.erase(reservations.begin() + (choice - 1));
-
-    // Update asset status back to available
-    json assets;
-    ifstream assetFile("../../data/assets.json");
-    if (assetFile.is_open()) {
-        assetFile >> assets;
-        assetFile.close();
-
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID) {
-                asset["operationalStatus"] = "available";
-                break;
-            }
-        }
-
-        ofstream outAssetFile("../../data/assets.json");
-        outAssetFile << setw(4) << assets << endl;
-        outAssetFile.close();
-    }
-
-    // Save updated accounts
-    ofstream accountsOut("../../data/accounts.json");
-    accountsOut << setw(4) << accounts << endl;
-    accountsOut.close();
-    
-    cout << "Reservation cancelled successfully!" << endl;
-    
-    return true;
-}
 
 //LAB GROUP MANAGEMENT
 //Display group information

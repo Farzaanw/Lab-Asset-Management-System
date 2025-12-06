@@ -64,15 +64,6 @@ public:
 
 	bool listAccounts();
 
-	//assets
-	bool addAsset();
-
-	bool updateAsset();
-
-	bool removeAsset();
-
-	bool listAssets();
-
 	//inventory & Documents
 
 	//logs

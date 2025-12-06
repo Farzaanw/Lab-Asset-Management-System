@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 #include "../library/nlohmann/json.hpp"
+#include "../users/ResearchStudent.h"
+
 #include <fstream>
 #include <filesystem>
 #include <set>
@@ -21,6 +23,14 @@ private:
 public:
 
     bool reserveAsset(const std::string& email);
+
+    bool reserveMultipleAssets(const std::string& email);
+
+    bool viewMyReservations(const std::string& email);
+
+    bool cancelReservation(const std::string& email);
+
+
 
 };
 

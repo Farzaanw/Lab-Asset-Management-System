@@ -38,44 +38,12 @@ public:
     void display_page();
     void user_actions();
 
-    // Reserve multiple assets at once
-    bool reserveMultipleAssets();
-    
-    // Return a borrowed asset
-    bool return_asset();
-    
-    // View assets checked out by a specific student
-    bool viewStudentAssets(const std::string& studentEmail);
-    
-    // Search and filter assets by category and status
-    bool searchAssets(const std::string& category, const std::string& status);
-    
-    // View all available assets in the system
-    bool viewAvailableAssets();
-
-    // SOFTWARE LICENSE MANAGEMENT
-    // View available software license seats
-    bool viewAvailableLicenseSeats();
-    
     // Request software license for self
     bool requestSoftwareLicense(int licenseID, const std::string& startDate, const std::string& endDate);
     
     // Request software license for group
     bool requestSoftwareLicenseGroup(int licenseID, int labGroupID, const std::string& startDate, const std::string& endDate);
-    
-    // View own licenses
-    bool viewLicenses();
-    
-    // View group licenses
-    bool viewGroupLicenses(int labGroupID);
 
-    // RESERVATION MANAGEMENT
-    // View all reservations made by this faculty member
-    bool viewMyReservations();
-    
-    // Cancel own reservation
-    bool cancelReservation(int reservationID);
-    
     // LAB GROUP MANAGEMENT
     // Display group information and their work/ displays group assets and displays the usage log for that group
     void viewGroup(int labGroupID);

@@ -18,9 +18,11 @@ class ResearchStudent : public User {
 private:
     SystemController* system;
     // Append a usage log entry when a reservation is created
-    bool appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime);
 
 public:
+
+    static bool appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime);
+
     // Constructor
     ResearchStudent(const std::string& firstName,
                    const std::string& lastName,
@@ -35,29 +37,6 @@ public:
 
     // Override pure virtual function from User
     std::string getRole() const override;
-
-    // ASSET MANAGEMENT
-    // Reserve an asset for research use
-    bool reserveAsset();
-    
-    // Return a borrowed asset
-    bool return_asset();
-    
-    // View assets currently checked out by this student
-    bool viewAssets();
-    
-    // Search and filter assets by category and status
-    bool searchAssets(const std::string& category, const std::string& status);
-    
-    // View all available assets in the system
-    bool viewAvailableAssets();
-
-    // RESERVATION MANAGEMENT
-    // View all reservations made by this student
-    bool viewMyReservations();
-    
-    // Cancel a reservation by ID
-    bool cancelReservation(int reservationID);
 
     // STUDENT SPECIFIC FEATURES
     // Submit feedback after using equipment (rating, comments)
