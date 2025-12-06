@@ -244,8 +244,9 @@ bool Assets::listAssets(){
 		cout << "Location: " << asset["location"] << endl;
 		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
-			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
-			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
+			if (asset.contains("stock")) cout << "Quantity On Hand: " << asset["stock"] << endl;
+			if (asset.contains("minimumThreshold")) cout << "Low Stock Threshold: " << asset["minimumThreshold"] << endl;
+			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << (asset["lowStock"].get<bool>() ? "YES" : "NO") << endl;
 		}
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
@@ -350,7 +351,7 @@ bool Assets::addAsset(){
 		inFile.close();
 	}
 
-	string name, category, status, accessLevel, condition, location, quantityOnHand, minimumThreshold, description;
+	string name, category, status, accessLevel, condition, location, stock, minimumThreshold, description;
 	cout << "Creating a new asset." << endl;
 	cout << "Enter asset name: ";
 	getline(cin, name);
@@ -362,9 +363,9 @@ bool Assets::addAsset(){
 	}
 	if (category == "consumable") {
 		cout << "Because this asset is a consumeable please enter:" << endl;
-		cout << "Quantity on hand (grams): ";
-		getline(cin, quantityOnHand);
-		cout << "minimum threshold (grams): ";
+		cout << "stock";
+		getline(cin, stock);
+		cout << "minimum threshold";
 		getline(cin, minimumThreshold);
 	}
 	cout << "Enter asset status (available, reserved, out of service): ";
@@ -407,8 +408,8 @@ bool Assets::addAsset(){
 	asset["location"] = location;
 	asset["clearanceLevel"] = accessLevel;
 	if (category == "consumable") {
-		asset["quantityOnHand(grams)"] = quantityOnHand;
-		asset["minimumThreshold(grams)"] = minimumThreshold;
+		asset["stock"] = stock;
+		asset["minimumThreshold"] = minimumThreshold;
 	}
 	asset["description"] = description;
 
@@ -598,4 +599,94 @@ bool Assets::return_asset(const std::string& email) {
 
     cout << "Asset returned successfully!" << endl;
     return true;
+}
+
+// Helper to parse int from json field that may be string or number
+static int parse_int_field(const json &j, const std::string &key1, const std::string &key2, int defaultVal) {
+	if (j.contains(key1)) {
+		if (j[key1].is_number()) return j[key1].get<int>();
+		if (j[key1].is_string()) {
+			try { return std::stoi(j[key1].get<std::string>()); } catch(...) { return defaultVal; }
+		}
+	}
+	if (!key2.empty() && j.contains(key2)) {
+		if (j[key2].is_number()) return j[key2].get<int>();
+		if (j[key2].is_string()) {
+			try { return std::stoi(j[key2].get<std::string>()); } catch(...) { return defaultVal; }
+		}
+	}
+	return defaultVal;
+}
+
+bool Assets::decrementConsumable(int assetID, int amount, bool &becameLow) {
+	becameLow = false;
+	std::string assetsFile = "../../data/assets.json";
+	json assets;
+	std::ifstream inFile(assetsFile);
+	if (!inFile.is_open()) return false;
+	try { inFile >> assets; } catch(...) { inFile.close(); return false; }
+	inFile.close();
+
+	bool found = false;
+	for (auto& asset : assets) {
+		if (asset.contains("id") && asset["id"].get<int>() == assetID) {
+			found = true;
+			std::string category = asset.value("category", "");
+			if (category != "consumable") return false;
+
+			int q = parse_int_field(asset,"stock", "", 0);
+			int thresh = parse_int_field(asset,"minimumThreshold", "", 0);
+
+			q -= amount;
+			if (q < 0) q = 0;
+
+			asset["stock"] = q;
+			// set lowStock flag
+			bool low = (thresh > 0 && q <= thresh);
+			asset["lowStock"] = low;
+			if (low) becameLow = true;
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	std::ofstream outFile(assetsFile);
+	if (!outFile.is_open()) return false;
+	outFile << std::setw(4) << assets << std::endl;
+	outFile.close();
+	return true;
+}
+
+bool Assets::setLowStockThreshold(int assetID, int threshold) {
+	std::string assetsFile = "../../data/assets.json";
+	json assets;
+	std::ifstream inFile(assetsFile);
+	if (!inFile.is_open()) return false;
+	try { inFile >> assets; } catch(...) { inFile.close(); return false; }
+	inFile.close();
+
+	bool found = false;
+	for (auto& asset : assets) {
+		if (asset.contains("id") && asset["id"].get<int>() == assetID) {
+			found = true;
+			std::string category = asset.value("category", "");
+			if (category != "consumable") return false;
+
+			asset["minimumThreshold"] = threshold;
+
+			// recompute lowStock flag
+			int q = parse_int_field(asset, "stock", "", 0);
+			asset["lowStock"] = (threshold > 0 && q <= threshold);
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	std::ofstream outFile(assetsFile);
+	if (!outFile.is_open()) return false;
+	outFile << std::setw(4) << assets << std::endl;
+	outFile.close();
+	return true;
 }

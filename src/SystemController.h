@@ -31,6 +31,8 @@ public:
     void run();    // CLI entry point
     // Append a usage entry (reservation) to the in-memory log and persist to disk
     bool appendUsageEntry(const nlohmann::json& entry);
+    // Record a system event to the usage log
+    void update_usage_log(const std::string& message);
 
     // variables
     // std::vector<Assets*> assets;     // Stores all the assets available in the system
@@ -56,7 +58,6 @@ private:
     // ================
     // HELPER FUNCTIONS
     // ================
-    void update_usage_log(const std::string& message);
     std::string validate_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& password);
     bool load_json_safe(const std::string& path, nlohmann::json& out);
     std::string get_current_time();

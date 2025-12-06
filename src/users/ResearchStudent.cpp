@@ -300,6 +300,18 @@ bool ResearchStudent::reserveAsset() {
         cerr << "Warning: Failed to write usage log entry." << endl;
     }
 
+    // If this asset is a consumable, decrement quantity on hand and check low-stock
+    try {
+        bool becameLow = false;
+        if (a.decrementConsumable(assetID, 1, becameLow)) {
+            if (becameLow && system != nullptr) {
+                    system->update_usage_log("Low stock alert for asset ID " + to_string(assetID));
+                }
+        }
+    } catch (...) {
+        // non-fatal
+    }
+
     cout << "Asset reserved successfully!" << endl;
     return true;
 }

@@ -46,6 +46,7 @@ void LabAssetManager::main(){
 		cout << "10. Upload Document" << endl;
 		cout << "11. View Logs" << endl;
 		cout << "12. Logout" << endl;
+		cout << "13. Set Consumable Low-Stock Threshold" << endl;
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
@@ -108,6 +109,10 @@ void LabAssetManager::main(){
 				cout << "Failed to list assets." << endl;
 			}
 		}
+		else if (choice == "13") {
+			if (setConsumableThreshold()) cout << "Threshold updated." << endl;
+			else cout << "Failed to update threshold." << endl;
+		}
 		else if (choice == "9") {
 			Documents d;
 			d.listDocuments();
@@ -127,6 +132,24 @@ void LabAssetManager::main(){
 			cout << "Invalid choice. Please try again." << endl;
 		}
 	}
+}
+
+bool LabAssetManager::setConsumableThreshold() {
+	int assetID;
+	cout << "Enter asset ID of consumable to set threshold: ";
+	cin >> assetID;
+	cin.ignore();
+
+	int threshold;
+	cout << "Enter new low-stock threshold (integer): ";
+	cin >> threshold;
+	cin.ignore();
+
+	bool ok = a.setLowStockThreshold(assetID, threshold);
+	if (ok) {
+		if (system) system->update_usage_log("Low-stock threshold updated for asset ID " + to_string(assetID));
+	}
+	return ok;
 }
 
 

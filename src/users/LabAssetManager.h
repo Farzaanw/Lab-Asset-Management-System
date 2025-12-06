@@ -73,6 +73,9 @@ public:
 
 	bool listAssets();
 
+	// Consumable controls
+	bool setConsumableThreshold();
+
 	//inventory & Documents
 
 	//logs
