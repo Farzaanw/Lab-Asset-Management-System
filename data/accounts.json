@@ -7,7 +7,16 @@
         "lastName": "studentlast",
         "notifications": [],
         "password": "studentpass",
-        "reservations": [],
+        "reservations": [
+            {
+                "assetID": 2,
+                "assetName": "Fillament",
+                "endDate": "2025-11-19",
+                "reason": "",
+                "startDate": "2025-11-10",
+                "status": "approved"
+            }
+        ],
         "role": "research student"
     },
     {

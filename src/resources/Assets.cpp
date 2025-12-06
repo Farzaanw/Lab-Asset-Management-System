@@ -1,80 +1,173 @@
 #include "Assets.h"
-#include "Documents.h"
 
-// ==========================================
-// Base Asset Implementation
-// ==========================================
-Assets::Assets(int id, std::string name, std::string loc, int access) 
-    : assetID(id), assetName(name), location(loc), assetAccessLevel(access) {}
+//View all available assets
 
-void Assets::displayInfo() const {
-    std::cout << "[ID: " << assetID << "] " << assetName 
-              << " | Loc: " << location 
-              << " | Access Lvl: " << assetAccessLevel << "\n";
-}
-
-void Assets::addDocument(int id, std::string title) {
-    // documents.push_back({id, title});
-    std::cout << "PLACEHOLDER -- fix this" << std::endl;
-}
-
-std::vector<Documents> Assets::getDocuments() const {
-    return documents;
-}
-
-// ==========================================
-// Equipment Implementation
-// ==========================================
-Equipment::Equipment(int id, std::string name, std::string loc, int access, std::string cond)
-    : Assets(id, name, loc, access), condition(cond), outOfService(false) {}
-
-bool Equipment::isAvailable() const {
-    // Available if NOT out of service
-    return !outOfService;
-}
-
-void Equipment::setOutOfService(bool status, std::string reason) {
-    outOfService = status;
-    if(status) condition = "Maintenance: " + reason;
-    else condition = "Operational";
-}
-
-void Equipment::displayInfo() const {
-    Assets::displayInfo();
-    std::cout << "   Type: Equipment | Status: " << (outOfService ? "OUT OF SERVICE" : "Available") 
-              << " | Condition: " << condition << "\n";
-}
-
-// ==========================================
-// Consumable Implementation
-// ==========================================
-Consumable::Consumable(int id, std::string name, std::string loc, int access, int qty, int thresh)
-    : Assets(id, name, loc, access), stock(qty), minThreshold(thresh) {}
-
-bool Consumable::isAvailable() const {
-    // Available if we have at least 1 item
-    return stock > 0;
-}
-
-void Consumable::reduceStock(int quantity) {
-    if (quantity > stock) {
-        std::cout << "Error: Not enough stock.\n";
-        return;
+bool Assets::viewAvailableAssets() {
+    cout << "--- Available Assets ---\n" << endl;
+    
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
     }
-    stock -= quantity;
-    // Note: Per requirement, we do NOT create a reservation here.
+
+    try {
+        inFile >> assets;
+    } catch (const std::exception& e) {
+        cerr << "Error reading JSON: " << e.what() << endl;
+        inFile.close();
+        return false;
+    }
+    inFile.close();
+
+    if (assets.empty()) {
+        cout << "No assets found." << endl;
+        return true;
+    }
+
+    cout << "Listing all available assets:\n" << endl;
+    bool hasAvailable = false;
+    for (const auto& asset : assets) {
+        if (asset["operationalStatus"] == "available") {
+            cout << "ID: " << asset["id"] << endl;
+            cout << "Name: " << asset["name"] << endl;
+            cout << "Category: " << asset["category"] << endl;
+            cout << "Condition: " << asset["condition"] << endl;
+            cout << "Location: " << asset["location"] << endl;
+            cout << "Description: " << asset["description"] << endl;
+            cout << "-----------------------------------" << endl;
+            hasAvailable = true;
+        }
+    }
+
+    if (!hasAvailable) {
+        cout << "No assets currently available." << endl;
+    }
+
+    return true;
+};
+
+//SOFTWARE LICENSE MANAGEMENT
+//View available software license seats
+bool Assets::viewAvailableLicenseSeats() {
+    cout << "--- Available Software License Seats ---\n" << endl;
+    cout << "TODO: Implement viewAvailableLicenseSeats" << endl;
+    return true;
 }
 
-void Consumable::restock(int quantity) {
-    stock += quantity;
+//View own licenses
+bool Assets::viewLicenses() {
+    cout << "--- My Licenses ---\n" << endl;
+    cout << "TODO: Implement viewLicenses" << endl;
+    return true;
 }
 
-bool Consumable::isLowStock() const {
-    return stock <= minThreshold;
+//View group licenses
+bool Assets::viewGroupLicenses(int labGroupID) {
+    cout << "--- View Group Licenses ---\n" << endl;
+    cout << "TODO: Implement viewGroupLicenses" << endl;
+    return true;
 }
 
-void Consumable::displayInfo() const {
-    Assets::displayInfo();
-    std::cout << "   Type: Consumable | Stock: " << stock 
-              << (isLowStock() ? " [LOW STOCK]" : "") << "\n";
+//Search and filter assets
+bool Assets::searchAssets(const std::string& category, const std::string& status) {
+    cout << "--- Search/Filter Assets ---\n" << endl;
+
+    string cat = category;
+    string stat = status;
+    
+    if (cat.empty()) {
+        cout << "Enter category (or leave blank): ";
+        getline(cin, cat);
+    }
+    if (stat.empty()) {
+        cout << "Enter status (or leave blank): ";
+        getline(cin, stat);
+    }
+    
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open assets.json" << endl;
+        return false;
+    }
+    inFile >> assets;
+    inFile.close();
+    
+    bool found = false;
+    for (const auto& asset : assets) {
+        bool matchCategory = cat.empty() || asset["category"] == cat;
+        bool matchStatus = stat.empty() || asset["operationalStatus"] == stat;
+        
+        if (matchCategory && matchStatus) {
+            cout << "ID: " << asset["id"] << endl;
+            cout << "Name: " << asset["name"] << endl;
+            cout << "Category: " << asset["category"] << endl;
+            cout << "Status: " << asset["operationalStatus"] << endl;
+            cout << "Location: " << asset["location"] << endl;
+            cout << "-----------------------------------" << endl;
+            found = true;
+        }
+    }
+    
+    if (!found) {
+        cout << "No assets found matching criteria." << endl;
+    }
+    
+    return true;
+}
+
+//View assets checked out by a specific student
+bool Assets::viewStudentAssets(const std::string& studentEmail) {
+    cout << "--- View Student Assets ---\n" << endl;
+
+    string email = studentEmail;
+    if (email.empty()) {
+        cout << "Enter student email: ";
+        getline(cin, email);
+    }
+
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) {
+        cerr << "Error: Could not open accounts.json" << endl;
+        return false;
+    }
+    accountsIn >> accounts;
+    accountsIn.close();
+
+    bool studentFound = false;
+    for (const auto& account : accounts) {
+        if (account["email"].get<string>() == email && 
+            account["role"] == "research student") {
+            studentFound = true;
+            
+            if (account["reservations"].empty()) {
+                cout << "Student " << account["firstName"] << " " << account["lastName"] 
+                     << " has no assets checked out." << endl;
+                return true;
+            }
+
+            cout << "Assets for " << account["firstName"] << " " << account["lastName"] << ":\n" << endl;
+            for (const auto& res : account["reservations"]) {
+                if (res["status"] == "confirmed" || res["status"] == "approved") {
+                    cout << "Asset ID: " << res["assetID"] << endl;
+                    cout << "Name: " << res["assetName"] << endl;
+                    cout << "Start Date: " << res["startDate"] << endl;
+                    cout << "End Date: " << res["endDate"] << endl;
+                    cout << "Status: " << res["status"] << endl;
+                    cout << "-----------------------------------" << endl;
+                }
+            }
+            break;
+        }
+    }
+
+    if (!studentFound) {
+        cout << "Student with email " << email << " not found." << endl;
+        return false;
+    }
+
+    return true;
 }

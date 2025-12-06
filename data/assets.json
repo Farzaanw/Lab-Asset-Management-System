@@ -18,7 +18,7 @@
         "location": "lab",
         "minimumThreshold(grams)": "20",
         "name": "Fillament",
-        "operationalStatus": "available",
+        "operationalStatus": "reserved",
         "quantityOnHand(grams)": "350"
     },
     {

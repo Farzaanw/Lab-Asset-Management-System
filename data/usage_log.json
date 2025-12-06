@@ -39,6 +39,74 @@
         {
             "event": "System started",
             "timestamp": "2025-12-04 16:33:10"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:11:40"
+        },
+        {
+            "event": "User logged in: studentfirst studentlast studentemail",
+            "timestamp": "2025-12-05 16:12:29"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:12:57"
+        },
+        {
+            "event": "User logged in: facultyfirst facultylast facultyemail",
+            "timestamp": "2025-12-05 16:13:17"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:17:18"
+        },
+        {
+            "event": "User logged in: labmanagerfirst labmanagerlast labmanageremail",
+            "timestamp": "2025-12-05 16:17:29"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:17:34"
+        },
+        {
+            "event": "User logged in: LAMfirst LAMlast LAMemail",
+            "timestamp": "2025-12-05 16:17:50"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:41:43"
+        },
+        {
+            "event": "User logged in: facultyfirst facultylast facultyemail",
+            "timestamp": "2025-12-05 16:42:15"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-05 16:44:21"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:44:23"
+        },
+        {
+            "event": "User logged in: studentfirst studentlast studentemail",
+            "timestamp": "2025-12-05 16:44:40"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-05 16:45:13"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-05 16:45:15"
+        },
+        {
+            "event": "User logged in: facultyfirst facultylast facultyemail",
+            "timestamp": "2025-12-05 16:45:31"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-05 16:45:47"
         }
     ],
     "usage": [
@@ -48,6 +116,13 @@
             "end": "03-06-2026",
             "loggedAt": "2025-12-04 16:19:11",
             "start": "03-05-2026"
+        },
+        {
+            "assetID": 2,
+            "email": "studentemail",
+            "end": "2025-11-19",
+            "loggedAt": "2025-12-05 16:45:01",
+            "start": "2025-11-10"
         }
     ]
 }
