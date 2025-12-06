@@ -2,9 +2,7 @@
     {
         "clearanceLevel": "1",
         "email": "studentemail",
-        "firstName": "studentfirst",
         "id": 1,
-        "lastName": "studentlast",
         "notifications": [],
         "password": "studentpass",
         "reservations": [
@@ -22,9 +20,7 @@
     {
         "clearanceLevel": "2",
         "email": "facultyemail",
-        "firstName": "facultyfirst",
         "id": 2,
-        "lastName": "facultylast",
         "notifications": [],
         "password": "facultypass",
         "reservations": [],
@@ -32,9 +28,7 @@
     },
     {
         "email": "labmanageremail",
-        "firstName": "labmanagerfirst",
         "id": 3,
-        "lastName": "labmanagerlast",
         "notifications": [],
         "password": "labmanagerpass",
         "reservations": [],
@@ -42,9 +36,7 @@
     },
     {
         "email": "LAMemail",
-        "firstName": "LAMfirst",
         "id": 4,
-        "lastName": "LAMlast",
         "notifications": [],
         "password": "LAMpass",
         "reservations": [],
@@ -53,9 +45,7 @@
     {
         "clearanceLevel": "1",
         "email": "McToodle@oregonstate.edu",
-        "firstName": "Mc",
         "id": 5,
-        "lastName": "Toodle",
         "notifications": [],
         "password": "ResearchStudent22!",
         "reservations": [],
