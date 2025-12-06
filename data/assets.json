@@ -42,6 +42,6 @@
         "minimumThreshold": 9,
         "name": "gloves",
         "operationalStatus": "available",
-        "stock": 10
+        "stock": "10"
     }
 ]

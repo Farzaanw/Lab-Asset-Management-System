@@ -240,13 +240,17 @@ bool Assets::listAssets(){
 		cout << "Name: " << asset["name"] << endl;
 		cout << "Category: " << asset["category"] << endl;
 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
+		if(asset["operationalStatus"] == "out of service"){
+			cout << "Out of Service Reason: " << asset["outOfServiceReason"] << endl;
+			cout << "Expected Return Date: " << asset["expectedReturnDate"] << endl;
+		}
 		cout << "Condition: " << asset["condition"] << endl;
 		cout << "Location: " << asset["location"] << endl;
 		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
 			if (asset.contains("stock")) cout << "stock: " << asset["stock"] << endl;
 			if (asset.contains("minimumThreshold")) cout << "Low Stock Threshold: " << asset["minimumThreshold"] << endl;
-			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << (asset["lowStock"].get<bool>() ? "YES" : "NO") << endl;
+			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << asset["lowStock"] << endl;
 		}
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
@@ -501,6 +505,34 @@ bool Assets::updateAsset(){
 
 		// Update JSON value
 		(*assetToUpdate)[key] = input;
+
+		// If operationalStatus was changed, ask for expected return date and
+		if (key == "operationalStatus") {
+			if (input == "out of service") {
+				string expectedReturn;
+				string reason;
+				// Prompt until non-empty expected return date
+				while (true) {
+					cout << "Enter expected return date (e.g. 2025-12-31): ";
+					getline(cin, expectedReturn);
+					if (!expectedReturn.empty()) break;
+					cout << "Expected return date is required when setting status to out of service." << endl;
+				}
+				// Prompt until non-empty reason
+				while (true) {
+					cout << "Enter reason for out of service: ";
+					getline(cin, reason);
+					if (!reason.empty()) break;
+					cout << "A reason is required when setting status to out of service." << endl;
+				}
+				(*assetToUpdate)["expectedReturnDate"] = expectedReturn;
+				(*assetToUpdate)["outOfServiceReason"] = reason;
+			} else {
+				// If changing away from out of service, remove OOS metadata if present
+				if (assetToUpdate->contains("expectedReturnDate")) assetToUpdate->erase("expectedReturnDate");
+				if (assetToUpdate->contains("outOfServiceReason")) assetToUpdate->erase("outOfServiceReason");
+			}
+		}
 	}
 
 	// Save updated JSON back to file

@@ -179,6 +179,22 @@
         {
             "event": "User logged in: LAMfirst LAMlast LAMemail",
             "timestamp": "2025-12-06 14:50:42"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 15:41:14"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 15:41:21"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 15:47:12"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 15:47:16"
         }
     ],
     "usage": [
