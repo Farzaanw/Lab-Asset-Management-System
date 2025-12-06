@@ -18,9 +18,7 @@ private:
     SystemController* system;
 	
 public:
-	LabManager(const std::string& firstName = "",
-			   const std::string& lastName = "",
-			   const std::string& email = "",
+	LabManager(const std::string& email = "",
 			   SystemController* sys = nullptr);
 
 	void main() override;

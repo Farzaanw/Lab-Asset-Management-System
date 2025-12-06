@@ -12,11 +12,9 @@ static Assets a;
 using namespace std;
 using json = nlohmann::json;
 
-LabAssetManager::LabAssetManager(const std::string& firstName,
-			   const std::string& lastName,
-			   const std::string& email,
+LabAssetManager::LabAssetManager(const std::string& email,
 			   SystemController* sys)
-	: User(firstName, lastName, email, sys) ,
+	: User(email, sys) ,
 	  system(sys) {}
 
 
@@ -30,7 +28,7 @@ std::string LabAssetManager::getRole() const {
 
 void LabAssetManager::main(){
 	cout << "\n=============================================" << endl;
-    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "Welcome " << getEmail() << endl;
     cout << "=============================================\n" << endl;
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
@@ -163,12 +161,8 @@ bool LabAssetManager::createAccount() {
 	}
 
 	//asks user for account info
-	string firstName, lastName, role, email, password;
+	string role, email, password;
 	cout << "Creating a new account." << endl;
-	cout << "Enter first name: ";
-	getline(cin, firstName);
-	cout << "Enter last name: ";
-	getline(cin, lastName);
 	cout << "Enter email: ";
 	getline(cin, email);
 	cout << "Enter role: ";
@@ -197,8 +191,6 @@ bool LabAssetManager::createAccount() {
 
 	// Create account
 	account["id"] = uniqueID;
-	account["firstName"] = firstName;
-	account["lastName"] = lastName;
 	account["email"] = email;
 	account["clearanceLevel"] = "1"; // Default clearance level, can be updated later
 	account["role"] = role;
@@ -329,8 +321,6 @@ bool LabAssetManager::listAccounts() {
 	cout << "Listing all accounts:\n" << endl;
 	for (const auto& acc : accounts) {
 		cout << "ID: " << acc["id"] << endl;
-		cout << "First Name: " << acc["firstName"] << endl;
-		cout << "Last Name: " << acc["lastName"] << endl;
 		cout << "Email: " << acc["email"] << endl;
 		cout << "Role: " << acc["role"] << endl;
 		cout << "Password: " << acc["password"] << endl;

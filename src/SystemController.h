@@ -45,7 +45,7 @@ private:
     // int role_selection_menu();   
     // bool create_account();  // removed arg: int roleChoice) 
     bool log_in();  // removed arg: int roleChoice)        
-    User* create_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& role);    // create instance of CurrentUser
+    User* create_user(const std::string& email, const std::string& role);    // create instance of CurrentUser
 
     // ==============================
     // PERSISTENT DATA LOAD 
@@ -58,7 +58,7 @@ private:
     // ================
     // HELPER FUNCTIONS
     // ================
-    std::string validate_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& password);
+    std::string validate_user(const std::string& email, const std::string& password);
     bool load_json_safe(const std::string& path, nlohmann::json& out);
     std::string get_current_time();
 

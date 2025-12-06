@@ -20,11 +20,9 @@ using namespace std;
 using json = nlohmann::json;
 
 //Constructor
-ResearchStudent::ResearchStudent(const std::string& firstName,
-                                 const std::string& lastName,
-                                 const std::string& email,
+ResearchStudent::ResearchStudent(const std::string& email,
                                  SystemController* sys)
-    : User(firstName, lastName, email, sys),
+    : User(email, sys),
       system(sys) {}
 
 //Destructor
@@ -38,7 +36,7 @@ std::string ResearchStudent::getRole() const {
 //Main menu
 void ResearchStudent::main() {
     cout << "\n=============================================" << endl;
-    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "Welcome " << getEmail() << endl;
     cout << "=============================================\n" << endl;
 
     while(true) {
@@ -106,12 +104,10 @@ void ResearchStudent::main() {
             submitUsageFeedback(equipmentID, comments, rating);
         }
         else if (choice == "9") {
-            string newName, newEmail;
-            cout << "Enter new name: ";
-            getline(cin, newName);
+            string newEmail;
             cout << "Enter new email: ";
             getline(cin, newEmail);
-            updateUserProfile(newName, newEmail);
+            updateUserProfile(newEmail);
         }
         else if (choice == "10") {
             cout << "Logging out of Research Student." << endl;
@@ -247,7 +243,7 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
 }
 
 //update profile information
-bool ResearchStudent::updateUserProfile(const std::string& newName, const std::string& newEmail) {
+bool ResearchStudent::updateUserProfile(const std::string& newEmail) {
     cout << "--- Update User Profile ---\n" << endl;
     
     json accounts;
@@ -263,12 +259,6 @@ bool ResearchStudent::updateUserProfile(const std::string& newName, const std::s
     bool found = false;
     for (auto& account : accounts) {
         if (account["email"] == getEmail() && account["role"] == "research student") {
-            // Parse new name
-            size_t spacePos = newName.find(' ');
-            if (spacePos != string::npos) {
-                account["firstName"] = newName.substr(0, spacePos);
-                account["lastName"] = newName.substr(spacePos + 1);
-            }
             account["email"] = newEmail;
             found = true;
             break;

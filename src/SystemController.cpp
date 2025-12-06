@@ -111,30 +111,39 @@ int SystemController::main() {
 /////////////////////////////////////////////////////////////////
 bool SystemController::log_in() {
     const int MAX_ATTEMPTS = 5;
-    std::string firstName, lastName, email, password;
+    std::string email, password;
 
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
         std::cout << "\nPlease enter your login credentials:\n";             // had before ... (" + ROLE_NAMES[roleChoice] + "):\n";
-        std::cout << "First Name: ";
-        std::getline(std::cin, firstName);
-        std::cout << "Last Name: ";
-        std::getline(std::cin, lastName);
+        // std::cout << "First Name: ";
+        // std::getline(std::cin, firstName);
+        // std::cout << "Last Name: ";
+        // std::getline(std::cin, lastName);
+
+
         std::cout << "Email: ";
         std::getline(std::cin, email);
         std::cout << "Password: ";
         std::getline(std::cin, password);
 
-        std::string role = validate_user(firstName, lastName, email, password);   // validate user step (check accounts.json for user existence)
+        std::string role = validate_user(email, password);   // validate user step (check accounts.json for user existence)
+
+            // roleLoginJson is assumed to be a JSON array
+        if (!roleLoginJson.is_array()) {
+            std::cerr << "Error: login JSON is not an array.\n";
+            return "";
+        }
+
         
         if (role != "") {
             // update usage log
-            update_usage_log("User logged in: " + firstName + " " + lastName + " " + email);
+            update_usage_log("User logged in: " + email);
             userActive = true;
 
             std::cout << "CHECK:: User is a " << role << std::endl;
 
             // --------------- Create User instance -------------- //
-            currentUser = create_user(firstName, lastName, email, role);
+            currentUser = create_user(email, role);
             return currentUser != nullptr;
             // ----------------------------------------------------- //
 
@@ -151,7 +160,7 @@ bool SystemController::log_in() {
 /////////////////////////////////////////////////////////////////
 // Validate Login Credentials
 /////////////////////////////////////////////////////////////////
-std::string SystemController::validate_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& password) {
+std::string SystemController::validate_user(const std::string& email, const std::string& password) {
   
     // roleLoginJson is assumed to be a JSON array
     if (!roleLoginJson.is_array()) {
@@ -161,14 +170,11 @@ std::string SystemController::validate_user(const std::string& firstName, const 
 
     for (const auto& user : roleLoginJson) {
         // Safely check all fields
-        if (!user.contains("firstName") || !user.contains("lastName") ||
-            !user.contains("email")     || !user.contains("password") ||
+        if (!user.contains("email") || !user.contains("password") ||
             !user.contains("role"))
             continue;
 
-        if (user["firstName"].get<std::string>() == firstName &&
-            user["lastName"].get<std::string>() == lastName &&
-            user["email"].get<std::string>() == email &&
+        if (user["email"].get<std::string>() == email &&
             user["password"].get<std::string>() == password)
         {
             return user["role"].get<std::string>();          // <--- changed to return a string that gets the users assigned role
@@ -181,26 +187,26 @@ std::string SystemController::validate_user(const std::string& firstName, const 
 /////////////////////////////////////////////////////////////////
 // Create User Instance
 /////////////////////////////////////////////////////////////////
-User* SystemController::create_user(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& role) {
+User* SystemController::create_user(const std::string& email, const std::string& role) {
 
     if (role == "research student") {
-        std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
-        currentUser = new ResearchStudent(firstName, lastName, email, this);
+        std::cout << "Creating ResearchStudent instance for " << email <<  "\n";
+        currentUser = new ResearchStudent(email, this);
         return currentUser;
     }
     else if (role == "faculty researcher") {
-        std::cout << "Creating ResearchStudent instance for " << firstName << " " << lastName << "\n";
-        currentUser = new FacultyResearcher(firstName, lastName, email, this);
+        std::cout << "Creating ResearchStudent instance for " << email << "\n";
+        currentUser = new FacultyResearcher(email, this);
         return currentUser;
     }
     else if (role == "lab manager") {
-        std::cout << "Creating LabManager instance for " << firstName << " " << lastName << "\n";
-        currentUser = new LabManager(firstName, lastName, email, this);
+        std::cout << "Creating LabManager instance for " << email << "\n";
+        currentUser = new LabManager(email, this);
         return currentUser;
     }
     else if (role == "lab asset manager") {
-        std::cout << "Creating LabAssetManager instance for " << firstName << " " << lastName << "\n";
-        currentUser = new LabAssetManager(firstName, lastName, email, this);
+        std::cout << "Creating LabAssetManager instance for " << email << "\n";
+        currentUser = new LabAssetManager(email, this);
         return currentUser;
     }
     else {

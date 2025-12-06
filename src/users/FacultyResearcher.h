@@ -20,9 +20,7 @@ private:
 
 public:
     // Constructor
-    FacultyResearcher(const std::string& firstName,
-                     const std::string& lastName,
-                     const std::string& email,
+    FacultyResearcher(const std::string& email,
                      SystemController* sys);
 
     // Destructor

@@ -11,16 +11,14 @@
 using namespace std;
 using json = nlohmann::json;
 
-LabManager::LabManager(const std::string& firstName,
-			   const std::string& lastName,
-			   const std::string& email,
+LabManager::LabManager(const std::string& email,
 			   SystemController* sys)
-	: User(firstName, lastName, email, sys) ,
+	: User(email, sys) ,
       system(sys) {}
 
 void LabManager::main(){
 	cout << "\n=============================================" << endl;
-    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "Welcome " << getEmail() << endl;
     cout << "=============================================\n" << endl;
 	while(true){
 		cout << endl << "---Lab Manager Main Menu---" << endl;

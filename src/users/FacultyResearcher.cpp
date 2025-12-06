@@ -18,11 +18,9 @@ using namespace std;
 using json = nlohmann::json;
 
 //Constructor
-FacultyResearcher::FacultyResearcher(const std::string& firstName,
-                                     const std::string& lastName,
-                                     const std::string& email,
+FacultyResearcher::FacultyResearcher(const std::string& email,
                                      SystemController* sys)
-    : User(firstName, lastName, email, sys),
+    : User(email, sys),
       system(sys) {}
 
 //Destructor
@@ -36,7 +34,7 @@ std::string FacultyResearcher::getRole() const {
 //Main menu
 void FacultyResearcher::main() {
     cout << "\n=============================================" << endl;
-    cout << "Welcome " << getFirstName() << " " << getLastName() << "!" << endl;
+    cout << "Welcome " << getEmail() <<  "!" << endl;
     cout << "=============================================\n" << endl;
 
     while(true) {
@@ -147,7 +145,6 @@ void FacultyResearcher::main() {
 //NAVIGATION/DISPLAY
 void FacultyResearcher::display_page() {
     cout << "--- Faculty Researcher Dashboard ---" << endl;
-    cout << "Name: " << getFirstName() << " " << getLastName() << endl;
     cout << "Email: " << getEmail() << endl;
     cout << "Role: " << getRole() << endl;
 }

@@ -24,9 +24,7 @@ public:
     static bool appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime);
 
     // Constructor
-    ResearchStudent(const std::string& firstName,
-                   const std::string& lastName,
-                   const std::string& email,
+    ResearchStudent(const std::string& email,
                    SystemController* sys);
 
     // Destructor
@@ -42,8 +40,8 @@ public:
     // Submit feedback after using equipment (rating, comments)
     bool submitUsageFeedback(int equipmentID, const std::string& comments, int rating);
     
-    // Update student profile information (name, email)
-    bool updateUserProfile(const std::string& newName, const std::string& newEmail);
+    // Update student profile information (email)
+    bool updateUserProfile(const std::string& newEmail);
 };
 
 #endif

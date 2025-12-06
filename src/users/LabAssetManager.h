@@ -41,11 +41,9 @@ private:
 	};
 public:
 	//constructor
-	LabAssetManager(const std::string& firstName = "",
-			   const std::string& lastName = "",
-			   const std::string& email = "",
+	LabAssetManager(const std::string& email = "",
 			   SystemController* system = nullptr);
-		// : User(firstName, lastName, email, system) {};
+		// : User(email, system) {};
 
 	void main() override;
 
