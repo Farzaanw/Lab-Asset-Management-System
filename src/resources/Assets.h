@@ -74,6 +74,17 @@ public:
 
     bool addAsset();
 
+    // Consumable management
+    // Decrement the quantity on hand for a consumable asset. Returns:
+    //  0 = success, not low
+    //  1 = success, reached low-stock (<= threshold)
+    // -1 = asset not found
+    // -2 = asset not consumable
+    bool decrementConsumable(int assetID, int amount, bool &becameLow);
+
+    // Set the low-stock threshold for a consumable asset
+    bool setLowStockThreshold(int assetID, int threshold);
+
     bool return_asset(const std::string& email);
 
 };
