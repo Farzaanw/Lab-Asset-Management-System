@@ -45,7 +45,7 @@ public:
       // View group licenses
     bool viewGroupLicenses(int labGroupID);
 
-
+    bool viewAssets(const std::string& email);
 
 
 };

@@ -171,3 +171,46 @@ bool Assets::viewStudentAssets(const std::string& studentEmail) {
 
     return true;
 }
+
+//view own assets
+bool Assets::viewAssets(const std::string& email) {
+    cout << "--- My Assets ---\n" << endl;
+
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) {
+        cerr << "Error: Could not open accounts.json" << endl;
+        return false;
+    }
+    accountsIn >> accounts;
+    accountsIn.close();
+
+    bool hasAssets = false;
+    for (const auto& account : accounts) {
+        if (account["email"].get<string>() == email) {
+            if (account["reservations"].empty()) {
+                cout << "You have no assets checked out." << endl;
+                return true;
+            }
+
+            for (const auto& res : account["reservations"]) {
+                if (res["status"] == "confirmed" || res["status"] == "approved") {
+                    cout << "Asset ID: " << res["assetID"] << endl;
+                    cout << "Name: " << res["assetName"] << endl;
+                    cout << "Start Date: " << res["startDate"] << endl;
+                    cout << "End Date: " << res["endDate"] << endl;
+                    cout << "Status: " << res["status"] << endl;
+                    cout << "-----------------------------------" << endl;
+                    hasAssets = true;
+                }
+            }
+            break;
+        }
+    }
+
+    if (!hasAssets) {
+        cout << "You have no assets checked out." << endl;
+    }
+
+    return true;
+}

@@ -12,7 +12,7 @@
 #include "FacultyResearcher.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
-Assets a;
+static Assets a;
 
 using namespace std;
 using json = nlohmann::json;

@@ -14,7 +14,7 @@
 #include "ResearchStudent.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
-
+static Assets a;
 using namespace std;
 using json = nlohmann::json;
 
@@ -72,18 +72,14 @@ void ResearchStudent::main() {
             return_asset();
         }
         else if (choice == "3") {
-            viewAvailableAssets();
+            a.viewAvailableAssets();
         }
         else if (choice == "4") {
-            viewAssets();
+            string email = getEmail();
+            a.viewAssets(email);
         }
         else if (choice == "5") {
-            string category, status;
-            cout << "Enter category (or leave blank): ";
-            getline(cin, category);
-            cout << "Enter status (or leave blank): ";
-            getline(cin, status);
-            searchAssets(category, status);
+            a.searchAssets("", ""); // Will prompt inside function
         }
         else if (choice == "6") {
             viewMyReservations();
@@ -477,131 +473,7 @@ bool ResearchStudent::return_asset() {
     return true;
 }
 
-//view own assets
-bool ResearchStudent::viewAssets() {
-    cout << "--- My Assets ---\n" << endl;
 
-    json accounts;
-    ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
-        cerr << "Error: Could not open accounts.json" << endl;
-        return false;
-    }
-    accountsIn >> accounts;
-    accountsIn.close();
-
-    bool hasAssets = false;
-    for (const auto& account : accounts) {
-        if (account["email"].get<string>() == getEmail()) {
-            if (account["reservations"].empty()) {
-                cout << "You have no assets checked out." << endl;
-                return true;
-            }
-
-            for (const auto& res : account["reservations"]) {
-                if (res["status"] == "confirmed" || res["status"] == "approved") {
-                    cout << "Asset ID: " << res["assetID"] << endl;
-                    cout << "Name: " << res["assetName"] << endl;
-                    cout << "Start Date: " << res["startDate"] << endl;
-                    cout << "End Date: " << res["endDate"] << endl;
-                    cout << "Status: " << res["status"] << endl;
-                    cout << "-----------------------------------" << endl;
-                    hasAssets = true;
-                }
-            }
-            break;
-        }
-    }
-
-    if (!hasAssets) {
-        cout << "You have no assets checked out." << endl;
-    }
-
-    return true;
-}
-
-//search and filter assets
-bool ResearchStudent::searchAssets(const std::string& category, const std::string& status) {
-    cout << "--- Search/Filter Assets ---\n" << endl;
-    
-    json assets;
-    ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-    inFile >> assets;
-    inFile.close();
-    
-    bool found = false;
-    for (const auto& asset : assets) {
-        bool matchCategory = category.empty() || asset["category"] == category;
-        bool matchStatus = status.empty() || asset["operationalStatus"] == status;
-        
-        if (matchCategory && matchStatus) {
-            cout << "ID: " << asset["id"] << endl;
-            cout << "Name: " << asset["name"] << endl;
-            cout << "Category: " << asset["category"] << endl;
-            cout << "Status: " << asset["operationalStatus"] << endl;
-            cout << "Location: " << asset["location"] << endl;
-            cout << "-----------------------------------" << endl;
-            found = true;
-        }
-    }
-    
-    if (!found) {
-        cout << "No assets found matching criteria." << endl;
-    }
-    
-    return true;
-}
-
-//view all available
-bool ResearchStudent::viewAvailableAssets() {
-    cout << "--- Available Assets ---\n" << endl;
-    
-    json assets;
-    ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
-    }
-
-    try {
-        inFile >> assets;
-    } catch (const std::exception& e) {
-        cerr << "Error reading JSON: " << e.what() << endl;
-        inFile.close();
-        return false;
-    }
-    inFile.close();
-
-    if (assets.empty()) {
-        cout << "No assets found." << endl;
-        return true;
-    }
-
-    cout << "Listing all available assets:\n" << endl;
-    bool hasAvailable = false;
-    for (const auto& asset : assets) {
-        if (asset["operationalStatus"] == "available") {
-            cout << "ID: " << asset["id"] << endl;
-            cout << "Name: " << asset["name"] << endl;
-            cout << "Category: " << asset["category"] << endl;
-            cout << "Condition: " << asset["condition"] << endl;
-            cout << "Location: " << asset["location"] << endl;
-            cout << "Description: " << asset["description"] << endl;
-            cout << "-----------------------------------" << endl;
-            hasAvailable = true;
-        }
-    }
-
-    if (!hasAvailable) {
-        cout << "No assets currently available." << endl;
-    }
-
-    return true;
-}
 
 //RESERVATIONS
 //view own reservations
