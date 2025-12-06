@@ -252,3 +252,261 @@ bool Assets::listAssets(){
 	}
 	return true;
 }
+
+bool Assets::removeAsset(){
+	int ID = -1;
+	json assets;
+    string assetsFile = "../../data/assets.json";
+	// Load JSON file
+	ifstream inFile(assetsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open assets.json" << endl;
+		return false;
+	}
+	inFile >> assets;
+	inFile.close();
+
+	// Pointer to the asset to delete
+	json* assetToDelete = nullptr;
+
+	// Loop until user enters a valid ID
+	while (!assetToDelete) {
+		string input;
+        listAssets();
+		cout << "Please enter the asset ID you want to delete (or type 'quit' to cancel): ";
+		getline(cin, input);
+
+		if (input == "quit") {
+			cout << "Delete operation canceled.\n";
+			return false;
+		}
+
+		// Validate numeric ID
+		try {
+			ID = stoi(input);
+		} catch (...) {
+			cout << "Invalid input. Please enter a numeric ID.\n";
+			continue;
+		}
+
+		// Search for asset
+		for (auto& asset : assets) {
+			if (asset["id"].get<int>() == ID) {
+				assetToDelete = &asset;
+				break;
+			}
+		}
+
+		if (!assetToDelete) {
+			cout << "Asset ID not found. Please try again.\n";
+		}
+	}
+
+	// Display asset info before deleting
+	cout << "\nAsset found:\n";
+	for (auto& [key, value] : assetToDelete->items()) {
+		cout << key << ": " << value << endl;
+	}
+
+	// Confirmation
+	string confirm;
+	cout << "\nAre you sure you want to delete this asset? (yes/no): ";
+	getline(cin, confirm);
+
+	while (confirm != "yes" && confirm != "no") {
+		cout << "Please enter 'yes' or 'no': ";
+		getline(cin, confirm);
+	}
+
+	if (confirm == "no") {
+		cout << "Deletion canceled.\n";
+		return false;
+	}
+
+	// Delete asset
+	for (size_t i = 0; i < assets.size(); i++) {
+		if (assets[i]["id"].get<int>() == ID) {
+			assets.erase(assets.begin() + i);
+			break;
+		}
+	}
+
+	// Save updated JSON
+	ofstream outFile(assetsFile);
+	outFile << assets.dump(4);
+	outFile.close();
+
+	cout << "\nAsset deleted successfully!\n";
+	return true;
+}
+
+bool Assets::addAsset(){
+	json assetFile;
+	json asset;
+    string assetsFile = "../../data/assets.json";
+	ifstream inFile(assetsFile);
+	if (inFile.is_open()) {
+		inFile >> assetFile;
+		inFile.close();
+	}
+
+	string name, category, status, accessLevel, condition, location, quantityOnHand, minimumThreshold, description;
+	cout << "Creating a new asset." << endl;
+	cout << "Enter asset name: ";
+	getline(cin, name);
+	cout << "Enter asset category (equipment, consumable, software): ";
+	getline(cin, category);
+	while (assetTypes.find(category) == assetTypes.end()) {
+		cout << "Invalid asset category entered. Please enter a valid asset category from the list:" << endl << "equipment" << endl << "consumable" << endl << "software" << endl;
+		getline(cin, category);
+	}
+	if (category == "consumable") {
+		cout << "Because this asset is a consumeable please enter:" << endl;
+		cout << "Quantity on hand (grams): ";
+		getline(cin, quantityOnHand);
+		cout << "minimum threshold (grams): ";
+		getline(cin, minimumThreshold);
+	}
+	cout << "Enter asset status (available, reserved, out of service): ";
+	getline(cin, status);
+	while (assetStatus.find(status) == assetStatus.end()) {
+		cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
+		getline(cin, status);
+	}
+	cout << "Enter asset condition: ";
+	getline(cin, condition);
+	cout << "Enter asset access level (1, 2, or 3): ";
+	getline(cin, accessLevel);
+	while (clearanceLevels.find(accessLevel) == clearanceLevels.end()) {
+		cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+		getline(cin, accessLevel);
+	}
+	cout << "Enter asset location: ";
+	getline(cin, location);
+	cout << "Enter asset description: ";
+	getline(cin, description);
+
+	//role validation
+
+	// Generate unique ID. This will generate the highest ID in the accounts.json file.
+	int maxID = 0;
+	for (const auto& asset : assetFile) {
+		if (asset.contains("id") && asset["id"].is_number()) {
+			int id = asset["id"];
+			if (id > maxID) maxID = id;
+		}
+	}
+	int uniqueID = maxID + 1;
+
+	// Create asset
+	asset["id"] = uniqueID;
+	asset["name"] = name;
+	asset["category"] = category;
+	asset["operationalStatus"] = status;
+	asset["condition"] = condition;
+	asset["location"] = location;
+	asset["clearanceLevel"] = accessLevel;
+	if (category == "consumable") {
+		asset["quantityOnHand(grams)"] = quantityOnHand;
+		asset["minimumThreshold(grams)"] = minimumThreshold;
+	}
+	asset["description"] = description;
+
+	// Add to JSON array
+	assetFile.push_back(asset);
+
+	// Save back to file
+	ofstream outFile(assetsFile);
+	outFile << setw(4) << assetFile << endl;
+	outFile.close();
+	return true;
+}
+
+bool Assets::updateAsset(){
+	int ID;
+	json assets;
+    string assetsFile = "../../data/assets.json";
+	// Load the JSON file
+	ifstream inFile(assetsFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open assets.json" << endl;
+		return false;
+	}
+	inFile >> assets;
+	inFile.close();
+
+	// Loop until valid ID is entered
+	json* assetToUpdate = nullptr;
+	while (!assetToUpdate) {
+		string input;
+		cout << "Please enter the asset ID you would like to modify (type quit to cancel the modification): ";
+		getline(cin, input);
+
+		if (input == "quit") {
+			return false;
+		}
+
+		try {
+			ID = stoi(input);
+		} catch (...) {
+			cout << "Invalid input. Please enter a numeric ID." << endl;
+			continue;
+		}
+
+		// Search for the asset
+		for (auto& asset : assets) {
+			if (asset["id"].get<int>() == ID) {
+				assetToUpdate = &asset;
+				break;
+			}
+		}
+
+		if (!assetToUpdate) {
+			cout << "Asset ID not found. Please try again." << endl;
+		}
+	}
+
+	// Display current account info
+	cout << "\nCurrent account information:\n";
+	for (auto& [key, value] : assetToUpdate->items()) {
+		cout << key << ": " << value << endl;
+	}
+	cout << endl << "Please note that the asset category and asset ID cannot be changed once created." << endl;
+	cout << "\nEnter new information (leave blank to keep current value):\n";
+
+	// Update fields (ID is NOT updated)
+	for (auto& [key, value] : assetToUpdate->items()) {
+		if (key == "id") continue;
+		if (key == "category") continue;
+		string input;
+		cout << key << " (" << value << "): ";
+		getline(cin, input);
+
+		if (input.empty()) {
+			continue;
+		}
+		if (key == "operationalStatus") {
+			while (assetStatus.find(input) == assetStatus.end()) {
+				cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
+				getline(cin, input);
+			}
+		}
+		if (key == "clearanceLevel") {
+			while (clearanceLevels.find(input) == clearanceLevels.end()) {
+				cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+				getline(cin, input);
+			}
+		}
+
+		// Update JSON value
+		(*assetToUpdate)[key] = input;
+	}
+
+	// Save updated JSON back to file
+	ofstream outFile(assetsFile);
+	outFile << assets.dump(4);
+	outFile.close();
+
+	cout << "\nAsset updated successfully!\n";
+	return true;
+}

@@ -31,24 +31,7 @@ private:
 		"lab asset manager"
 	};
 
-	//the level of clearance needed to obtain each asset
-	set<string> clearanceLevels = {
-		"1", //low clearance level (base clearance)
-		"2",  //Medium clearance level
-		"3"  //High clearance level
-	};
-
-	set<string> assetTypes = {
-		"equipment",
-		"consumable",
-		"software"
-	};
-
-	set<string> assetStatus = {
-		"available",
-		"reserved",
-		"out of service"
-	};
+	
 
 	set<string> documentTypes = {
 		"manual",
