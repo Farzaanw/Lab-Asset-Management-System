@@ -125,12 +125,7 @@ void LabAssetManager::main(){
 			else cout << "Failed to update threshold." << endl;
 		}
 		else if (choice == "13") {
-			string category, status;
-			cout << "Enter category to filter by (or leave blank for all): ";
-			getline(cin, category);
-			cout << "Enter status to filter by (or leave blank for all): ";
-			getline(cin, status); 
-			if (!a.searchAssets(category, status)) {
+			if (!a.searchAssets("", "")) {
 				cout << "Failed to search/filter assets." << endl;
 			}
 		}
