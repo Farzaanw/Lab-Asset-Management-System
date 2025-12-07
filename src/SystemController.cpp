@@ -9,7 +9,14 @@
 #include <limits>
 #include <cctype>
 #include <time.h>
-#include <unistd.h>  // for sleep()
+
+// needed for lockdown upon incorrect user login
+#ifdef _WIN32
+    #include <windows.h>  // for Sleep() on Windows
+    #define sleep(seconds) Sleep((seconds) * 1000)
+#else
+    #include <unistd.h>  // for sleep() on Unix/Linux   
+#endif
 
 // class includes
 #include "SystemController.h"
@@ -30,7 +37,7 @@ static const std::string DATA_DIR = "../../data/";
 /////////////////////////////////////////////////////////////////
 SystemController::SystemController() : isOpen(true), currentUser(nullptr) {   
     load_usage_log();
-    load_user_logins();
+    load_accounts();
     load_assets();
     load_policies();
 
@@ -116,11 +123,7 @@ bool SystemController::log_in() {
 
     // user gets max 5 attempts to log in
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
-        std::cout << "\nPlease enter your login credentials:\n";             // had before ... (" + ROLE_NAMES[roleChoice] + "):\n";
-        // std::cout << "First Name: ";
-        // std::getline(std::cin, firstName);
-        // std::cout << "Last Name: ";
-        // std::getline(std::cin, lastName);
+        std::cout << "\nPlease enter your login credentials:\n";             
         std::cout << "Email: ";
         std::getline(std::cin, email);
         std::cout << "Password: ";
@@ -128,13 +131,13 @@ bool SystemController::log_in() {
 
         std::string role = validate_user(email, password);   // validate user step (check accounts.json for user existence)
 
-            // roleLoginJson is assumed to be a JSON array
+        // roleLoginJson is assumed to be a JSON array
         if (!roleLoginJson.is_array()) {
             std::cerr << "Error: login JSON is not an array.\n";
             return "";
         }
 
-        
+        // if user exists
         if (role != "") {
             // update usage log
             update_usage_log("User logged in: " + email);
@@ -159,9 +162,8 @@ bool SystemController::log_in() {
     if (minutes < 5) {
         printf("*Account locked for 10 minutes*\n");
 
-        // Create notification
+        // Create notification to send to Lab Asset Manager
         json notification = {
-            {"notificationID", std::to_string(nextID)},
             {"message", "Multiple failed login attempts detected for email: " + email},
             {"type", "security_alert"},
             {"timeStamp", get_current_time()},
@@ -172,26 +174,12 @@ bool SystemController::log_in() {
         };
 
         // ----------------------- send message to LAM
-        
-        
-        std::cout << "PLACEHOLDER (waiting on Notifications Class) -- need to send message to LAM ...\n";
-
-
-
-        //////////// ------------------------------ //
+        Notifications notif;
+        notif.send_notifications("lab asset manager", notification);
+        // ------------------------------ //
 
         // pause for 10 minutes
         sleep(600); 
-
-        // Save updated accounts
-        std::ofstream outFile("../../data/accounts.json");
-        if (!outFile.is_open()) {
-            std::cerr << "Error: Could not save accounts.json" << std::endl;
-            return false;
-        }
-        outFile << std::setw(4) << accounts << std::endl;
-        outFile.close();
-        //////////////////////////////////////////////////////
 
         return log_in(); // retry login after lockout
     } else {
@@ -286,7 +274,7 @@ bool SystemController::load_json_safe(const std::string& path, json& out) {
     }
 }
 
-void SystemController::load_user_logins() {
+void SystemController::load_accounts() {
     std::string path = DATA_DIR + "accounts.json";
     if (!load_json_safe(path, roleLoginJson)) {
         // initialize as empty array, not object
@@ -361,31 +349,31 @@ void SystemController::update_usage_log(const std::string& message) {
 }
 
 // Append a usage entry (reservation) into the central usage_log and persist it.
-bool SystemController::appendUsageEntry(const nlohmann::json& entry) {
-    // Ensure events exists (update_usage_log already does this on startup)
-    if (!usage_log.is_object()) usage_log = json::object();
+// bool SystemController::appendUsageEntry(const nlohmann::json& entry) {
+//     // Ensure events exists (update_usage_log already does this on startup)
+//     if (!usage_log.is_object()) usage_log = json::object();
 
-    if (!usage_log.contains("usage") || !usage_log["usage"].is_array())
-        usage_log["usage"] = json::array();
+//     if (!usage_log.contains("usage") || !usage_log["usage"].is_array())
+//         usage_log["usage"] = json::array();
 
-    usage_log["usage"].push_back(entry);
+//     usage_log["usage"].push_back(entry);
 
-    // Write back to disk, preserving events (usage_log already contains events)
-    try {
-        std::string path = DATA_DIR + std::string("usage_log.json");
-        std::ofstream out(path);
-        if (!out.is_open()) {
-            std::cerr << "Error: Could not open usage_log.json for appending usage entry: " << path << std::endl;
-            return false;
-        }
-        out << std::setw(4) << usage_log;
-        out.close();
-        return true;
-    } catch (const std::exception& e) {
-        std::cerr << "Exception writing usage log: " << e.what() << std::endl;
-        return false;
-    }
-}
+//     // Write back to disk, preserving events (usage_log already contains events)
+//     try {
+//         std::string path = DATA_DIR + std::string("usage_log.json");
+//         std::ofstream out(path);
+//         if (!out.is_open()) {
+//             std::cerr << "Error: Could not open usage_log.json for appending usage entry: " << path << std::endl;
+//             return false;
+//         }
+//         out << std::setw(4) << usage_log;
+//         out.close();
+//         return true;
+//     } catch (const std::exception& e) {
+//         std::cerr << "Exception writing usage log: " << e.what() << std::endl;
+//         return false;
+//     }
+// }
 
 // Helper to get current time as string (for usage log timestamps)
 std::string SystemController::get_current_time() {

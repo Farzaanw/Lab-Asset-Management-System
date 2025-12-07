@@ -29,8 +29,10 @@ public:
     // methods
     SystemController();     // Loads all data from /data    
     void run();    // CLI entry point
+
     // Append a usage entry (reservation) to the in-memory log and persist to disk
-    bool appendUsageEntry(const nlohmann::json& entry);
+    // bool appendUsageEntry(const nlohmann::json& entry);
+
     // Record a system event to the usage log
     void update_usage_log(const std::string& message);
 
@@ -42,8 +44,6 @@ private:
     // CORE UI METHODS
     // ================
     int main();
-    // int role_selection_menu();   
-    // bool create_account();  // removed arg: int roleChoice) 
     bool log_in();  // removed arg: int roleChoice)        
     User* create_user(const std::string& email, const std::string& role);    // create instance of CurrentUser
 
@@ -53,7 +53,7 @@ private:
     void load_assets();
     void load_policies();
     void load_usage_log();
-    void load_user_logins();
+    void load_accounts();
 
     // ================
     // HELPER FUNCTIONS

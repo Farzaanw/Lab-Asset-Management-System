@@ -15,37 +15,44 @@
 // //  * Description: a class of 1 notification that is inside a user class
 // //  */ 
 
+Notifications::Notifications() {}
 
+void Notifications::send_notifications(std::string recipient, json data) const {
+    std::cout << "Notification Sent to " << recipient << ": " << data["message"] << "\n";
+    // nlohmann::json accounts;
+    // std::ifstream inFile("../../data/accounts.json");
+    // if (!inFile.is_open()) {
+    //     std::cerr << "Error: Could not open accounts.json" << std::endl;
+    //     return false;
+    // }
+    // inFile >> accounts;
+    // inFile.close();
 
-// Notifications::Notifications(const json& data) : data(data) {}
+    // // Find all Lab Asset Managers and add notification
+    // for (auto& account : accounts) {
+    //     if (account["role"] == "lab asset manager") {
+    //         // Ensure notifications array exists (else create it)
+    //         if (!account.contains("notifications")) {
+    //             account["notifications"] = json::array();
+    //         }
 
-// void Notifications::send_notifications(std::string recipient, json data) const {
-//     // std::cout << "Notification Sent to " << recipient << ": " << data["message"] << "\n";
-//     nlohmann::json accounts;
-//     std::ifstream inFile("../../data/accounts.json");
-//     if (!inFile.is_open()) {
-//         std::cerr << "Error: Could not open accounts.json" << std::endl;
-//         return false;
-//     }
-//     inFile >> accounts;
-//     inFile.close();
+    //         // Generate unique notification ID based on current array size
+    //         int nextID = account["notifications"].size() + 1;
 
-//     // Find all Lab Asset Managers and add notification
-//     for (auto& account : accounts) {
-//         if (account["role"] == "lab asset manager") {
-//             // Ensure notifications array exists (else create it)
-//             if (!account.contains("notifications")) {
-//                 account["notifications"] = json::array();
-//             }
+    //         // Add to user's notifications
+    //         account["notifications"].push_back(notification);
+    //     }
+    // }
 
-//             // Generate unique notification ID based on current array size
-//             int nextID = account["notifications"].size() + 1;
-
-//             // Add to user's notifications
-//             account["notifications"].push_back(notification);
-//         }
-//     }
-// }
+    // Save updated accounts
+        // std::ofstream outFile("../../data/accounts.json");
+        // if (!outFile.is_open()) {
+        //     std::cerr << "Error: Could not save accounts.json" << std::endl;
+        //     return false;
+        // }
+        // outFile << std::setw(4) << accounts << std::endl;
+        // outFile.close();
+}
 
 void Notifications::view_notifications() const {
     std::cout << "Notification ID: " << data["notificationID"] << "\n";

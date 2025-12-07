@@ -1,8 +1,10 @@
 [
     {
-        "clearanceLevel": "1",
-        "email": "studentemail",
         "id": 1,
+        "email": "studentemail",
+        "password": "studentpass",
+        "role": "research student",
+        "clearanceLevel": "1",
         "notifications": [
             {
                 "message": "A research student attempted to reserve a restricted asset.",
@@ -15,7 +17,6 @@
                 "type": "restricted_reservation_attempt"
             }
         ],
-        "password": "studentpass",
         "reservations": [
             {
                 "assetID": 2,
@@ -41,29 +42,32 @@
                 "startDate": "2027-01-01",
                 "status": "approved"
             }
-        ],
-        "role": "research student"
+        ]
     },
     {
-        "clearanceLevel": "2",
-        "email": "facultyemail",
         "id": 2,
-        "notifications": [],
+        "email": "facultyemail",
         "password": "facultypass",
-        "reservations": [],
-        "role": "faculty researcher"
-    },
-    {
-        "email": "labmanageremail",
-        "id": 3,
+        "role": "faculty researcher",
+        "clearanceLevel": "2",
         "notifications": [],
-        "password": "labmanagerpass",
-        "reservations": [],
-        "role": "lab manager"
+        "reservations": []
     },
     {
-        "email": "LAMemail",
+        "id": 3,
+        "email": "labmanageremail",
+        "password": "labmanagerpass",
+        "role": "lab manager",
+        "clearanceLevel": "",
+        "notifications": [],
+        "reservations": []
+    },
+    {
         "id": 4,
+        "email": "LAMemail",
+        "password": "LAMpass",
+        "role": "lab asset manager",
+        "clearanceLevel": "",
         "notifications": [
             {
                 "message": "Multiple failed login attempts detected for email: qwe",
@@ -76,17 +80,15 @@
                 "type": "security_alert"
             }
         ],
-        "password": "LAMpass",
-        "reservations": [],
-        "role": "lab asset manager"
+        "reservations": []
     },
     {
-        "clearanceLevel": "1",
-        "email": "McToodle@oregonstate.edu",
         "id": 5,
-        "notifications": [],
+        "email": "McToodle@oregonstate.edu",
         "password": "ResearchStudent22!",
-        "reservations": [],
-        "role": "research student"
+        "role": "research student",
+        "clearanceLevel": "1",
+        "notifications": [],
+        "reservations": []
     }
 ]
