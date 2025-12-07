@@ -1,11 +1,20 @@
 [
     {
-        "documentId": 1,
         "assetId": 1,
-        "type": "manual",
-        "filePath": "../db/documents/1\\AstrOpt_03telescopes.pdf",
-        "uploader": "Lab Asset Manager",
         "clearanceLevel": "1",
-        "timestamp_utc": "Sat Nov 29 23:20:49 2025\n"
+        "documentId": 1,
+        "filePath": "../db/documents/1\\AstrOpt_03telescopes.pdf",
+        "timestamp_utc": "Sat Nov 29 23:20:49 2025\n",
+        "type": "manual",
+        "uploader": "Lab Asset Manager"
+    },
+    {
+        "assetId": 2,
+        "clearanceLevel": "2",
+        "documentId": 2,
+        "filePath": "../../data/documents/2\\test.pdf",
+        "timestamp_utc": "Sun Dec 07 01:48:35 2025\n",
+        "type": "warranty",
+        "uploader": "Lab Asset Manager"
     }
 ]
