@@ -83,9 +83,15 @@ bool Reservations::reserveAsset(const std::string& email) {
     int assetID;
     string startInput, endInput, reason, startDate, endDate;
     
-    cout << "Please enter the AssetID you would like to reserve: ";
+    cout << "Please enter the AssetID you would like to reserve(type \"0\" to return to menu): ";
     cin >> assetID;
     cin.ignore();
+
+    if(assetID == 0) {
+        cout << "Reserve asset cancelled" << endl;
+        sysController->update_usage_log("Reserve asset cancelled");
+        return false;
+	}
 
     //find the right asset
     json* targetAsset = nullptr;
@@ -302,12 +308,18 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
 
     cout << "\n-----------------------------------\n" << endl;
     
-    cout << "How many assets would you like to reserve? ";
+    cout << "How many assets would you like to reserve(type \"0\" to return to menu)?";
     int numAssets;
     cin >> numAssets;
     cin.ignore();
+
+    if(numAssets == 0) {
+        cout << "Reserve assets cancelled" << endl;
+        sysController->update_usage_log("Reserve assets cancelled");
+        return false;
+	}
     
-    if (numAssets <= 0) {
+    if (numAssets < 0) {
         cout << "Invalid number of assets." << endl;
         sysController->update_usage_log("Reservation canceled, invalid input");        
         return false;
@@ -497,10 +509,16 @@ bool Reservations::cancelReservation(const std::string& email) {
         index++;
     }
 
-    cout << "\nEnter the number of the reservation to cancel: ";
+    cout << "\nEnter the number of the reservation to cancel(type \"0\" to return to menu): ";
     int choice;
     cin >> choice;
     cin.ignore();
+
+    if(choice == 0) {
+        cout << "Cancel asset cancelled" << endl;
+        sysController->update_usage_log("Cancel asset cancelled");
+        return false;
+	}
 
     if (choice < 1 || choice > (*userAccount)["reservations"].size()) {
         cout << "Invalid selection." << endl;
