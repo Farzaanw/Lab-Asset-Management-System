@@ -62,4 +62,5 @@ dkms.conf
 usage_log.json
 data/assets.json
 data/policies.json
+*.cvs
 # I removed the ignore for *.json we can change it back after we've finalised the structure of the json files
