@@ -195,6 +195,38 @@
         {
             "event": "User logged in: LAMemail",
             "timestamp": "2025-12-06 15:47:16"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 16:51:08"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 16:51:15"
+        },
+        {
+            "event": "Low-stock threshold updated for asset ID 2",
+            "timestamp": "2025-12-06 16:52:30"
+        },
+        {
+            "event": "Low-stock threshold updated for asset ID 2",
+            "timestamp": "2025-12-06 16:52:46"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 16:52:51"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 16:57:24"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 16:57:28"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 16:58:18"
         }
     ],
     "usage": [

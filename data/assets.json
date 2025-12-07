@@ -1,13 +1,13 @@
 [
     {
-        "category": "telescope",
+        "category": "equipment",
         "clearanceLevel": "1",
         "condition": "excellent",
         "description": "An 8-inch Schmidt-Cassegrain telescope with advanced coma-free optics. Ideal for deep-sky imaging and planetary observation.",
         "id": 1,
-        "location": "Lab A – Astronomy Equipment Room",
-        "name": "Celestron EdgeHD 800",
-        "operationalStatus": "reserved"
+        "location": "Lab A - Astronomy Equipment Room",
+        "name": "Celestron EdgeHD 800 Microscope",
+        "operationalStatus": "available"
     },
     {
         "category": "consumable",
@@ -19,18 +19,20 @@
         "lowStock": false,
         "minimumThreshold": 20,
         "name": "Fillament",
-        "operationalStatus": "reserved",
-        "stock": 349
+        "operationalStatus": "available",
+        "stock": 30
     },
     {
-        "category": "Magnifying Glass",
+        "category": "equipment",
         "clearanceLevel": "1",
-        "condition": "good",
+        "condition": "broken",
         "description": "Magnifying Glass used for closer inspections",
+        "expectedReturnDate": "2026-01-01",
         "id": 3,
         "location": "Henry Building, Lab 4005 Extensive Research",
         "name": "V2.0 ViewMagnifier",
-        "operationalStatus": "available"
+        "operationalStatus": "out of service",
+        "outOfServiceReason": "some dumb chem student broke it"
     },
     {
         "category": "consumable",
@@ -39,9 +41,9 @@
         "description": "latex gloves",
         "id": 4,
         "location": "lab2",
-        "minimumThreshold": 9,
+        "minimumThreshold": 50,
         "name": "gloves",
         "operationalStatus": "available",
-        "stock": "10"
+        "stock": 51
     }
 ]

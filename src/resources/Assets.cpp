@@ -1,4 +1,5 @@
 #include "Assets.h"
+#include <vector>
 
 //View all available assets
 
@@ -480,9 +481,18 @@ bool Assets::updateAsset(){
 	cout << "\nEnter new information (leave blank to keep current value):\n";
 
 	// Update fields (ID is NOT updated)
-	for (auto& [key, value] : assetToUpdate->items()) {
+	// Build a fixed list of keys to iterate so newly-added fields (like OOS metadata)
+	// aren't processed in this same update loop, which would cause duplicate prompts.
+	std::vector<std::string> keys;
+	for (auto it = assetToUpdate->begin(); it != assetToUpdate->end(); ++it) {
+		keys.push_back(it.key());
+	}
+
+	for (const auto& key : keys) {
 		if (key == "id") continue;
 		if (key == "category") continue;
+
+		json value = (*assetToUpdate)[key];
 		string input;
 		cout << key << " (" << value << "): ";
 		getline(cin, input);
@@ -490,23 +500,45 @@ bool Assets::updateAsset(){
 		if (input.empty()) {
 			continue;
 		}
+
+		// Validate asset status if editing
 		if (key == "operationalStatus") {
 			while (assetStatus.find(input) == assetStatus.end()) {
 				cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
 				getline(cin, input);
 			}
 		}
+
+		// Validate clearance level if editing
 		if (key == "clearanceLevel") {
 			while (clearanceLevels.find(input) == clearanceLevels.end()) {
-				cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+				cout << "Invalid access level entered. Please enter a valid access level from the list:\t\t1, 2, or 3" << endl;
 				getline(cin, input);
 			}
 		}
 
-		// Update JSON value
-		(*assetToUpdate)[key] = input;
+		// If editing stock or minimumThreshold, store as integer
+		if (key == "stock" || key == "minimumThreshold") {
+			while (true) {
+				try {
+					int v = stoi(input);
+					(*assetToUpdate)[key] = v;
+					break;
+				} catch (...) {
+					cout << "Invalid integer for " << key << ". Please enter a numeric value: ";
+					getline(cin, input);
+					if (input.empty()) {
+						cout << "Keeping existing value for " << key << "." << endl;
+						break;
+					}
+				}
+			}
+		} else {
+			// Update JSON value for other fields (store as string)
+			(*assetToUpdate)[key] = input;
+		}
 
-		// If operationalStatus was changed, ask for expected return date and
+		// If operationalStatus was changed, ask for expected return date and reason
 		if (key == "operationalStatus") {
 			if (input == "out of service") {
 				string expectedReturn;
