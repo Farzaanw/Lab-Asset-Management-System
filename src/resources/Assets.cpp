@@ -25,7 +25,7 @@ bool Assets::viewAvailableAssets() {
 
     if (assets.empty()) {
         cout << "No assets found." << endl;
-				
+				sysController->update_usage_log("User viewed available assets");
         return true;
     }
 
@@ -60,11 +60,18 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
     string stat = status;
     
     if (cat.empty()) {
-        cout << "Enter category (or leave blank): ";
+        cout << "Enter category (leave blank for no filter, type \"back\" to return to menu): ";
         getline(cin, cat);
     }
+
+		if(cat == "back") {
+			cout << "Reservation cancelled, returning to menu" << endl;
+			sysController->update_usage_log("User cancelled reservation");
+			return false;
+		}
+
     if (stat.empty()) {
-        cout << "Enter status (or leave blank): ";
+        cout << "Enter status (leave blank for no filter): ";
         getline(cin, stat);
     }
     
@@ -107,9 +114,15 @@ bool Assets::viewStudentAssets(const std::string& studentEmail) {
 
     string email = studentEmail;
     if (email.empty()) {
-        cout << "Enter student email: ";
+        cout << "Enter student email(type \"back\" to return to menu): ";
         getline(cin, email);
     }
+
+		if(email == "back") {
+			cout << "Action cancelled, returning to menu" << endl;
+			sysController->update_usage_log("Action cancelled");
+			return false;
+		}
 
     json accounts;
     ifstream accountsIn("../../data/accounts.json");
@@ -267,11 +280,12 @@ bool Assets::removeAsset(){
 	while (!assetToDelete) {
 		string input;
         listAssets();
-		cout << "Please enter the asset ID you want to delete (or type 'quit' to cancel): ";
+		cout << "Please enter the asset ID you want to delete (type \"back\" to return to menu): ";
 		getline(cin, input);
 
-		if (input == "quit") {
-			cout << "Delete operation canceled.\n";
+		if (input == "back") {
+			cout << "Remove Operation Cancelled" << endl;
+			sysController->update_usage_log("Remove asset cancelled");
 			return false;
 		}
 
@@ -348,8 +362,15 @@ bool Assets::addAsset(){
 	string name, category, status, accessLevel, condition, location, stock, minimumThreshold, description, renewalDate;
 	int minThresholdInt, stockInt, seatCountInt;
 	cout << "Creating a new asset." << endl;
-	cout << "Enter asset name: ";
+	cout << "Enter asset name(type \"back\" to return to menu): ";
 	getline(cin, name);
+
+	if(name == "back") {
+			cout << "Add Operation Cancelled" << endl;
+			sysController->update_usage_log("Add asset cancelled");
+			return false;
+	}
+
 	cout << "Enter asset category (equipment, consumable, software): ";
 	getline(cin, category);
 	while (assetTypes.find(category) == assetTypes.end()) {
@@ -451,12 +472,14 @@ bool Assets::updateAsset(){
 	json* assetToUpdate = nullptr;
 	while (!assetToUpdate) {
 		string input;
-		cout << "Please enter the asset ID you would like to modify (type quit to cancel the modification): ";
+		cout << "Please enter the asset ID you would like to modify (type \"back\" to return to menu): ";
 		getline(cin, input);
 
-		if (input == "quit") {
+	if(input == "back") {
+			cout << "Update Operation Cancelled" << endl;
+			sysController->update_usage_log("Update asset cancelled");
 			return false;
-		}
+	}
 
 		try {
 			ID = stoi(input);
@@ -622,9 +645,15 @@ bool Assets::return_asset(const std::string& email) {
 
     // Ask which asset to return
     int assetID;
-    cout << "Enter Asset ID to return: ";
+    cout << "Enter Asset ID to return(type \"0\" to return to menu): ";
     cin >> assetID;
     cin.ignore();
+
+		if(assetID == 0) {
+			cout << "Return asset cancelled" << endl;
+			sysController->update_usage_log("Return asset cancelled");
+			return false;
+		}
 
     // Update asset status to available
     json assets;
