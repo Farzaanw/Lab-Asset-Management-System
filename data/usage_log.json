@@ -179,6 +179,130 @@
         {
             "event": "User logged in: LAMfirst LAMlast LAMemail",
             "timestamp": "2025-12-06 14:50:42"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 15:41:14"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 15:41:21"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 15:47:12"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 15:47:16"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 16:51:08"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 16:51:15"
+        },
+        {
+            "event": "Low-stock threshold updated for asset ID 2",
+            "timestamp": "2025-12-06 16:52:30"
+        },
+        {
+            "event": "Low-stock threshold updated for asset ID 2",
+            "timestamp": "2025-12-06 16:52:46"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 16:52:51"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 16:57:24"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 16:57:28"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 16:58:18"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 18:38:03"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 18:38:07"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 18:50:24"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 18:52:37"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 18:52:43"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 18:57:01"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 18:57:13"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:00:16"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 19:00:21"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:22:13"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 19:22:20"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 19:22:37"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:22:41"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-06 19:22:48"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 19:24:42"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:24:43"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 19:24:56"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:47:01"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 19:47:03"
         }
     ],
     "usage": [

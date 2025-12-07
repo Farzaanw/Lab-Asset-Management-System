@@ -1,45 +1,41 @@
-// CS-9: Notifications.h
-// Auth: Jacob Munly
-// Supports: System Alerts, User Notifications
-// Collaborators: StudentResearcher[*], FacultyResearcher[*], LabManager[*], LabAssetManager[*], Reservations[1], Assets[1]
-#include <string>
-#include <vector>
-#include <map>
 #pragma once
+#include <string>
+#include <map>
+#include <vector>
+#include <nlohmann/json.hpp>
+
+// Auth: Cash Limberg
+// Class: Notifications
+
+using json = nlohmann::json;
 
 class Notifications {
-private:
-    std::string notificationID;
-    std::string recipientID;
-    std::string message;
-    std::string type; // notificationType
-    bool urgency;
-    bool readFlag;
-    std::string timeStamp; // zonedDateTimeStamp
-    std::map<std::string, std::string> metaData;
-
 public:
-    //Adds a notification
-    void add_notification(std::string notification);
 
-    //Retrieves unread notifications for a specific user
-    std::vector<std::string> get_unread_notifications(std::string userID, bool readFlag);
+    // Create a new notification and append it to notifications.json
+    static void create_notification(const std::string& recipientID,
+                                    const std::string& message,
+                                    const std::string& type,
+                                    bool urgency,
+                                    const std::map<std::string, std::string>& metaData = {});
 
-    //Retrieves read notifications for a specific user
-    std::vector<std::string> get_read_notifications(std::string userID, bool readFlag);
+    // Get all notifications from notifications.json
+    static json load_all();
 
-    //Marks a specific notification as read
-    void mark_notifications_read(std::string notificationID);
+    // Write entire notifications array back to file
+    static void save_all(const json& data);
 
-    //Clears all notifications for a specific user
-    void clear_notifications(std::string userID);
+    // Filtering utilities
+    static json get_unread(const std::string& userID);
+    static json get_read(const std::string& userID);
+    static json get_urgent();
+    static json get_for_user(const std::string& userID);
 
-    //Searches for a specific notification
-    std::string search_notifications(std::string notificationID);
+    // Mark a notification read inside the JSON file
+    static void mark_read(const std::string& notificationID);
 
-    //Retrieves metadata for a specific notification
-    std::map<std::string, std::string> get_notification_metadata(std::string notificationID);
-
-    //Retrieves urgent notifications
-    std::vector<std::string> get_urgent_notifications(bool urgency);
+private:
+    static std::string now_timestamp();
+    static std::string generate_id();
 };
+

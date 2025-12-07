@@ -1,4 +1,5 @@
 #include "Assets.h"
+#include <vector>
 
 //View all available assets
 
@@ -47,28 +48,6 @@ bool Assets::viewAvailableAssets() {
 
     return true;
 };
-
-//SOFTWARE LICENSE MANAGEMENT
-//View available software license seats
-bool Assets::viewAvailableLicenseSeats() {
-    cout << "--- Available Software License Seats ---\n" << endl;
-    cout << "TODO: Implement viewAvailableLicenseSeats" << endl;
-    return true;
-}
-
-//View own licenses
-bool Assets::viewLicenses() {
-    cout << "--- My Licenses ---\n" << endl;
-    cout << "TODO: Implement viewLicenses" << endl;
-    return true;
-}
-
-//View group licenses
-bool Assets::viewGroupLicenses(int labGroupID) {
-    cout << "--- View Group Licenses ---\n" << endl;
-    cout << "TODO: Implement viewGroupLicenses" << endl;
-    return true;
-}
 
 //Search and filter assets
 bool Assets::searchAssets(const std::string& category, const std::string& status) {
@@ -240,13 +219,21 @@ bool Assets::listAssets(){
 		cout << "Name: " << asset["name"] << endl;
 		cout << "Category: " << asset["category"] << endl;
 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
+		if(asset["operationalStatus"] == "out of service"){
+			cout << "Out of Service Reason: " << asset["outOfServiceReason"] << endl;
+			cout << "Expected Return Date: " << asset["expectedReturnDate"] << endl;
+		}
 		cout << "Condition: " << asset["condition"] << endl;
 		cout << "Location: " << asset["location"] << endl;
 		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
 		if (asset["category"] == "consumable") {
 			if (asset.contains("stock")) cout << "stock: " << asset["stock"] << endl;
 			if (asset.contains("minimumThreshold")) cout << "Low Stock Threshold: " << asset["minimumThreshold"] << endl;
-			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << (asset["lowStock"].get<bool>() ? "YES" : "NO") << endl;
+			if (asset.contains("lowStock")) cout << "Low Stock Flag: " << asset["lowStock"] << endl;
+		}
+		if (asset["category"] == "software") {
+			if (asset.contains("renewalDate")) cout << "Renewal Date: " << asset["renewalDate"] << endl;
+			if (asset.contains("seatCount")) cout << "Seat Count: " << asset["seatCount"] << endl;
 		}
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
@@ -351,7 +338,8 @@ bool Assets::addAsset(){
 		inFile.close();
 	}
 
-	string name, category, status, accessLevel, condition, location, stock, minimumThreshold, description;
+	string name, category, status, accessLevel, condition, location, stock, minimumThreshold, description, renewalDate;
+	int minThresholdInt, stockInt, seatCountInt;
 	cout << "Creating a new asset." << endl;
 	cout << "Enter asset name: ";
 	getline(cin, name);
@@ -363,10 +351,21 @@ bool Assets::addAsset(){
 	}
 	if (category == "consumable") {
 		cout << "Because this asset is a consumeable please enter:" << endl;
-		cout << "stock";
-		getline(cin, stock);
-		cout << "minimum threshold";
-		getline(cin, minimumThreshold);
+		cout << "stock: ";
+		int stockInt;
+		cin >> stockInt;
+		cout << "minimum threshold: ";
+		cin >> minThresholdInt;
+	}
+	if (category == "software") {
+		cout << "Because this asset is software please enter:" << endl;
+		cout << "Seat count:";
+		int seatCountInt;
+		cin >> seatCountInt;
+		// FIX: Ignore/clear the remaining newline character from the buffer
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Enter renewal date (e.g. 2025-12-31): ";
+		getline(cin, renewalDate);
 	}
 	cout << "Enter asset status (available, reserved, out of service): ";
 	getline(cin, status);
@@ -407,9 +406,13 @@ bool Assets::addAsset(){
 	asset["condition"] = condition;
 	asset["location"] = location;
 	asset["clearanceLevel"] = accessLevel;
+	if (category == "software") {
+		asset["renewalDate"] = renewalDate;
+		asset["seatCount"] = seatCountInt;
+	}
 	if (category == "consumable") {
-		asset["stock"] = stock;
-		asset["minimumThreshold"] = minimumThreshold;
+		asset["stock"] = stockInt;
+		asset["minimumThreshold"] = minThresholdInt;
 	}
 	asset["description"] = description;
 
@@ -476,9 +479,18 @@ bool Assets::updateAsset(){
 	cout << "\nEnter new information (leave blank to keep current value):\n";
 
 	// Update fields (ID is NOT updated)
-	for (auto& [key, value] : assetToUpdate->items()) {
+	// Build a fixed list of keys to iterate so newly-added fields (like OOS metadata)
+	// aren't processed in this same update loop, which would cause duplicate prompts.
+	std::vector<std::string> keys;
+	for (auto it = assetToUpdate->begin(); it != assetToUpdate->end(); ++it) {
+		keys.push_back(it.key());
+	}
+
+	for (const auto& key : keys) {
 		if (key == "id") continue;
 		if (key == "category") continue;
+
+		json value = (*assetToUpdate)[key];
 		string input;
 		cout << key << " (" << value << "): ";
 		getline(cin, input);
@@ -486,21 +498,71 @@ bool Assets::updateAsset(){
 		if (input.empty()) {
 			continue;
 		}
+
+		// Validate asset status if editing
 		if (key == "operationalStatus") {
 			while (assetStatus.find(input) == assetStatus.end()) {
 				cout << "Invalid asset status entered. Please enter a valid asset status from the list:" << endl << "available" << endl << "reserved" << endl << "out of service" << endl;
 				getline(cin, input);
 			}
 		}
+
+		// Validate clearance level if editing
 		if (key == "clearanceLevel") {
 			while (clearanceLevels.find(input) == clearanceLevels.end()) {
-				cout << "Invalid access level entered. Please enter a valid access level from the list:		1, 2, or 3" << endl;
+				cout << "Invalid access level entered. Please enter a valid access level from the list:\t\t1, 2, or 3" << endl;
 				getline(cin, input);
 			}
 		}
 
-		// Update JSON value
-		(*assetToUpdate)[key] = input;
+		// If editing stock or minimumThreshold, store as integer
+		if (key == "stock" || key == "minimumThreshold" || key == "seatCount") {  //things that should be ints
+			while (true) {
+				try {
+					int v = stoi(input);
+					(*assetToUpdate)[key] = v;
+					break;
+				} catch (...) {
+					cout << "Invalid integer for " << key << ". Please enter a numeric value: ";
+					getline(cin, input);
+					if (input.empty()) {
+						cout << "Keeping existing value for " << key << "." << endl;
+						break;
+					}
+				}
+			}
+		} else {
+			// Update JSON value for other fields (store as string)
+			(*assetToUpdate)[key] = input;
+		}
+
+		// If operationalStatus was changed, ask for expected return date and reason
+		if (key == "operationalStatus") {
+			if (input == "out of service") {
+				string expectedReturn;
+				string reason;
+				// Prompt until non-empty expected return date
+				while (true) {
+					cout << "Enter expected return date (e.g. 2025-12-31): ";
+					getline(cin, expectedReturn);
+					if (!expectedReturn.empty()) break;
+					cout << "Expected return date is required when setting status to out o	f service." << endl;
+				}
+				// Prompt until non-empty reason
+				while (true) {
+					cout << "Enter reason for out of service: ";
+					getline(cin, reason);
+					if (!reason.empty()) break;
+					cout << "A reason is required when setting status to out of service." << endl;
+				}
+				(*assetToUpdate)["expectedReturnDate"] = expectedReturn;
+				(*assetToUpdate)["outOfServiceReason"] = reason;
+			} else {
+				// If changing away from out of service, remove OOS metadata if present
+				if (assetToUpdate->contains("expectedReturnDate")) assetToUpdate->erase("expectedReturnDate");
+				if (assetToUpdate->contains("outOfServiceReason")) assetToUpdate->erase("outOfServiceReason");
+			}
+		}
 	}
 
 	// Save updated JSON back to file
@@ -645,6 +707,44 @@ bool Assets::decrementConsumable(int assetID, int amount, bool &becameLow) {
 			bool low = (thresh > 0 && q <= thresh);
 			asset["lowStock"] = low;
 			if (low) becameLow = true;
+			// If stock hit zero, mark out of stock; if refilled above zero and status was out of stock, set to available
+			if (q == 0) {
+				asset["operationalStatus"] = "out of stock";
+			} else {
+				if (asset.value("operationalStatus", string("")) == "out of stock") {
+					asset["operationalStatus"] = "available";
+				}
+			}
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	std::ofstream outFile(assetsFile);
+	if (!outFile.is_open()) return false;
+	outFile << std::setw(4) << assets << std::endl;
+	outFile.close();
+	return true;
+}
+bool Assets::incrementSeatCount(int assetID, int amount) {
+	std::string assetsFile = "../../data/assets.json";
+	json assets;
+	std::ifstream inFile(assetsFile);
+	if (!inFile.is_open()) return false;
+	try { inFile >> assets; } catch(...) { inFile.close(); return false; }
+	inFile.close();
+
+	bool found = false;
+	for (auto& asset : assets) {
+		if (asset.contains("id") && asset["id"].get<int>() == assetID) {
+			found = true;
+			std::string category = asset.value("category", "");
+			if (category != "software") return false;
+
+			int seats = parse_int_field(asset,"seatCount", "", 0);
+			seats += amount;
+			asset["seatCount"] = seats;
 			break;
 		}
 	}
@@ -678,6 +778,54 @@ bool Assets::setLowStockThreshold(int assetID, int threshold) {
 			// recompute lowStock flag
 			int q = parse_int_field(asset, "stock", "", 0);
 			asset["lowStock"] = (threshold > 0 && q <= threshold);
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	std::ofstream outFile(assetsFile);
+	if (!outFile.is_open()) return false;
+	outFile << std::setw(4) << assets << std::endl;
+	outFile.close();
+	return true;
+}
+
+bool Assets::adjustSeatUsage(int assetID, int amount, bool &becameFull) {
+	becameFull = false;
+	std::string assetsFile = "../../data/assets.json";
+	json assets;
+	std::ifstream inFile(assetsFile);
+	if (!inFile.is_open()) return false;
+	try { inFile >> assets; } catch(...) { inFile.close(); return false; }
+	inFile.close();
+
+	bool found = false;
+	for (auto& asset : assets) {
+		if (asset.contains("id") && asset["id"].get<int>() == assetID) {
+			found = true;
+			std::string category = asset.value("category", "");
+			if (category != "software") return false;
+
+			int seatCount = parse_int_field(asset, "seatCount", "", 0);
+			int inUse = parse_int_field(asset, "seatsInUse", "", 0);
+
+			inUse += amount;
+			if (inUse < 0) inUse = 0;
+			if (inUse > seatCount) inUse = seatCount;
+
+			asset["seatsInUse"] = inUse;
+
+			// If we've reached capacity, mark as no seats available
+			if (seatCount > 0 && inUse >= seatCount) {
+				asset["operationalStatus"] = "no seats available";
+				becameFull = true;
+			} else {
+				// if we freed seats and status was no seats available, restore to available
+				if (asset.value("operationalStatus", string("")) == "no seats available") {
+					asset["operationalStatus"] = "available";
+				}
+			}
 			break;
 		}
 	}

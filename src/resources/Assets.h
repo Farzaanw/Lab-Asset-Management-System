@@ -82,6 +82,12 @@ public:
     // -2 = asset not consumable
     bool decrementConsumable(int assetID, int amount, bool &becameLow);
 
+    bool incrementSeatCount(int assetID, int amount);
+    // Adjust seats in use for a software license. `amount` may be positive (use seat)
+    // or negative (release seat). If operation causes the license to become full,
+    // `becameFull` will be set to true. Returns false on error.
+    bool adjustSeatUsage(int assetID, int amount, bool &becameFull);
+
     // Set the low-stock threshold for a consumable asset
     bool setLowStockThreshold(int assetID, int threshold);
 

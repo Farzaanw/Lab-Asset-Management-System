@@ -1,5 +1,6 @@
 #include "Reservations.h"
 #include "ResearchStudent.h"
+#include "Assets.h"
 
 //ASSETS
 //reserve an asset, returns a bool
@@ -31,7 +32,37 @@ bool Reservations::reserveAsset(const std::string& email) {
     cout << "Available Assets:\n" << endl;
     bool hasAvailable = false;
     for (const auto& asset : assets) {
-        if (asset["operationalStatus"] == "available") {
+        std::string category = asset.value("category", string(""));
+        bool available = false;
+        std::string status = asset.value("operationalStatus", string(""));
+        if (status == "available") available = true;
+        if (category == "consumable") {
+            int stock = 0;
+            if (asset.contains("stock")) {
+                if (asset["stock"].is_number()) stock = asset["stock"].get<int>();
+                else if (asset["stock"].is_string()) {
+                    try { stock = stoi(asset["stock"].get<string>()); } catch(...) { stock = 0; }
+                }
+            }
+            if (stock > 0) available = true;
+        }
+        if (category == "software") {
+            int seatCount = 0, inUse = 0;
+            if (asset.contains("seatCount")) {
+                if (asset["seatCount"].is_number()) seatCount = asset["seatCount"].get<int>();
+                else if (asset["seatCount"].is_string()) {
+                    try { seatCount = stoi(asset["seatCount"].get<string>()); } catch(...) { seatCount = 0; }
+                }
+            }
+            if (asset.contains("seatsInUse")) {
+                if (asset["seatsInUse"].is_number()) inUse = asset["seatsInUse"].get<int>();
+                else if (asset["seatsInUse"].is_string()) {
+                    try { inUse = stoi(asset["seatsInUse"].get<string>()); } catch(...) { inUse = 0; }
+                }
+            }
+            if (seatCount == 0 || inUse < seatCount) available = true;
+        }
+        if (available) {
             cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
                  << " | Category: " << asset["category"] << endl;
             hasAvailable = true;
@@ -170,12 +201,22 @@ bool Reservations::reserveAsset(const std::string& email) {
     accountsOut << setw(4) << accounts << endl;
     accountsOut.close();
     
-    // Update asset status to reserved
-    (*targetAsset)["operationalStatus"] = "reserved";
-    
-    ofstream outAssetFile("../../data/assets.json");
-    outAssetFile << setw(4) << assets << endl;
-    outAssetFile.close();
+    // Update asset usage/status depending on type
+    Assets a;
+    std::string category = (*targetAsset).value("category", string(""));
+    if (category == "consumable") {
+        bool becameLow = false;
+        a.decrementConsumable(assetID, 1, becameLow);
+    } else if (category == "software") {
+        bool becameFull = false;
+        a.adjustSeatUsage(assetID, 1, becameFull);
+    } else {
+        // equipment or others -> mark as reserved
+        (*targetAsset)["operationalStatus"] = "reserved";
+        ofstream outAssetFile("../../data/assets.json");
+        outAssetFile << setw(4) << assets << endl;
+        outAssetFile.close();
+    }
     
     // Append usage log entry for this reservation
     if (!ResearchStudent::appendUsageLog(email, assetID, startDate, endDate)) {
@@ -290,8 +331,18 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
                     }
                 }
 
-                // Update asset status
-                asset["operationalStatus"] = "reserved";
+                // Update asset usage/status depending on type
+                std::string category = asset.value("category", string(""));
+                Assets a;
+                if (category == "consumable") {
+                    bool becameLow = false;
+                    a.decrementConsumable(assetID, 1, becameLow);
+                } else if (category == "software") {
+                    bool becameFull = false;
+                    a.adjustSeatUsage(assetID, 1, becameFull);
+                } else {
+                    asset["operationalStatus"] = "reserved";
+                }
                 break;
             }
         }
@@ -419,7 +470,18 @@ bool Reservations::cancelReservation(const std::string& email) {
 
         for (auto& asset : assets) {
             if (asset["id"].get<int>() == assetID) {
-                asset["operationalStatus"] = "available";
+                std::string category = asset.value("category", string(""));
+                Assets a;
+                if (category == "consumable") {
+                    bool dummy = false;
+                    // restore one unit back to stock
+                    a.decrementConsumable(assetID, -1, dummy);
+                } else if (category == "software") {
+                    bool becameFull = false;
+                    a.adjustSeatUsage(assetID, -1, becameFull);
+                } else {
+                    asset["operationalStatus"] = "available";
+                }
                 break;
             }
         }
