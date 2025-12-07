@@ -63,3 +63,4 @@ data/usage_log.json
 usage_log.json
 data/assets.json
 data/policies.json
+*.json
