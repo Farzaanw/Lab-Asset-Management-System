@@ -14,7 +14,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (!inFile.is_open()) {
         cerr << "Error: Could not open assets.json" << endl;
         sysController->update_usage_log("Error opening json file");
-        return false;
+        return false; 
     }
     inFile >> assets;
     inFile.close();

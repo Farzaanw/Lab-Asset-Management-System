@@ -15,7 +15,7 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 static Assets a;
-static Reservations r;
+static Reservations* r = nullptr;
 using namespace std;
 using json = nlohmann::json;
 
@@ -35,6 +35,10 @@ std::string ResearchStudent::getRole() const {
 
 //Main menu
 void ResearchStudent::main() {
+    if (r == nullptr) {
+        r = new Reservations(system);
+    }
+
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() << endl;
     cout << "=============================================\n" << endl;
@@ -60,7 +64,7 @@ void ResearchStudent::main() {
         if (choice == "1") {
             ///////////////////
             string email = getEmail();
-            if (r.reserveAsset(email)){
+            if (r->reserveAsset(email)){
                 cout << "Asset officially reserved." << endl;
             } else {
                 cout << "Asset reservation failed or request sent to Lab Manager for approval." << endl;
@@ -86,11 +90,11 @@ void ResearchStudent::main() {
         }
         else if (choice == "5") {
             string email = getEmail();
-            r.viewMyReservations(email);
+            r->viewMyReservations(email);
         }
         else if (choice == "6") {
             string email = getEmail();
-            r.cancelReservation(email); // Will prompt inside function
+            r->cancelReservation(email); // Will prompt inside function
         }
         else if (choice == "7") {
             int equipmentID, rating;

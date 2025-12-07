@@ -13,7 +13,7 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 static Assets a;
-static Reservations r;
+static Reservations* r = nullptr;
 using namespace std;
 using json = nlohmann::json;
 
@@ -33,6 +33,9 @@ std::string FacultyResearcher::getRole() const {
 
 //Main menu
 void FacultyResearcher::main() {
+    if (r == nullptr) {
+        r = new Reservations(system);
+    }
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() <<  "!" << endl;
     cout << "=============================================\n" << endl;
@@ -69,11 +72,11 @@ void FacultyResearcher::main() {
 
         if (choice == "1") {
             string email = getEmail();
-            r.reserveAsset(email);
+            r->reserveAsset(email);
         }
         else if (choice == "2") {
             string email = getEmail();
-            r.reserveMultipleAssets(email);
+            r->reserveMultipleAssets(email);
         }
         else if (choice == "3") {
             string email = getEmail();
@@ -87,11 +90,11 @@ void FacultyResearcher::main() {
         }
         else if (choice == "6") {
             string email = getEmail();
-            r.viewMyReservations(email);
+            r->viewMyReservations(email);
         }
         else if (choice == "7") {
             string email = getEmail();
-            r.cancelReservation(email);
+            r->cancelReservation(email);
         }
 
         else if (choice == "11") {
