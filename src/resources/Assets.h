@@ -14,6 +14,7 @@
 #include <fstream>
 #include <filesystem>
 #include <set>
+class SystemController;
 using namespace std;
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -45,9 +46,12 @@ private:
     // int assetAccessLevel; // e.g., 1=Student, 2=Manager
     // std::vector<Documents> documents;
 
+    SystemController* sysController;
+
 public:
 
-
+    Assets() : sysController(nullptr) {}
+    Assets(SystemController* sc) : sysController(sc) {}
 
     bool viewStudentAssets(const std::string& studentEmail);
 
