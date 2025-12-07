@@ -44,13 +44,13 @@ void ResearchStudent::main() {
         cout << "1. Reserve Asset" << endl;
         cout << "2. Return Asset" << endl;
         cout << "3. View Available Assets" << endl;
-        cout << "4. View My Assets" << endl;
-        cout << "5. Search/Filter Assets" << endl;
-        cout << "6. View My Reservations" << endl;
-        cout << "7. Cancel Reservation" << endl;
-        cout << "8. Submit Usage Feedback" << endl;
-        cout << "9. Update Profile" << endl;
-        cout << "10. Logout" << endl;
+        //cout << "4. View My Assets" << endl;
+        cout << "4. Search/Filter Assets" << endl;
+        cout << "5. View My Reservations" << endl;
+        cout << "6. Cancel Reservation" << endl;
+        cout << "7. Submit Usage Feedback" << endl;
+        cout << "8. Update Profile" << endl;
+        cout << "9. Logout" << endl;
         cout << "Please enter your choice: ";
         
         string choice;
@@ -75,22 +75,24 @@ void ResearchStudent::main() {
         else if (choice == "3") {
             a.viewAvailableAssets();
         }
+        /*
         else if (choice == "4") {
             string email = getEmail();
             a.viewAssets(email);
         }
-        else if (choice == "5") {
+        */
+        else if (choice == "4") {
             a.searchAssets("", ""); // Will prompt inside function
         }
-        else if (choice == "6") {
+        else if (choice == "5") {
             string email = getEmail();
             r.viewMyReservations(email);
         }
-        else if (choice == "7") {
+        else if (choice == "6") {
             string email = getEmail();
             r.cancelReservation(email); // Will prompt inside function
         }
-        else if (choice == "8") {
+        else if (choice == "7") {
             int equipmentID, rating;
             string comments;
             cout << "Enter Equipment ID: ";
@@ -103,13 +105,13 @@ void ResearchStudent::main() {
             cin.ignore();
             submitUsageFeedback(equipmentID, comments, rating);
         }
-        else if (choice == "9") {
+        else if (choice == "8") {
             string newEmail;
             cout << "Enter new email: ";
             getline(cin, newEmail);
             updateUserProfile(newEmail);
         }
-        else if (choice == "10") {
+        else if (choice == "9") {
             cout << "Logging out of Research Student." << endl;
             break;
         }
