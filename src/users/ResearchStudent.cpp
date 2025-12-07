@@ -248,6 +248,7 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
     outFile.close();
     
     cout << "Feedback submitted successfully!" << endl;
+    system->update_usage_log("User submitted feedback");
     return true;
 }
 
@@ -285,5 +286,6 @@ bool ResearchStudent::updateUserProfile(const std::string& newEmail) {
     outFile.close();
     
     cout << "Profile updated successfully!" << endl;
+    system->update_usage_log("User updated profile");
     return true;
 }
