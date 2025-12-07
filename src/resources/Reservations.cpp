@@ -350,6 +350,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
         
         if (!found) {
             cout << "Asset ID " << assetID << " not found or unavailable!" << endl;
+            sysController->update_usage_log("Reservation canceled, assetID not found");
             return false;
         }
     }
@@ -389,6 +390,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
                 } else {
                     asset["operationalStatus"] = "reserved";
                 }
+                sysController->update_usage_log("Multiple assets reserved");
                 break;
             }
         }
