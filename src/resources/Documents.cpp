@@ -47,7 +47,7 @@ bool Documents::uploadDocument() {
 	inFileAssets.close();
 
 	// Ask for file path
-	cout << "Enter the full path of the PDF you want to upload: ";
+	cout << "Enter the full path of the PDF you want to upload (C:\\Users\\YourName\\Documents\\example.pdf): ";
 	getline(cin, filePath);
 
 	// File validation
