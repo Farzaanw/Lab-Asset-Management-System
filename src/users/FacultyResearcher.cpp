@@ -49,11 +49,6 @@ void FacultyResearcher::main() {
         cout << "6. View My Reservations" << endl;
         cout << "7. Cancel Reservation" << endl;
 
-        cout << "Software Licenses: " << endl;
-        cout << "8. View Available License Seats" << endl; // move to view aavailable ssets
-        cout << "9. Request Software License" << endl; //move to reserve asset, chaneg to reserv/request
-        cout << "10. View My Licenses" << endl; //move to view my reservations
-
         cout << "Student/Group Work: " << endl;
         cout << "11. View Student Assets" << endl; //change to view group/student assets
         //when ^ this runs, input either the group ID or student ID, this will show their assets
@@ -98,27 +93,9 @@ void FacultyResearcher::main() {
             string email = getEmail();
             r.cancelReservation(email);
         }
-        else if (choice == "8") {
-            a.viewAvailableLicenseSeats();
-        }
-        else if (choice == "9") {
-            requestSoftwareLicense(0, "", "");
-        }
-        else if (choice == "10") {
-            a.viewLicenses();
-            
-        }
+
         else if (choice == "11") {
             a.viewStudentAssets("");
-            
-        }
-        else if (choice == "12") {
-            a.viewGroupLicenses(0);
-            
-        }
-        else if (choice == "13") {
-            requestSoftwareLicenseGroup(0, 0, "", "");
-            
         }
         else if (choice == "14") {
             viewGroup(0);

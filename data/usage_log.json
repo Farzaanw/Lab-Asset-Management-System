@@ -295,6 +295,14 @@
         {
             "event": "User logged in: LAMemail",
             "timestamp": "2025-12-06 19:24:56"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 19:47:01"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-06 19:47:03"
         }
     ],
     "usage": [
