@@ -69,6 +69,8 @@ public:
 	bool viewLogs();
 
 	bool setConsumableThreshold();
+
+	bool displayDashboard();
 };
 
 #endif
