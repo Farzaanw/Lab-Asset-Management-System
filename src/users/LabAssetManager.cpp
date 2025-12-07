@@ -28,8 +28,8 @@ string LabAssetManager::getRole() const {
 
 void LabAssetManager::main(){
 	cout << "\n=============================================" << endl;
-    cout << "Welcome " << getEmail() << endl;
-    cout << "=============================================\n" << endl;
+	cout << "Welcome " << getEmail() << endl;
+	cout << "=============================================\n" << endl;
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
 		cout << "1. Create Account" << endl;
@@ -517,143 +517,142 @@ bool LabAssetManager::viewLogs() {
 }
 
 bool LabAssetManager::displayDashboard() {
-    json usageLogs;
-    ifstream inFile(usageLogFile);
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open " << usageLogFile << endl;
-        return false;
-    }
-    inFile >> usageLogs;
-    inFile.close();
+	json usageLogs;
+	ifstream inFile(usageLogFile);
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << usageLogFile << endl;
+		return false;
+	}
+	inFile >> usageLogs;
+	inFile.close();
 
-    json assets;
-    ifstream assetIn(assetsFile);
-    if (!assetIn.is_open()) {
-        cerr << "Error: Could not open " << assetsFile << endl;
-        return false;
-    }
-    assetIn >> assets;
-    assetIn.close();
+	json assets;
+	ifstream assetIn(assetsFile);
+	if (!assetIn.is_open()) {
+		cerr << "Error: Could not open " << assetsFile << endl;
+		return false;
+	}
+	assetIn >> assets;
+	assetIn.close();
 
 	// this makes it easier to lookup asset names by ID
-    unordered_map<int, string> assetNames;
+	unordered_map<int, string> assetNames;
 
-    if (!assets.is_array()) {
-        cerr << "Error: assets.json is not an array!" << endl;
-        return false;
-    }
+	if (!assets.is_array()) {
+		cerr << "Error: assets.json is not an array!" << endl;
+		return false;
+	}
 
-    for (auto& a : assets) {
-        if (!a.contains("id") || !a.contains("name"))
-            continue;
-        assetNames[a["id"]] = a["name"];
-    }
+	for (auto& a : assets) {
+		if (!a.contains("id") || !a.contains("name"))
+			continue;
+		assetNames[a["id"]] = a["name"];
+	}
 
-    cout << "Please select a dashboard view to display:" << endl;
-    cout << "1. Utilization by Asset (selectable date range)" << endl;
-    cout << "2. Top Assets" << endl;
+	cout << "Please select a dashboard view to display:" << endl;
+	cout << "1. Utilization by Asset (selectable date range)" << endl;
+	cout << "2. Top Assets" << endl;
 	cout << "3. Low Stock Summary" << endl;
 	cout << "4. Reservations per group" << endl;
 	cout << "5. Overdue incidents" << endl;
-    cout << "Enter your choice: ";
+	cout << "Enter your choice: ";
 
-    string choice;
-    getline(cin, choice);
+	string choice;
+	getline(cin, choice);
 
 	// -----------------------------------------------------------
-    if (choice == "1") {
-        string startDate, endDate;
-        cout << "Enter start date (YYYY-MM-DD): ";
-        getline(cin, startDate);
-        cout << "Enter end date (YYYY-MM-DD): ";
-        getline(cin, endDate);
+	if (choice == "1") {
+		string startDate, endDate;
+		if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
+			cerr << "There are no usage logs to display." << endl;
+			return false;
+		}
+		cout << "Enter start date (YYYY-MM-DD): ";
+		getline(cin, startDate);
+		cout << "Enter end date (YYYY-MM-DD): ";
+		getline(cin, endDate);
 
-        startDate += " 00:00:00";
-        endDate   += " 23:59:59";
+		startDate += " 00:00:00";
+		endDate   += " 23:59:59";
 
-        unordered_map<int, int> usageCount;
+		unordered_map<int, int> usageCount;
 
-        if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
-            cerr << "ERROR: usage_log.json does not contain 'usage' array.\n";
-            return false;
-        }
+		for (auto& entry : usageLogs["usage"]) {
+			if (!entry.contains("start") || !entry.contains("assetID"))
+				continue;
 
-        for (auto& entry : usageLogs["usage"]) {
-            if (!entry.contains("start") || !entry.contains("assetID"))
-                continue;
+			string start = entry["start"];
 
-            string start = entry["start"];
+			if (start >= startDate && start <= endDate) {
+				usageCount[entry["assetID"]] += 1;
+			}
+		}
 
-            if (start >= startDate && start <= endDate) {
-                usageCount[entry["assetID"]] += 1;
-            }
-        }
+		cout << "\n===== UTILIZATION BY ASSET =====\n";
+		if (usageCount.empty()) {
+			cout << "No usage in this date range.\n";
+			return true;
+		}
 
-        cout << "\n===== UTILIZATION BY ASSET =====\n";
-        if (usageCount.empty()) {
-            cout << "No usage in this date range.\n";
-            return true;
-        }
+		cout << left << setw(10) << "ID"
+			 << setw(40) << "Name"
+			 << setw(10) << "Uses" << endl;
+		cout << string(60, '-') << endl;
 
-        cout << left << setw(10) << "ID"
-             << setw(40) << "Name"
-             << setw(10) << "Uses" << endl;
-        cout << string(60, '-') << endl;
+		for (auto& p : usageCount) {
+			int id = p.first;
+			int uses = p.second;
 
-        for (auto& p : usageCount) {
-            int id = p.first;
-            int uses = p.second;
+			string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
 
-            string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
+			cout << left << setw(10) << id
+				 << setw(40) << name
+				 << setw(10) << uses << endl;
+		}
 
-            cout << left << setw(10) << id
-                 << setw(40) << name
-                 << setw(10) << uses << endl;
-        }
-
-        return true;
-    }
+		return true;
+	}
 	// -----------------------------------------------------------
-    else if (choice == "2") {
-        unordered_map<int, int> usageCount;
+	else if (choice == "2") {
+		unordered_map<int, int> usageCount;
 
-        if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
-            cerr << "ERROR: usage_log.json does not contain 'usage' array.\n";
-            return false;
-        }
+		if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
+			cerr << "There are no usage logs to display." << endl;
+			return false;
+		}
 
-        for (auto& entry : usageLogs["usage"]) {
-            if (entry.contains("assetID"))
-                usageCount[entry["assetID"]]++;
-        }
+		for (auto& entry : usageLogs["usage"]) {
+			if (entry.contains("assetID"))
+				usageCount[entry["assetID"]]++;
+		}
 
-        if (usageCount.empty()) {
-            cout << "No usage recorded.\n";
-            return true;
-        }
+		if (usageCount.empty()) {
+			cout << "No usage recorded.\n";
+			return true;
+		}
 
-        vector<pair<int,int>> sorted(usageCount.begin(), usageCount.end());
-        sort(sorted.begin(), sorted.end(),
-            [](auto& a, auto& b){ return a.second > b.second; });
+		vector<pair<int,int>> sorted(usageCount.begin(), usageCount.end());
+		sort(sorted.begin(), sorted.end(),
+			[](auto& a, auto& b){ return a.second > b.second; });
 
-        cout << "\n===== TOP ASSETS =====\n";
-        cout << left << setw(10) << "ID"
-             << setw(40) << "Name"
-             << setw(10) << "Uses" << endl;
-        cout << string(60, '-') << endl;
+		cout << "\n===== TOP ASSETS =====\n";
+		cout << left << setw(10) << "ID"
+			 << setw(40) << "Name"
+			 << setw(10) << "Uses" << endl;
+		cout << string(60, '-') << endl;
 
-        for (auto& p : sorted) {
-            int id = p.first;
-            int uses = p.second;
+		for (auto& p : sorted) {
+			int id = p.first;
+			int uses = p.second;
 
-            string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
+			string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
 
-            cout << left << setw(10) << id
-                 << setw(40) << name
-                 << setw(10) << uses << endl;
-        }
-        return true;
-    }
+			cout << left << setw(10) << id
+				 << setw(40) << name
+				 << setw(10) << uses << endl;
+		}
+		return true;
+	}
 
 	// -----------------------------------------------------------
 	else if (choice == "3") {
@@ -678,12 +677,11 @@ bool LabAssetManager::displayDashboard() {
 					if (stock < threshold) {
 						anyLowStock = true;
 
-						cout << left
-								<< setw(5)  << asset["id"]
-								<< setw(25) << asset["name"]
-								<< setw(10) << stock
-								<< setw(12) << threshold
-								<< "\n";
+					cout << left
+						<< setw(5)  << asset["id"].get<int>()
+						<< setw(25) << asset["name"].get<std::string>()
+						<< setw(10) << stock
+						<< setw(12) << threshold << endl;
 					}
 				}
 			}
@@ -705,8 +703,8 @@ bool LabAssetManager::displayDashboard() {
 		return true;
 	}
 	else {
-        cout << "Invalid option.\n";
-        return false;
-    }
+		cout << "Invalid option.\n";
+		return false;
+	}
 }
 
