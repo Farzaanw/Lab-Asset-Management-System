@@ -2,18 +2,18 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
+// using json = nlohmann::json;
 
-class Notifications {
-public:
-    Notifications(const json& data); // this notification's JSON object
+// class Notifications {
+// public:
+//     Notifications(const json& data); // this notification's JSON object
 
-    std::string get_message() const;
-    std::string get_ID() const;
+//     void send_notifications(std::string recipient, json data) const;
+//     void view_notifications() const;
 
-    void accept_reservation() const;
-    void deny_reservation() const;
+//     // void accept_reservation() const;  // NEED TO BE IN LAB MANAGER CLASS
+//     // void deny_reservation() const;    // NEED TO BE IN LAB MANAGER CLASS
 
-private:
-    json data; // ← NOT a "member variable" storing state, just a copy of the JSON object
-};
+// private:
+//     json data; // ← NOT a "member variable" storing state, just a copy of the JSON object
+// };

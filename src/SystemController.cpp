@@ -8,6 +8,8 @@
 #include <sstream>
 #include <limits>
 #include <cctype>
+#include <time.h>
+#include <unistd.h>  // for sleep()
 
 // class includes
 #include "SystemController.h"
@@ -63,7 +65,6 @@ int SystemController::main() {
     while (isOpen) {
         std::cout << "\n====== MAIN MENU ======\n";
         std::cout << "1. Login\n";
-        // std::cout << "2. Create Account\n"; 
         std::cout << "2. Exit\n";
         std::cout << "Enter choice: ";
         std::cin >> choiceChar;
@@ -75,8 +76,6 @@ int SystemController::main() {
             // handles log in
             case '1': {
                 userCreated = log_in();          // <------ returns bool (T/F) if user successfully created
-
-                // std::cout << "PLACEHOLDER (uncomment once other User Classes made and uncomment in create_user()):\n";
                 if (userCreated) {
                     std::cout << "User Logged in.\n";
                     isOpen = false;
@@ -100,7 +99,7 @@ int SystemController::main() {
     }
 
     // ------ CALL currentUser's main() -------- //
-    std::cout << "...User has been created. Calling user's main()...\n";
+    // std::cout << "...User has been created. Calling user's main()...\n";
     currentUser->main();    // Calls ResearchStudent::main() or LabManager::main() etc based on currentUser's actual type
 
     return -1;
@@ -110,17 +109,18 @@ int SystemController::main() {
 // Log-In Handler
 /////////////////////////////////////////////////////////////////
 bool SystemController::log_in() {
+    time_t start = time(NULL);
+
     const int MAX_ATTEMPTS = 5;
     std::string email, password;
 
+    // user gets max 5 attempts to log in
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
         std::cout << "\nPlease enter your login credentials:\n";             // had before ... (" + ROLE_NAMES[roleChoice] + "):\n";
         // std::cout << "First Name: ";
         // std::getline(std::cin, firstName);
         // std::cout << "Last Name: ";
         // std::getline(std::cin, lastName);
-
-
         std::cout << "Email: ";
         std::getline(std::cin, email);
         std::cout << "Password: ";
@@ -153,15 +153,57 @@ bool SystemController::log_in() {
         }
     }
 
-    std::cout << "Maximum login attempts reached. Exiting.\n";
-    return false; // failed login after 3 attempts
+    // FR-9: Account lockout after max attempts within 5 minutes
+    time_t end = time(NULL);
+    double minutes = difftime(end, start) / 60.0;
+    if (minutes < 5) {
+        printf("*Account locked for 10 minutes*\n");
+
+        // Create notification
+        json notification = {
+            {"notificationID", std::to_string(nextID)},
+            {"message", "Multiple failed login attempts detected for email: " + email},
+            {"type", "security_alert"},
+            {"timeStamp", get_current_time()},
+            {"metaData", {
+                {"email", email},
+                {"attempts", MAX_ATTEMPTS}
+            }}
+        };
+
+        // ----------------------- send message to LAM
+        
+        
+        std::cout << "PLACEHOLDER (waiting on Notifications Class) -- need to send message to LAM ...\n";
+
+
+
+        //////////// ------------------------------ //
+
+        // pause for 10 minutes
+        sleep(600); 
+
+        // Save updated accounts
+        std::ofstream outFile("../../data/accounts.json");
+        if (!outFile.is_open()) {
+            std::cerr << "Error: Could not save accounts.json" << std::endl;
+            return false;
+        }
+        outFile << std::setw(4) << accounts << std::endl;
+        outFile.close();
+        //////////////////////////////////////////////////////
+
+        return log_in(); // retry login after lockout
+    } else {
+        std::cout << "Maximum login attempts reached. Exiting.\n";
+        return false; // failed login after 3 attempts
+    }
 }
 
 /////////////////////////////////////////////////////////////////
 // Validate Login Credentials
 /////////////////////////////////////////////////////////////////
 std::string SystemController::validate_user(const std::string& email, const std::string& password) {
-  
     // roleLoginJson is assumed to be a JSON array
     if (!roleLoginJson.is_array()) {
         std::cerr << "Error: login JSON is not an array.\n";
@@ -174,9 +216,7 @@ std::string SystemController::validate_user(const std::string& email, const std:
             !user.contains("role"))
             continue;
 
-        if (user["email"].get<std::string>() == email &&
-            user["password"].get<std::string>() == password)
-        {
+        if (user["email"].get<std::string>() == email && user["password"].get<std::string>() == password){
             return user["role"].get<std::string>();          // <--- changed to return a string that gets the users assigned role
         }
     }
@@ -188,33 +228,32 @@ std::string SystemController::validate_user(const std::string& email, const std:
 // Create User Instance
 /////////////////////////////////////////////////////////////////
 User* SystemController::create_user(const std::string& email, const std::string& role) {
-
     if (role == "research student") {
-        std::cout << "Creating ResearchStudent instance for " << email <<  "\n";
+        // std::cout << "Creating ResearchStudent instance for " << email <<  "\n";
         currentUser = new ResearchStudent(email, this);
         return currentUser;
     }
     else if (role == "faculty researcher") {
-        std::cout << "Creating ResearchStudent instance for " << email << "\n";
+        // std::cout << "Creating ResearchStudent instance for " << email << "\n";
         currentUser = new FacultyResearcher(email, this);
         return currentUser;
     }
     else if (role == "lab manager") {
-        std::cout << "Creating LabManager instance for " << email << "\n";
+        // std::cout << "Creating LabManager instance for " << email << "\n";
         currentUser = new LabManager(email, this);
         return currentUser;
     }
     else if (role == "lab asset manager") {
-        std::cout << "Creating LabAssetManager instance for " << email << "\n";
+        // std::cout << "Creating LabAssetManager instance for " << email << "\n";
         currentUser = new LabAssetManager(email, this);
         return currentUser;
     }
     else {
-        std::cerr << "Unknown role (*UNCOMMENT OTHERS^^): " << role << "\n";
+        std::cerr << "System (new role or role doesn't exist): " << role << "\n";
         return nullptr;
     }
 
-    std::cout << "^^PLACEHOLDER (INTATIATING USER HERE -- WAITING ON CLASS IMPLEMENTATION - then uncomment; return null_ptr for now:).\n";
+    // std::cout << "^^PLACEHOLDER (INTATIATING USER HERE -- WAITING ON CLASS IMPLEMENTATION - then uncomment; return null_ptr for now:).\n";
     return nullptr;
 }
 
@@ -258,59 +297,13 @@ void SystemController::load_user_logins() {
 }
 
 void SystemController::load_assets() {
-//     json assetJson;
-//     std::string path = DATA_DIR + "assets.json";
+    json assetJson;
+    std::string path = DATA_DIR + "assets.json";
 
-//     if (!load_json_safe(path, assetJson))
-//         return;
+    if (!load_json_safe(path, assetJson))
+        return;
 
-//     for (auto& a : assetJson) {
-//         int id = a.value("id", -1);
-//         std::string name = a.value("name", "UNKNOWN");
-//         std::string location = a.value("location", "UNKNOWN");
-//         std::string category = a.value("category", "equipment");
-//         int accessLevel = a.value("accessLevel", 1);
-
-//         Assets* newAsset = nullptr;
-
-//         if (category == "consumable") {
-//             // Safely parse quantities (string or int)
-//             int quantity = 0;
-//             int threshold = 0;
-
-//             if (a.contains("quantityOnHand(grams)")) {
-//                 quantity = std::stoi(a["quantityOnHand(grams)"].get<std::string>());
-//             } else {
-//                 quantity = a.value("quantityOnHand", 0);
-//             }
-
-//             if (a.contains("minimumThreshold(grams)")) {
-//                 threshold = std::stoi(a["minimumThreshold(grams)"].get<std::string>());
-//             } else {
-//                 threshold = a.value("minimumThreshold", 0);
-//             }
-
-//             newAsset = new Consumable(id, name, location, accessLevel, quantity, threshold);
-//         }
-//         else {
-//             // Default = Equipment
-//             std::string condition = a.value("condition", "good");
-//             std::string status = a.value("operationalStatus", "available");
-
-//             Equipment* e = new Equipment(id, name, location, accessLevel, condition);
-
-//             if (status == "maintenance" || status == "out-of-service") {
-//                 e->setOutOfService(true, "Loaded as " + status);
-//             }
-
-//             newAsset = e;
-//         }
-
-//         assets.push_back(newAsset);
-//     }
-
-//     std::cout << "Loaded " << assets.size() << " assets from assets.json\n";
-    std::cout << "LOAD ASSETS: Function not implemented yet (waiting on Asset classes)\n";
+    std::cout << "Loaded " << assetJson.size() << " assets from assets.json\n";
 }
 
 void SystemController::load_policies() {
