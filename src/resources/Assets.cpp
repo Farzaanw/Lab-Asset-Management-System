@@ -430,8 +430,8 @@ bool Assets::addAsset(){
 	ofstream outFile(assetsFile);
 	outFile << setw(4) << assetFile << endl;
 	outFile.close();
-	return true;
 	sysController->update_usage_log("User created an asset");
+	return true;
 }
 
 bool Assets::updateAsset(){
