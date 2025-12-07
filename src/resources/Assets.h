@@ -1,6 +1,10 @@
+#ifndef ASSETS_H
+#define ASSETS_H
+
 // CS-6: Assets.h
 // Supports: UR-302 to UR-432
 // Description: Defines the Asset hierarchy (Inheritance) and the Manager class.
+
 
 #include <string>
 #include <vector>
@@ -97,3 +101,4 @@ public:
 
 
 
+#endif

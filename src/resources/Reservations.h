@@ -1,3 +1,6 @@
+#ifndef RESERVATIONS_H
+#define RESERVATIONS_H
+
 // CS-7: Assets.h
 // Supports: US-101, UR-201, UR-310
 // Description: Defines the reservation functions
@@ -40,3 +43,4 @@ public:
 
 
 
+#endif
