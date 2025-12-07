@@ -113,6 +113,51 @@ bool SystemController::log_in() {
     const int MAX_ATTEMPTS = 5;
     std::string email, password;
 
+    //upon login, check all assets(endDate)
+    //compare with current time
+    time_t currentTime = time(nullptr);
+
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) {
+        cerr << "Error: Could not open accounts.json" << endl;
+        return false;
+    }
+    accountsIn >> accounts;
+    accountsIn.close();
+
+    bool reservationsChanged = false;
+
+    for (auto& account : accounts) {
+        if (!account.contains("reservations")) continue;
+        
+        for (auto& reservation : account["reservations"]) {
+            string endDateStr = reservation["endDate"].get<string>();
+            
+            std::tm endTm = {};
+            std::istringstream endStream(endDateStr);
+            endStream >> std::get_time(&endTm, "%Y-%m-%d %H:%M:%S");
+            
+            if (!endStream.fail()) {
+                time_t endTime = mktime(&endTm);
+                
+                if (currentTime > endTime) {
+                    reservation["status"] = "Overdue";
+                    reservationsChanged = true;
+                }
+            }
+        }
+    }
+
+    if (reservationsChanged) {
+        ofstream accountsOut("../../data/accounts.json");
+        accountsOut << setw(4) << accounts << endl;
+        accountsOut.close();
+    }
+
+    //PLACEHOLDER
+    cout << "PLaceholder, if an asset has changed to overdue, send a notificattion to LAM and the user(WAITING ON NOTIFICATION CLASS METHODS)" << endl;
+
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt) {
         std::cout << "\nPlease enter your login credentials:\n";             // had before ... (" + ROLE_NAMES[roleChoice] + "):\n";
         // std::cout << "First Name: ";
