@@ -13,6 +13,22 @@
                 "reason": "",
                 "startDate": "2026-10-11",
                 "status": "approved"
+            },
+            {
+                "assetID": 4,
+                "assetName": "gloves",
+                "endDate": "2026-11-11",
+                "reason": "",
+                "startDate": "2026-10-10",
+                "status": "approved"
+            },
+            {
+                "assetID": 5,
+                "assetName": "MATLAB R2023a License",
+                "endDate": "2027-02-02",
+                "reason": "",
+                "startDate": "2027-01-01",
+                "status": "approved"
             }
         ],
         "role": "research student"

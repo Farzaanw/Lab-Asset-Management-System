@@ -43,7 +43,20 @@
         "location": "lab2",
         "minimumThreshold": 50,
         "name": "gloves",
-        "operationalStatus": "available",
+        "operationalStatus": "reserved",
         "stock": 51
+    },
+    {
+        "category": "software",
+        "clearanceLevel": "1",
+        "condition": "good",
+        "currentUsers": 4,
+        "description": "MATLAB R2023a License for engineering and scientific computing tasks.",
+        "id": 5,
+        "location": "Virtual Software Library",
+        "name": "MATLAB R2023a License",
+        "operationalStatus": "reserved",
+        "renewalDate": "2026-12-31",
+        "seatCount": 10
     }
 ]
