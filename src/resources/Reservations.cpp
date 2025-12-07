@@ -77,7 +77,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     cout << "\n-----------------------------------\n" << endl;
     
     int assetID;
-    string startDate, endDate, reason;
+    string startInput, endInput, reason, startDate, endDate;
     
     cout << "Please enter the AssetID you would like to reserve: ";
     cin >> assetID;
@@ -105,15 +105,40 @@ bool Reservations::reserveAsset(const std::string& email) {
     }
 
     // Get reservation dates
-    cout << "Enter Start Date (YYYY-MM-DD): ";
-    getline(cin, startDate);
-    cout << "Enter End Date (YYYY-MM-DD): ";
-    getline(cin, endDate);
+    cout << "Enter Start Date and Time (YYYY-MM-DD HH:MM): ";
+    getline(cin, startInput);
+    cout << "Enter End Time (YYYY-MM-DD HH:MM): ";
+    getline(cin, endInput);
+    //This gets the time and date as strings, this is correct format
+
+    tm startTm = {};
+    tm endTm = {};
+    istringstream startStream(startInput);
+    istringstream endStream(endInput);
+
+    startStream >> get_time(&startTm, "%Y-%m-%d %H:%M");
+    endStream >> get_time(&endTm, "%Y-%m-%d %H:%M");
+
     // Validate dates
-    if (startDate.empty() || endDate.empty()) {
+    if (startStream.fail() || endStream.fail()) {
         cout << "Error: Invalid date format!" << endl;
         return false;
     }
+
+    //convert to actual time and date
+    time_t startTimeT = mktime(&startTm);
+    time_t endTimeT = mktime(&endTm);
+
+    if (startTimeT == -1 || endTimeT == -1) {
+        cout << "Error: Invalid date/time values!" << endl;
+        return false;
+    }   
+
+    std::ostringstream startOut, endOut;
+    startOut << std::put_time(&startTm, "%Y-%m-%d %H:%M:%S");
+    endOut << std::put_time(&endTm, "%Y-%m-%d %H:%M:%S");
+    startDate = startOut.str();
+    endDate = endOut.str();
 
     // --------- find the user's account info
     json* targetUser = nullptr;

@@ -8,7 +8,8 @@
 #include <algorithm>
 #include "../library/nlohmann/json.hpp"
 #include "../users/ResearchStudent.h"
-
+#include <sstream>
+#include <ctime>
 #include <fstream>
 #include <filesystem>
 #include <set>
