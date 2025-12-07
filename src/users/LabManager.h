@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "../library/nlohmann/json.hpp"
+#include "../resources/Notifications.h"
 #include "User.h"
 
 using namespace std;
