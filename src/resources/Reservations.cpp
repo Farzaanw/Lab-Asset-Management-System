@@ -1,5 +1,5 @@
 #include "Reservations.h"
-#include "ResearchStudent.h"
+#include "../users/ResearchStudent.h"
 #include "Assets.h"
 
 //ASSETS
