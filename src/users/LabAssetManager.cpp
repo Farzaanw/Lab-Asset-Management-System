@@ -56,7 +56,7 @@ void LabAssetManager::main(){
 		if (choice == "1") {
 			if(createAccount()) {
 				cout << "Account created successfully." << endl;
-				
+				system->update_usage_log("Account created by Lab Asset Manager");
 			} else {
 				cout << "Failed to create account." << endl;
 			}
@@ -64,6 +64,7 @@ void LabAssetManager::main(){
 		else if (choice == "2") {
 			if(updateAccount()) {
 				cout << "Account updated successfully." << endl;
+				system->update_usage_log("Account updated by Lab Asset Manager");
 			} else {
 				cout << "Failed to update account." << endl;
 			}
@@ -71,6 +72,7 @@ void LabAssetManager::main(){
 		else if (choice == "3") {
 			if(deleteAccount()) {
 				cout << "Account deleted successfully." << endl;
+				system->update_usage_log("Account deleted by Lab Asset Manager");
 			} else {
 				cout << "Failed to delete account." << endl;
 			}
@@ -85,6 +87,7 @@ void LabAssetManager::main(){
 		else if (choice == "5") {
 			if(a.addAsset()) {
 				cout << "Asset added successfully." << endl;
+				system->update_usage_log("Asset added by Lab Asset Manager");
 			} else {
 				cout << "Failed to add asset." << endl;
 			}
@@ -92,6 +95,7 @@ void LabAssetManager::main(){
 		else if (choice == "6") {
 			if(a.updateAsset()) {
 				cout << "Asset updated successfully." << endl;
+				system->update_usage_log("Asset updated by Lab Asset Manager");
 			} else {
 				cout << "Failed to update asset." << endl;
 			}
@@ -99,6 +103,7 @@ void LabAssetManager::main(){
 		else if (choice == "7") {
 			if(a.removeAsset()) {
 				cout << "Asset removed successfully." << endl;
+				system->update_usage_log("Asset removed by Lab Asset Manager");
 			} else {
 				cout << "Failed to remove asset." << endl;
 			}
@@ -116,14 +121,23 @@ void LabAssetManager::main(){
 		}
 		else if (choice == "10") {
 			Documents d;
-			d.uploadDocument();
+			if(d.uploadDocument()){
+				cout << "Document uploaded successfully." << endl;
+				system->update_usage_log("Document uploaded by Lab Asset Manager");
+			} else {
+				cout << "Failed to upload document." << endl;
+			}
 		}
 		else if (choice == "11") {
 			viewLogs();
 		}
 		else if (choice == "12") {
-			if (setConsumableThreshold()) cout << "Threshold updated." << endl;
-			else cout << "Failed to update threshold." << endl;
+			if (setConsumableThreshold()){
+			cout << "Threshold updated." << endl;
+			system->update_usage_log("Low-stock threshold updated by Lab Asset Manager");
+			} else {
+				cout << "Failed to update threshold." << endl;
+			}
 		}
 		else if (choice == "13") {
 			if (!a.searchAssets("", "")) {
@@ -135,6 +149,7 @@ void LabAssetManager::main(){
 		}
 		else if (choice == "15") {
 			cout << "Exiting Lab Asset Manager." << endl;
+			system->update_usage_log("Lab Asset Manager logged out");
 			break;
 		}
 		else {
@@ -515,7 +530,6 @@ bool LabAssetManager::viewLogs() {
 
 	return true;
 }
-
 bool LabAssetManager::displayDashboard() {
 	json usageLogs;
 	ifstream inFile(usageLogFile);
@@ -535,17 +549,22 @@ bool LabAssetManager::displayDashboard() {
 	assetIn >> assets;
 	assetIn.close();
 
-	// this makes it easier to lookup asset names by ID
-	unordered_map<int, string> assetNames;
+	json accounts;
+	ifstream accountIn(accountsFile);
+	if (!accountIn.is_open()) {
+		cerr << "Error: Could not open " << accountsFile << endl;
+		return false;
+	}
+	accountIn >> accounts;
+	accountIn.close();
 
+	unordered_map<int, string> assetNames;
 	if (!assets.is_array()) {
 		cerr << "Error: assets.json is not an array!" << endl;
 		return false;
 	}
-
 	for (auto& a : assets) {
-		if (!a.contains("id") || !a.contains("name"))
-			continue;
+		if (!a.contains("id") || !a.contains("name")) continue;
 		assetNames[a["id"]] = a["name"];
 	}
 
@@ -560,29 +579,25 @@ bool LabAssetManager::displayDashboard() {
 	string choice;
 	getline(cin, choice);
 
-	// -----------------------------------------------------------
+	// ------------------ Utilization by Asset ------------------
 	if (choice == "1") {
 		string startDate, endDate;
 		if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
 			cerr << "There are no usage logs to display." << endl;
 			return false;
 		}
+
 		cout << "Enter start date (YYYY-MM-DD): ";
 		getline(cin, startDate);
 		cout << "Enter end date (YYYY-MM-DD): ";
 		getline(cin, endDate);
-
 		startDate += " 00:00:00";
 		endDate   += " 23:59:59";
 
 		unordered_map<int, int> usageCount;
-
 		for (auto& entry : usageLogs["usage"]) {
-			if (!entry.contains("start") || !entry.contains("assetID"))
-				continue;
-
+			if (!entry.contains("start") || !entry.contains("assetID")) continue;
 			string start = entry["start"];
-
 			if (start >= startDate && start <= endDate) {
 				usageCount[entry["assetID"]] += 1;
 			}
@@ -602,28 +617,41 @@ bool LabAssetManager::displayDashboard() {
 		for (auto& p : usageCount) {
 			int id = p.first;
 			int uses = p.second;
-
 			string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
-
 			cout << left << setw(10) << id
 				 << setw(40) << name
 				 << setw(10) << uses << endl;
 		}
 
+		// CSV export
+		string exportChoice;
+		cout << "\nWould you like to export this dashboard to CSV? (y/n): ";
+		getline(cin, exportChoice);
+		if (exportChoice == "y" || exportChoice == "Y") {
+			ofstream outFile("utilization.csv");
+			outFile << "ID,Name,Uses\n";
+			for (auto& p : usageCount) {
+				int id = p.first;
+				int uses = p.second;
+				string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
+				outFile << id << ",\"" << name << "\"," << uses << "\n";
+			}
+			cout << "Dashboard exported successfully to utilization.csv\n";
+		}
+
 		return true;
 	}
-	// -----------------------------------------------------------
+
+	// ------------------ Top Assets ------------------
 	else if (choice == "2") {
 		unordered_map<int, int> usageCount;
-
 		if (!usageLogs.contains("usage") || !usageLogs["usage"].is_array()) {
 			cerr << "There are no usage logs to display." << endl;
 			return false;
 		}
 
 		for (auto& entry : usageLogs["usage"]) {
-			if (entry.contains("assetID"))
-				usageCount[entry["assetID"]]++;
+			if (entry.contains("assetID")) usageCount[entry["assetID"]]++;
 		}
 
 		if (usageCount.empty()) {
@@ -632,8 +660,7 @@ bool LabAssetManager::displayDashboard() {
 		}
 
 		vector<pair<int,int>> sorted(usageCount.begin(), usageCount.end());
-		sort(sorted.begin(), sorted.end(),
-			[](auto& a, auto& b){ return a.second > b.second; });
+		sort(sorted.begin(), sorted.end(), [](auto& a, auto& b){ return a.second > b.second; });
 
 		cout << "\n===== TOP ASSETS =====\n";
 		cout << left << setw(10) << "ID"
@@ -644,44 +671,59 @@ bool LabAssetManager::displayDashboard() {
 		for (auto& p : sorted) {
 			int id = p.first;
 			int uses = p.second;
-
 			string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
-
 			cout << left << setw(10) << id
 				 << setw(40) << name
 				 << setw(10) << uses << endl;
 		}
+
+		// CSV export
+		string exportChoice;
+		cout << "\nWould you like to export this dashboard to CSV? (y/n): ";
+		getline(cin, exportChoice);
+		if (exportChoice == "y" || exportChoice == "Y") {
+			ofstream outFile("top_assets.csv");
+			outFile << "ID,Name,Uses\n";
+			for (auto& p : sorted) {
+				int id = p.first;
+				int uses = p.second;
+				string name = assetNames.count(id) ? assetNames[id] : "UNKNOWN";
+				outFile << id << ",\"" << name << "\"," << uses << "\n";
+			}
+			cout << "Dashboard exported successfully to top_assets.csv\n";
+		}
+
 		return true;
 	}
 
-	// -----------------------------------------------------------
+	// ------------------ Low Stock Summary ------------------
 	else if (choice == "3") {
 		cout << "\n===== LOW STOCK DASHBOARD =====\n";
 		cout << left
-				<< setw(5)  << "ID"
-				<< setw(25) << "Name"
-				<< setw(10) << "Stock"
-				<< setw(12) << "Threshold"
-				<< "\n";
+			 << setw(5)  << "ID"
+			 << setw(25) << "Name"
+			 << setw(10) << "Stock"
+			 << setw(12) << "Threshold"
+			 << "\n";
 		cout << "-----------------------------------------------------\n";
 
 		bool anyLowStock = false;
+		vector<json> lowStockAssets;
 
 		for (const auto& asset : assets) {
 			if (asset.contains("category") && asset["category"] == "consumable") {
-				
 				if (asset.contains("stock") && asset.contains("minimumThreshold")) {
 					int stock = asset["stock"];
 					int threshold = asset["minimumThreshold"];
-
 					if (stock < threshold) {
 						anyLowStock = true;
+						lowStockAssets.push_back(asset);
 
-					cout << left
-						<< setw(5)  << asset["id"].get<int>()
-						<< setw(25) << asset["name"].get<std::string>()
-						<< setw(10) << stock
-						<< setw(12) << threshold << endl;
+						cout << left
+							 << setw(5)  << asset["id"].get<int>()
+							 << setw(25) << asset["name"].get<string>()
+							 << setw(10) << stock
+							 << setw(12) << threshold << endl;
 					}
 				}
 			}
@@ -692,16 +734,112 @@ bool LabAssetManager::displayDashboard() {
 		}
 
 		cout << "===============================================\n";
+
+		// CSV export
+		if (anyLowStock) {
+			string exportChoice;
+			cout << "\nWould you like to export this dashboard to CSV? (y/n): ";
+			getline(cin, exportChoice);
+			if (exportChoice == "y" || exportChoice == "Y") {
+				ofstream outFile("low_stock.csv");
+				outFile << "ID,Name,Stock,Threshold\n";
+				for (auto& asset : lowStockAssets) {
+					outFile << asset["id"].get<int>() << ",\""
+							<< asset["name"].get<string>() << "\","
+							<< asset["stock"].get<int>() << ","
+							<< asset["minimumThreshold"].get<int>() << "\n";
+				}
+				cout << "Dashboard exported successfully to low_stock.csv\n";
+			}
+		}
+
 		return true;
 	}
-	// -----------------------------------------------------------
+
+	// ------------------ Reservations per Group ------------------
 	else if (choice == "4") {
+		string group;
+		cout << "Enter group to display (research student / faculty researcher): ";
+		getline(cin, group);
+		while(group != "research student" && group != "faculty researcher") {
+			cout << "Invalid group selected.\n";
+			cout << "Enter group to display (research student / faculty researcher): ";
+			getline(cin, group);
+		}
+
+		cout << "\n===== RESERVATION DASHBOARD: " << group << " =====\n";
+		cout << left
+			 << setw(30) << "Email"
+			 << setw(10) << "Asset ID"
+			 << setw(30) << "Asset Name"
+			 << setw(15) << "Start Date"
+			 << setw(15) << "End Date"
+			 << setw(10) << "Status" << "\n";
+		cout << string(110, '-') << "\n";
+
+		struct ReservationEntry {
+			string email;
+			int assetID;
+			string assetName;
+			string startDate;
+			string endDate;
+			string status;
+		};
+		vector<ReservationEntry> reservationsToExport;
+
+		for (const auto& account : accounts) {
+			if (account.contains("role") && account["role"] == group) {
+				if (account.contains("reservations") && !account["reservations"].empty()) {
+					string email = account["email"];
+					for (const auto& res : account["reservations"]) {
+						cout << left
+							 << setw(30) << email
+							 << setw(10) << res["assetID"].get<int>()
+							 << setw(30) << res["assetName"].get<string>()
+							 << setw(15) << res["startDate"].get<string>()
+							 << setw(15) << res["endDate"].get<string>()
+							 << setw(10) << res["status"].get<string>() << "\n";
+
+						reservationsToExport.push_back({
+							email,
+							res["assetID"].get<int>(),
+							res["assetName"].get<string>(),
+							res["startDate"].get<string>(),
+							res["endDate"].get<string>(),
+							res["status"].get<string>()
+						});
+					}
+				}
+			}
+		}
+
+		if (!reservationsToExport.empty()) {
+			string exportChoice;
+			cout << "\nWould you like to export this dashboard to CSV? (y/n): ";
+			getline(cin, exportChoice);
+			if (exportChoice == "y" || exportChoice == "Y") {
+				ofstream outFile("reservations.csv");
+				outFile << "Email,Asset ID,Asset Name,Start Date,End Date,Status\n";
+				for (const auto& entry : reservationsToExport) {
+					outFile << "\"" << entry.email << "\","
+							<< entry.assetID << ","
+							<< "\"" << entry.assetName << "\","
+							<< entry.startDate << ","
+							<< entry.endDate << ","
+							<< entry.status << "\n";
+				}
+				cout << "Dashboard exported successfully to reservations.csv\n";
+			}
+		}
+
 		return true;
 	}
-	// -----------------------------------------------------------
+
+	// ------------------ Overdue incidents (not implemented) ------------------
 	else if (choice == "5") {
 		return true;
 	}
+
 	else {
 		cout << "Invalid option.\n";
 		return false;

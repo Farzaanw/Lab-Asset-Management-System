@@ -49,10 +49,10 @@ public:
 	void main() override;
 
 	// Destructor
-    virtual ~LabAssetManager();
+	virtual ~LabAssetManager();
 
 	// Override pure virtual function from User
-    std::string getRole() const override;
+	std::string getRole() const override;
 
 	//accounts
 	bool createAccount();
@@ -62,8 +62,6 @@ public:
 	bool deleteAccount();
 
 	bool listAccounts();
-
-	//inventory & Documents
 
 	//logs
 	bool viewLogs();
