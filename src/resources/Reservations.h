@@ -21,7 +21,10 @@ namespace fs = std::filesystem;
 class Reservations {
 private:
     // empty
+    SystemController* sysController;
 public:
+
+    Reservations(SystemController* sc) : sysController(sc) {}
 
     bool reserveAsset(const std::string& email);
 

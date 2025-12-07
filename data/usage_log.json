@@ -27,6 +27,18 @@
         {
             "event": "Failed login attempt for email: d",
             "timestamp": "2025-12-06 23:42:09"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 23:53:52"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-07 00:09:07"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-07 00:09:10"
         }
     ]
 }

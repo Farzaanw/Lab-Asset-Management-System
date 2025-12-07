@@ -1,6 +1,7 @@
 #include "Reservations.h"
 #include "../users/ResearchStudent.h"
 #include "Assets.h"
+#include "SystemController.h"
 
 //ASSETS
 //reserve an asset, returns a bool
@@ -12,6 +13,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     ifstream inFile("../../data/assets.json");
     if (!inFile.is_open()) {
         cerr << "Error: Could not open assets.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     inFile >> assets;
@@ -22,6 +24,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     ifstream accountsIn("../../data/accounts.json");
     if (!accountsIn.is_open()) {
         cerr << "Error: Could not open accounts.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     accountsIn >> accounts;
@@ -71,6 +74,7 @@ bool Reservations::reserveAsset(const std::string& email) {
 
     if (!hasAvailable) {
         cout << "No assets currently available for reservation." << endl;
+        sysController->update_usage_log("Reservation canceled, no available assets");
         return false;
     }
 
@@ -93,6 +97,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     }
     if (!targetAsset) {
         cout << "Error: Asset ID " << assetID << " not found!" << endl;
+        sysController->update_usage_log("Reservation canceled, asset not found");
         return false;
     }
 
@@ -101,6 +106,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (status != "available") {
         cout << "Error: Asset is not available!" << endl;
         cout << "Current Status: " << status << endl;
+        sysController->update_usage_log("Reservation canceled, asset not availble");
         return false;
     }
 
@@ -122,6 +128,8 @@ bool Reservations::reserveAsset(const std::string& email) {
     // Validate dates
     if (startStream.fail() || endStream.fail()) {
         cout << "Error: Invalid date format!" << endl;
+        sysController->update_usage_log("Reservation canceled, invaild date format");
+
         return false;
     }
 
@@ -131,6 +139,7 @@ bool Reservations::reserveAsset(const std::string& email) {
 
     if (startTimeT == -1 || endTimeT == -1) {
         cout << "Error: Invalid date/time values!" << endl;
+        sysController->update_usage_log("Reservation canceled, invalid date/time");
         return false;
     }   
 
@@ -183,6 +192,7 @@ bool Reservations::reserveAsset(const std::string& email) {
         }
         if (!userFound) {
             cout << "Error: User account not found!" << endl;
+            sysController->update_usage_log("Error: Account not found");
             return false;
         }
 
@@ -190,6 +200,8 @@ bool Reservations::reserveAsset(const std::string& email) {
         ofstream accountsOut("../../data/accounts.json");
         accountsOut << setw(4) << accounts << endl;
         accountsOut.close();
+
+        sysController->update_usage_log("Reservation pending, requires approval");
 
         // Notify Lab Manager (TODO: implement notification system)
         cout << "NEED TO IMPLMENT ---- Notification sent to Lab Manager for approval." << endl;
@@ -218,6 +230,7 @@ bool Reservations::reserveAsset(const std::string& email) {
 
     if (!userFound) {
         cout << "Error: User account not found!" << endl;
+        sysController->update_usage_log("Error: Account not found");
         return false;
     }
 
@@ -243,10 +256,14 @@ bool Reservations::reserveAsset(const std::string& email) {
         outAssetFile.close();
     }
     
+    /*
     // Append usage log entry for this reservation
     if (!ResearchStudent::appendUsageLog(email, assetID, startDate, endDate)) {
         cerr << "Warning: Failed to write usage log entry." << endl;
     }
+    */
+
+   sysController->update_usage_log("Asset reserved");
 
     cout << "Asset reserved successfully!" << endl;
     return true;
@@ -261,6 +278,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     ifstream inFile("../../data/assets.json");
     if (!inFile.is_open()) {
         cerr << "Error: Could not open assets.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     inFile >> assets;
@@ -278,6 +296,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
 
     if (!hasAvailable) {
         cout << "No assets currently available for reservation." << endl;
+        sysController->update_usage_log("Reservation canceled, no available assets");
         return false;
     }
 
@@ -290,6 +309,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     
     if (numAssets <= 0) {
         cout << "Invalid number of assets." << endl;
+        sysController->update_usage_log("Reservation canceled, invalid input");        
         return false;
     }
 
@@ -304,6 +324,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     ifstream accountsIn("../../data/accounts.json");
     if (!accountsIn.is_open()) {
         cerr << "Error: Could not open accounts.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     accountsIn >> accounts;
