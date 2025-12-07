@@ -14,6 +14,7 @@
 #ifdef _WIN32
     #include <windows.h>  // for Sleep() on Windows
     #define sleep(seconds) Sleep((seconds) * 1000)
+    #undef max  
 #else
     #include <unistd.h>  // for sleep() on Unix/Linux   
 #endif

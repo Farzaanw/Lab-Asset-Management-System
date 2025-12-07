@@ -1,5 +1,6 @@
 #include "Notifications.h"
 #include <iostream>
+#include <fstream>
 
 // // Private add_notification(notification: string): void
 // // Private get_unread_notifications(userID: string, readFlag: bool): vector<string>
@@ -18,19 +19,30 @@
 Notifications::Notifications() {}
 
 void Notifications::send_notifications(std::string recipient, json data) const {
-    std::cout << "Notification Sent to " << recipient << ": " << data["message"] << "\n";
-    // nlohmann::json accounts;
-    // std::ifstream inFile("../../data/accounts.json");
-    // if (!inFile.is_open()) {
-    //     std::cerr << "Error: Could not open accounts.json" << std::endl;
-    //     return false;
-    // }
-    // inFile >> accounts;
-    // inFile.close();
+    std::cout << "Notification Being Sent to " << recipient << "\n";
+    nlohmann::json accounts;
+    std::ifstream inFile("../../data/accounts.json");
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open accounts.json" << std::endl;
+        return;
+    }
+    inFile >> accounts;
+    inFile.close();
 
-    // // Find all Lab Asset Managers and add notification
+    ////// ----- NEED TO IMPLMENET --> 3 CASES OF SENDING NOTIFICATIONS (cash!!) /////
+    std::cout << "Cash : need to know the 3 cases of sending notifications and include them here" << std::endl;
+    return;
+    // 1. if sending to a specific user --> send to that user only
+
+
+
+    // 2. if sending to all users of a specific role --> send to all users with that role
+
+
+
+    // 3. if sending to lab asset manager --> sends to all of them
     // for (auto& account : accounts) {
-    //     if (account["role"] == "lab asset manager") {
+    //     if (account["role"] == recipient) {
     //         // Ensure notifications array exists (else create it)
     //         if (!account.contains("notifications")) {
     //             account["notifications"] = json::array();
@@ -45,13 +57,13 @@ void Notifications::send_notifications(std::string recipient, json data) const {
     // }
 
     // Save updated accounts
-        // std::ofstream outFile("../../data/accounts.json");
-        // if (!outFile.is_open()) {
-        //     std::cerr << "Error: Could not save accounts.json" << std::endl;
-        //     return false;
-        // }
-        // outFile << std::setw(4) << accounts << std::endl;
-        // outFile.close();
+    std::ofstream outFile("../../data/accounts.json");
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Could not save accounts.json" << std::endl;
+        return;
+    }
+    outFile << std::setw(4) << accounts << std::endl;
+    outFile.close();
 }
 
 void Notifications::view_notifications() const {
