@@ -303,6 +303,14 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-06 19:47:03"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-06 20:12:30"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-06 20:12:35"
         }
     ],
     "usage": [

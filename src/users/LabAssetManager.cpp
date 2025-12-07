@@ -43,8 +43,10 @@ void LabAssetManager::main(){
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
 		cout << "11. View Logs" << endl;
-		cout << "12. Logout" << endl;
-		cout << "13. Set Consumable Low-Stock Threshold" << endl;
+		cout << "12. Set Consumable Low-Stock Threshold" << endl;
+		cout << "13. Search/Filter Assets" << endl;
+		cout << "14. Logout" << endl;
+		
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
@@ -107,10 +109,6 @@ void LabAssetManager::main(){
 				cout << "Failed to list assets." << endl;
 			}
 		}
-		else if (choice == "13") {
-			if (setConsumableThreshold()) cout << "Threshold updated." << endl;
-			else cout << "Failed to update threshold." << endl;
-		}
 		else if (choice == "9") {
 			Documents d;
 			d.listDocuments();
@@ -123,6 +121,20 @@ void LabAssetManager::main(){
 			viewLogs();
 		}
 		else if (choice == "12") {
+			if (setConsumableThreshold()) cout << "Threshold updated." << endl;
+			else cout << "Failed to update threshold." << endl;
+		}
+		else if (choice == "13") {
+			string category, status;
+			cout << "Enter category to filter by (or leave blank for all): ";
+			getline(cin, category);
+			cout << "Enter status to filter by (or leave blank for all): ";
+			getline(cin, status); 
+			if (!a.searchAssets(category, status)) {
+				cout << "Failed to search/filter assets." << endl;
+			}
+		}
+		else if (choice == "14") {
 			cout << "Exiting Lab Asset Manager." << endl;
 			break;
 		}
