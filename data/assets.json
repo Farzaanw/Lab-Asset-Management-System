@@ -40,10 +40,10 @@
         "condition": "perfect",
         "description": "latex gloves",
         "id": 4,
-        "location": "lab2",
+        "location": "Storage Room #6",
         "minimumThreshold": 50,
         "name": "gloves",
-        "operationalStatus": "reserved",
+        "operationalStatus": "available",
         "stock": 51
     },
     {
@@ -55,7 +55,7 @@
         "id": 5,
         "location": "Virtual Software Library",
         "name": "MATLAB R2023a License",
-        "operationalStatus": "reserved",
+        "operationalStatus": "available",
         "renewalDate": "2026-12-31",
         "seatCount": 10
     }
