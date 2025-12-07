@@ -390,7 +390,6 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
                 } else {
                     asset["operationalStatus"] = "reserved";
                 }
-                sysController->update_usage_log("Multiple assets reserved");
                 break;
             }
         }
@@ -405,7 +404,8 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     outAssetFile << setw(4) << assets << endl;
     outAssetFile.close();
 
-    cout << "All " << numAssets << " assets reserved successfully!" << endl;
+    sysController->update_usage_log("Multiple assets reserved");
+    cout << "All " << numAssets << "Multiple assets reserved successfully!" << endl;
     return true;
 }
 
@@ -417,6 +417,7 @@ bool Reservations::viewMyReservations(const std::string& email) {
     ifstream accountsIn("../../data/accounts.json");
     if (!accountsIn.is_open()) {
         cerr << "Error: Could not open accounts.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     accountsIn >> accounts;
@@ -427,6 +428,7 @@ bool Reservations::viewMyReservations(const std::string& email) {
         if (account["email"].get<string>() == email) {
             if (account["reservations"].empty()) {
                 cout << "No active reservations found." << endl;
+                sysController->update_usage_log("User viewed their reservations");
                 return true;
             }
 
@@ -452,7 +454,8 @@ bool Reservations::viewMyReservations(const std::string& email) {
     if (!hasReservations) {
         cout << "No active reservations found." << endl;
     }
-    
+
+    sysController->update_usage_log("User viewed their reservations");
     return true;
 }
 
@@ -465,6 +468,7 @@ bool Reservations::cancelReservation(const std::string& email) {
     ifstream accountsIn("../../data/accounts.json");
     if (!accountsIn.is_open()) {
         cerr << "Error: Could not open accounts.json" << endl;
+        sysController->update_usage_log("Error opening json file");
         return false;
     }
     accountsIn >> accounts;
@@ -481,6 +485,7 @@ bool Reservations::cancelReservation(const std::string& email) {
 
     if (!userAccount || (*userAccount)["reservations"].empty()) {
         cout << "You have no reservations to cancel." << endl;
+        sysController->update_usage_log("User tried to cancel a reservation");
         return false;
     }
 
@@ -499,6 +504,7 @@ bool Reservations::cancelReservation(const std::string& email) {
 
     if (choice < 1 || choice > (*userAccount)["reservations"].size()) {
         cout << "Invalid selection." << endl;
+        sysController->update_usage_log("User tried to cancel a reservation");
         return false;
     }
 
@@ -544,6 +550,7 @@ bool Reservations::cancelReservation(const std::string& email) {
     accountsOut << setw(4) << accounts << endl;
     accountsOut.close();
     
+    sysController->update_usage_log("User canceled reservation");
     cout << "Reservation cancelled successfully!" << endl;
     
     return true;
