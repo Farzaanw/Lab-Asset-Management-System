@@ -14,7 +14,7 @@
 #include "ResearchStudent.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
-static Assets a;
+static Assets* a = nullptr;
 static Reservations* r = nullptr;
 using namespace std;
 using json = nlohmann::json;
@@ -37,6 +37,9 @@ std::string ResearchStudent::getRole() const {
 void ResearchStudent::main() {
     if (r == nullptr) {
         r = new Reservations(system);
+    }
+    if (a == nullptr) {
+        a = new Assets(system);
     }
 
     cout << "\n=============================================" << endl;
@@ -74,10 +77,10 @@ void ResearchStudent::main() {
         }
         else if (choice == "2") {
             string email = getEmail();
-            a.return_asset(email);
+            a->return_asset(email);
         }
         else if (choice == "3") {
-            a.viewAvailableAssets();
+            a->viewAvailableAssets();
         }
         /*
         else if (choice == "4") {
@@ -86,7 +89,7 @@ void ResearchStudent::main() {
         }
         */
         else if (choice == "4") {
-            a.searchAssets("", ""); // Will prompt inside function
+            a->searchAssets("", ""); // Will prompt inside function
         }
         else if (choice == "5") {
             string email = getEmail();
