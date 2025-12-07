@@ -1,38 +1,29 @@
 [
     {
-        "notificationID": "100321",
+        "notificationID": "000",
         "recipientID": "3",
         "message": "A research student attempted to reserve a restricted asset.",
         "type": "restricted_reservation_attempt",
-        "urgency": true,
-        "readFlag": false,
-        "timeStamp": "2025-01-22 13:45:12",
         "metaData": {
             "assetID": "204",
             "studentID": "1"
         }
     },
     {
-        "notificationID": "100512",
+        "notificationID": "111",
         "recipientID": "1",
         "message": "Your reservation request has been approved by the lab manager.",
         "type": "reservation_approved",
-        "urgency": false,
-        "readFlag": false,
-        "timeStamp": "2025-01-22 14:10:44",
         "metaData": {
             "reservationID": "55127",
             "managerID": "3"
         }
     },
     {
-        "notificationID": "100793",
+        "notificationID": "333",
         "recipientID": "1",
         "message": "Your reservation request has been denied by the lab manager.",
         "type": "reservation_denied",
-        "urgency": false,
-        "readFlag": false,
-        "timeStamp": "2025-01-22 14:15:08",
         "metaData": {
             "reservationID": "55127",
             "managerID": "3",
