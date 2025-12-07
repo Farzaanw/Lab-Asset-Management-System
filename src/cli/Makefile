@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -I.. -I../library -I../users -O2
 
 # Source files
-SRC = main.cpp ../SystemController.cpp ../users/User.cpp ../users/ResearchStudent.cpp ../users/LabManager.cpp ../resources/Reservations.cpp ../users/FacultyResearcher.cpp ../users/LabAssetManager.cpp ../resources/Documents.cpp  ../resources/Assets.cpp
+SRC = main.cpp ../SystemController.cpp ../users/User.cpp ../users/ResearchStudent.cpp ../users/LabManager.cpp ../resources/Reservations.cpp ../users/FacultyResearcher.cpp ../users/LabAssetManager.cpp ../resources/Documents.cpp  ../resources/Assets.cpp ../resources/Notifications.cpp
 OBJ = $(SRC:.cpp=.o)
 
 TARGET = MicroCat.exe
