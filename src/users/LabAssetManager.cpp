@@ -12,7 +12,7 @@ static Assets a;
 using namespace std;
 using json = nlohmann::json;
 
-LabAssetManager::LabAssetManager(const std::string& email,
+LabAssetManager::LabAssetManager(const string& email,
 			   SystemController* sys)
 	: User(email, sys) ,
 	  system(sys) {}
@@ -22,7 +22,7 @@ LabAssetManager::LabAssetManager(const std::string& email,
 LabAssetManager::~LabAssetManager() {}
 
 //Override getRole
-std::string LabAssetManager::getRole() const {
+string LabAssetManager::getRole() const {
 	return "lab asset manager";
 }
 
@@ -317,7 +317,7 @@ bool LabAssetManager::listAccounts() {
 
 	try {
 		inFile >> accounts;
-	} catch (const std::exception& e) {
+	} catch (const exception& e) {
 		cerr << "Error reading JSON: " << e.what() << endl;
 		inFile.close();
 		return false;
@@ -438,7 +438,7 @@ bool LabAssetManager::viewLogs() {
 
 	try {
 		inFile >> logs;
-	} catch (const std::exception& e) {
+	} catch (const exception& e) {
 		cerr << "Error reading JSON: " << e.what() << endl;
 		return false;
 	}
@@ -460,7 +460,7 @@ bool LabAssetManager::viewLogs() {
 	// - usage entries (key: "usage") created when reservations are made
 
 	// Helper to find an array by key or top-level
-	auto find_array_by_key = [&](const json& j, const std::string& key) -> const json* {
+	auto find_array_by_key = [&](const json& j, const string& key) -> const json* {
 		if (j.is_object() && j.contains(key) && j[key].is_array()) return &j[key];
 		if (j.is_object()) {
 			for (auto it = j.begin(); it != j.end(); ++it) {
@@ -478,8 +478,8 @@ bool LabAssetManager::viewLogs() {
 	if (eventsPtr) {
 		cout << "Listing system events:\n" << endl;
 		for (const auto& ev : *eventsPtr) {
-			std::string e = ev.contains("event") ? ev["event"].get<std::string>() : "(no event)";
-			std::string ts = ev.contains("timestamp") ? ev["timestamp"].get<std::string>() : "(no timestamp)";
+			string e = ev.contains("event") ? ev["event"].get<string>() : "(no event)";
+			string ts = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "(no timestamp)";
 			cout << "Event: " << e << endl;
 			cout << "Timestamp: " << ts << endl;
 		}
@@ -494,11 +494,11 @@ bool LabAssetManager::viewLogs() {
 	if (usagePtr && !usagePtr->empty()) {
 		cout << "\nListing usage logs (reservations):\n" << endl;
 		for (const auto& u : *usagePtr) {
-			std::string email = u.contains("email") ? u["email"].get<std::string>() : "(no email)";
-			std::string start = u.contains("start") ? u["start"].get<std::string>() : "(no start)";
-			std::string end = u.contains("end") ? u["end"].get<std::string>() : "(no end)";
-			std::string logged = u.contains("loggedAt") ? u["loggedAt"].get<std::string>() : "(no loggedAt)";
-			std::string assetid = u.contains("assetID") ? std::to_string(u["assetID"].get<int>()) : "(no assetID)";
+			string email = u.contains("email") ? u["email"].get<string>() : "(no email)";
+			string start = u.contains("start") ? u["start"].get<string>() : "(no start)";
+			string end = u.contains("end") ? u["end"].get<string>() : "(no end)";
+			string logged = u.contains("loggedAt") ? u["loggedAt"].get<string>() : "(no loggedAt)";
+			string assetid = u.contains("assetID") ? to_string(u["assetID"].get<int>()) : "(no assetID)";
 			cout << "User Email: " << email << endl;
 			cout << "Asset ID: " << assetid << endl;
 			cout << "Start: " << start << endl;
@@ -526,24 +526,24 @@ bool LabAssetManager::displayDashboard() {
     inFile >> usageLogs;
     inFile.close();
 
-    json assetData;
+    json assets;
     ifstream assetIn(assetsFile);
     if (!assetIn.is_open()) {
         cerr << "Error: Could not open " << assetsFile << endl;
         return false;
     }
-    assetIn >> assetData;
+    assetIn >> assets;
     assetIn.close();
 
 	// this makes it easier to lookup asset names by ID
     unordered_map<int, string> assetNames;
 
-    if (!assetData.is_array()) {
+    if (!assets.is_array()) {
         cerr << "Error: assets.json is not an array!" << endl;
         return false;
     }
 
-    for (auto& a : assetData) {
+    for (auto& a : assets) {
         if (!a.contains("id") || !a.contains("name"))
             continue;
         assetNames[a["id"]] = a["name"];
@@ -632,7 +632,6 @@ bool LabAssetManager::displayDashboard() {
             return true;
         }
 
-        // sort by usage desc
         vector<pair<int,int>> sorted(usageCount.begin(), usageCount.end());
         sort(sorted.begin(), sorted.end(),
             [](auto& a, auto& b){ return a.second > b.second; });
@@ -655,12 +654,53 @@ bool LabAssetManager::displayDashboard() {
         }
         return true;
     }
+
+	// -----------------------------------------------------------
 	else if (choice == "3") {
+		cout << "\n===== LOW STOCK DASHBOARD =====\n";
+		cout << left
+				<< setw(5)  << "ID"
+				<< setw(25) << "Name"
+				<< setw(10) << "Stock"
+				<< setw(12) << "Threshold"
+				<< "\n";
+		cout << "-----------------------------------------------------\n";
+
+		bool anyLowStock = false;
+
+		for (const auto& asset : assets) {
+			if (asset.contains("category") && asset["category"] == "consumable") {
+				
+				if (asset.contains("stock") && asset.contains("minimumThreshold")) {
+					int stock = asset["stock"];
+					int threshold = asset["minimumThreshold"];
+
+					if (stock < threshold) {
+						anyLowStock = true;
+
+						cout << left
+								<< setw(5)  << asset["id"]
+								<< setw(25) << asset["name"]
+								<< setw(10) << stock
+								<< setw(12) << threshold
+								<< "\n";
+					}
+				}
+			}
+		}
+
+		if (!anyLowStock) {
+			cout << "All consumable assets are sufficiently stocked.\n";
+		}
+
+		cout << "===============================================\n";
 		return true;
 	}
+	// -----------------------------------------------------------
 	else if (choice == "4") {
 		return true;
 	}
+	// -----------------------------------------------------------
 	else if (choice == "5") {
 		return true;
 	}
