@@ -16,8 +16,8 @@ class SystemController;
 class LabManager : public User {
 private:
 	const std::string policiesFile = "../../data/policies.json";
+	const string accountsFile = "../../data/accounts.json";
     SystemController* system;
-	
 public:
 	LabManager(const std::string& email = "",
 			   SystemController* sys = nullptr);
@@ -39,6 +39,8 @@ public:
 	// Returns the value of a specific policy
 	// policyType can be "MAXBOOKINGDURATION" or "ADVANCEBOOKINGHORIZON"
 	int getPolicy(string policyType);
+
+	bool changeUserPrivilege();
 };
 
 #endif
