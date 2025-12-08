@@ -595,6 +595,154 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-07 22:34:17"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 23:33:46"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2003-12-05 12:00:00",
+            "timestamp": "2025-12-07 23:33:47"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2012-06-13 21:00:00",
+            "timestamp": "2025-12-07 23:33:47"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2013-07-08 23:00:00",
+            "timestamp": "2025-12-07 23:33:47"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2003-10-13 4:00",
+            "timestamp": "2025-12-07 23:33:47"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-07 23:33:55"
+        },
+        {
+            "event": "Lab Manager labmanageremail reviewed reservation requests.",
+            "timestamp": "2025-12-07 23:34:56"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 23:43:09"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2003-12-05 12:00:00",
+            "timestamp": "2025-12-07 23:43:10"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2012-06-13 21:00:00",
+            "timestamp": "2025-12-07 23:43:10"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2013-07-08 23:00:00",
+            "timestamp": "2025-12-07 23:43:10"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2003-10-13 4:00",
+            "timestamp": "2025-12-07 23:43:10"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-07 23:43:24"
+        },
+        {
+            "event": "Lab Manager labmanageremail reviewed reservation requests.",
+            "timestamp": "2025-12-07 23:43:28"
+        },
+        {
+            "event": "Lab Manager labmanageremail reviewed reservation requests.",
+            "timestamp": "2025-12-07 23:43:59"
+        },
+        {
+            "event": "Lab Manager labmanageremail listed policies.",
+            "timestamp": "2025-12-07 23:44:33"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 23:52:27"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2003-12-05 12:00:00",
+            "timestamp": "2025-12-07 23:52:28"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2012-06-13 21:00:00",
+            "timestamp": "2025-12-07 23:52:28"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2013-07-08 23:00:00",
+            "timestamp": "2025-12-07 23:52:28"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2003-10-13 4:00",
+            "timestamp": "2025-12-07 23:52:28"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-07 23:52:37"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 23:59:55"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2003-12-05 12:00:00",
+            "timestamp": "2025-12-07 23:59:57"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2012-06-13 21:00:00",
+            "timestamp": "2025-12-07 23:59:57"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2013-07-08 23:00:00",
+            "timestamp": "2025-12-07 23:59:57"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2003-10-13 4:00",
+            "timestamp": "2025-12-07 23:59:57"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-08 00:00:06"
+        },
+        {
+            "event": "Lab Manager labmanageremail reviewed reservation requests.",
+            "timestamp": "2025-12-08 00:00:36"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 00:05:46"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2003-12-05 12:00:00",
+            "timestamp": "2025-12-08 00:05:48"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2012-06-13 21:00:00",
+            "timestamp": "2025-12-08 00:05:48"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 2 (Fillament) - End Date: 2013-07-08 23:00:00",
+            "timestamp": "2025-12-08 00:05:48"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2003-10-13 4:00",
+            "timestamp": "2025-12-08 00:05:48"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-08 00:05:57"
+        },
+        {
+            "event": "labmanageremail has denied the reservation request for asset ID 4 made by studentemail.",
+            "timestamp": "2025-12-08 00:06:23"
+        },
+        {
+            "event": "labmanageremail has approved the reservation request for asset ID 4 made by studentemail.",
+            "timestamp": "2025-12-08 00:06:53"
         }
     ]
 }
