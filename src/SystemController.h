@@ -35,6 +35,9 @@ public:
 
     // Record a system event to the usage log
     void update_usage_log(const std::string& message);
+    
+    // Get current timestamp as string
+    std::string get_current_time();
 
     // variables
     // std::vector<Assets*> assets;     // Stores all the assets available in the system
@@ -61,7 +64,6 @@ private:
     // ================
     std::string validate_user(const std::string& email, const std::string& password);
     bool load_json_safe(const std::string& path, nlohmann::json& out);
-    std::string get_current_time();
 
     // ====================
     // MEMBER VARIABLES
