@@ -25,22 +25,46 @@ void LabManager::main(){
 		cout << "1. List Policies" << endl;
 		cout << "2. Change Policies" << endl;
 		cout << "3. Display Dashboard" << endl;
-		cout << "4. Logout" << endl;
+		cout << "4. Change User Privilege" << endl;
+		cout << "5. Logout" << endl;
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
 		cout << endl;
 
 		if (choice == "1") {
-			listPolicies();
+			if(listPolicies()){
+				cout << "Policies listed successfully." << endl;
+				system->update_usage_log("Lab Manager " + getEmail() + " listed policies.");
+			} else {
+				cout << "Failed to list policies." << endl;
+			}
 		}
 		else if (choice == "2") {
-			changePolicies();
+			if(changePolicies()){
+				cout << "Policies changed successfully." << endl;
+				system->update_usage_log("Lab Manager " + getEmail() + " changed policies.");
+			} else {
+				cout << "Failed to change policies." << endl;
+			}
 		}
 		else if (choice == "3") {
-			displayDashboard();
+			if(displayDashboard()){
+				cout << "Dashboard displayed successfully." << endl;
+				system->update_usage_log("Lab Manager " + getEmail() + " displayed the dashboard.");
+			} else {
+				cout << "Failed to display dashboard." << endl;
+			}
 		}
 		else if (choice == "4") {
+			if(changeUserPrivilege()){
+				cout << "User privilege changed successfully." << endl;
+				system->update_usage_log("Lab Manager " + getEmail() + " changed a user's privilege.");
+			} else {
+				cout << "Failed to change user privilege." << endl;
+			}
+		}
+		else if (choice == "5") {
 			cout << "Exiting Lab Manager." << endl;
 			break;
 		}
@@ -165,5 +189,93 @@ bool LabManager::listPolicies(){
 	cout << "Max Booking Duration (hours): " << policiesJson["MAXBOOKINGDURATION"] << endl;
 	cout << "Advance Booking Horizon (days): " << policiesJson["ADVANCEBOOKINGHORIZON"] << endl;
 
+	return true;
+}
+
+bool LabManager::changeUserPrivilege() {
+	int accountId;
+    bool found = false;
+    cout << "Enter the Account ID you want to modify: ";
+    cin >> accountId;
+
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cerr << "Invalid input. Must be a number.\n";
+        return false;
+    }
+    cin.ignore();
+
+    // Load accounts.json
+    json accounts;
+    ifstream inFile(accountsFile);
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open " << accountsFile << endl;
+        return false;
+    }
+
+    try {
+        inFile >> accounts;
+        inFile.close();
+    } catch (...) {
+        cerr << "Error reading JSON from " << accountsFile << endl;
+        return false;
+    }
+
+    // Find the account
+    for (auto& acct : accounts) {
+        if (acct["id"] == accountId) {
+            found = true;
+
+            cout << "Current privilege (clearanceLevel): "
+                 << (acct["clearanceLevel"].is_string() ? acct["clearanceLevel"].get<string>() : "None")
+                 << "\n";
+
+            int newLevel;
+            cout << "Enter new privilege level (1, 2, 3): ";
+            cin >> newLevel;
+
+			while (cin.fail() || newLevel < 1 || newLevel > 3) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cerr << "Invalid privilege level. Must be between 1 and 3.\n";
+				cout << "Enter new privilege level (1, 2, 3): ";
+				cin >> newLevel;
+            }
+            cin.ignore();
+
+            // Confirm
+            char confirm;
+            cout << "Are you sure you want to change the privilege for account ID "
+                 << accountId << " to level " << newLevel << "? (y/n): ";
+            cin >> confirm;
+            cin.ignore();
+
+            if (tolower(confirm) != 'y') {
+                cout << "Operation canceled.\n";
+                return false;
+            }
+
+            // Update clearanceLevel
+            acct["clearanceLevel"] = to_string(newLevel);
+
+            // Save file
+            ofstream outFile(accountsFile);
+            if (!outFile.is_open()) {
+                cerr << "Error: Could not save to " << accountsFile << endl;
+                return false;
+            }
+
+            outFile << accounts.dump(4);
+            outFile.close();
+
+            cout << "Privilege successfully updated!\n";
+            return true;
+        }
+    }
+
+    if (!found) {
+        cout << "No account with ID " << accountId << " found.\n";
+    }
 	return true;
 }
