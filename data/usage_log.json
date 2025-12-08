@@ -39,6 +39,62 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-07 00:09:10"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 17:41:27"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-07 17:41:32"
+        },
+        {
+            "event": "User returned an asset",
+            "timestamp": "2025-12-07 17:41:35"
+        },
+        {
+            "event": "User returned an asset",
+            "timestamp": "2025-12-07 17:41:39"
+        },
+        {
+            "event": "Return asset cancelled",
+            "timestamp": "2025-12-07 17:41:44"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-07 17:46:26"
+        },
+        {
+            "event": "Failed login attempt for email: student",
+            "timestamp": "2025-12-07 17:46:32"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-07 17:46:38"
+        },
+        {
+            "event": "User viewed available assets",
+            "timestamp": "2025-12-07 17:46:40"
+        },
+        {
+            "event": "Return asset cancelled",
+            "timestamp": "2025-12-07 17:46:55"
+        },
+        {
+            "event": "Consumable amount decrememted",
+            "timestamp": "2025-12-07 17:46:58"
+        },
+        {
+            "event": "User canceled reservation",
+            "timestamp": "2025-12-07 17:46:58"
+        },
+        {
+            "event": "User viewed their reservations",
+            "timestamp": "2025-12-07 17:47:02"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-07 17:47:12"
         }
     ]
 }

@@ -246,7 +246,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     accountsOut.close();
     
     // Update asset usage/status depending on type
-    Assets a;
+    Assets a(sysController);
     std::string category = (*targetAsset).value("category", string(""));
     if (category == "consumable") {
         bool becameLow = false;
@@ -392,7 +392,7 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
 
                 // Update asset usage/status depending on type
                 std::string category = asset.value("category", string(""));
-                Assets a;
+                Assets a(sysController);
                 if (category == "consumable") {
                     bool becameLow = false;
                     a.decrementConsumable(assetID, 1, becameLow);
@@ -543,7 +543,7 @@ bool Reservations::cancelReservation(const std::string& email) {
         for (auto& asset : assets) {
             if (asset["id"].get<int>() == assetID) {
                 std::string category = asset.value("category", string(""));
-                Assets a;
+                Assets a(sysController);
                 if (category == "consumable") {
                     bool dummy = false;
                     // restore one unit back to stock
