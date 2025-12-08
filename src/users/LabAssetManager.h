@@ -66,6 +66,8 @@ public:
 	//logs
 	bool viewLogs();
 
+	bool viewAuditLog();
+
 	bool setConsumableThreshold();
 	
 	bool cancelReservation();

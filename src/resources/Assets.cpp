@@ -25,7 +25,7 @@ bool Assets::viewAvailableAssets() {
 
     if (assets.empty()) {
         cout << "No assets found." << endl;
-				sysController->update_usage_log("User viewed available assets");
+				if (sysController) sysController->update_usage_log("User viewed available assets");
         return true;
     }
 
@@ -48,7 +48,7 @@ bool Assets::viewAvailableAssets() {
         cout << "No assets currently available." << endl;
     }
 
-		sysController->update_usage_log("User viewed available assets");
+		if (sysController) sysController->update_usage_log("User viewed available assets");
     return true;
 };
 
@@ -66,7 +66,7 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
 
 		if(cat == "back") {
 			cout << "Reservation cancelled, returning to menu" << endl;
-			sysController->update_usage_log("User cancelled reservation");
+			if (sysController) sysController->update_usage_log("User cancelled reservation");
 			return false;
 		}
 
@@ -104,7 +104,7 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
         cout << "No assets found matching criteria." << endl;
     }
     
-		sysController->update_usage_log("User searched assets");
+		if (sysController) sysController->update_usage_log("User searched assets");
     return true;
 }
 
@@ -120,7 +120,7 @@ bool Assets::viewStudentAssets(const std::string& studentEmail) {
 
 		if(email == "back") {
 			cout << "Action cancelled, returning to menu" << endl;
-			sysController->update_usage_log("Action cancelled");
+			if (sysController) sysController->update_usage_log("Action cancelled");
 			return false;
 		}
 
@@ -142,7 +142,7 @@ bool Assets::viewStudentAssets(const std::string& studentEmail) {
             if (account["reservations"].empty()) {
                 cout << "Student " << account["firstName"] << " " << account["lastName"] 
                      << " has no assets checked out." << endl;
-								sysController->update_usage_log("User viewed student assets");
+								if (sysController) sysController->update_usage_log("User viewed student assets");
                 return true;
             }
 
@@ -165,7 +165,7 @@ bool Assets::viewStudentAssets(const std::string& studentEmail) {
         cout << "Student with email " << email << " not found." << endl;
         return false;
     }
-		sysController->update_usage_log("User viewed student assets");
+		if (sysController) sysController->update_usage_log("User viewed student assets");
     return true;
 }
 
@@ -256,7 +256,7 @@ bool Assets::listAssets(){
 		cout << "Description: " << asset["description"] << endl;
 		cout << "-----------------------------------" << endl;
 	}
-	sysController->update_usage_log("User listed all assets");
+	if (sysController) sysController->update_usage_log("User listed all assets");
 	return true;
 }
 
@@ -285,7 +285,7 @@ bool Assets::removeAsset(){
 
 		if (input == "back") {
 			cout << "Remove Operation Cancelled" << endl;
-			sysController->update_usage_log("Remove asset cancelled");
+			if (sysController) sysController->update_usage_log("Remove asset cancelled");
 			return false;
 		}
 
@@ -345,7 +345,7 @@ bool Assets::removeAsset(){
 	outFile.close();
 
 	cout << "\nAsset deleted successfully!\n";
-	sysController->update_usage_log("User deleted an asset");
+	if (sysController) sysController->update_usage_log("User deleted an asset");
 	return true;
 }
 
@@ -367,7 +367,7 @@ bool Assets::addAsset(){
 
 	if(name == "back") {
 			cout << "Add Operation Cancelled" << endl;
-			sysController->update_usage_log("Add asset cancelled");
+			if (sysController) sysController->update_usage_log("Add asset cancelled");
 			return false;
 	}
 
@@ -451,7 +451,7 @@ bool Assets::addAsset(){
 	ofstream outFile(assetsFile);
 	outFile << setw(4) << assetFile << endl;
 	outFile.close();
-	sysController->update_usage_log("User created an asset");
+	if (sysController) sysController->update_usage_log("User created an asset");
 	return true;
 }
 
@@ -477,7 +477,7 @@ bool Assets::updateAsset(){
 
 	if(input == "back") {
 			cout << "Update Operation Cancelled" << endl;
-			sysController->update_usage_log("Update asset cancelled");
+			if (sysController) sysController->update_usage_log("Update asset cancelled");
 			return false;
 	}
 
@@ -602,7 +602,7 @@ bool Assets::updateAsset(){
 	outFile.close();
 
 	cout << "\nAsset updated successfully!\n";
-	sysController->update_usage_log("User updated an asset");
+	if (sysController) sysController->update_usage_log("User updated an asset");
 	return true;
 }
 
@@ -651,7 +651,7 @@ bool Assets::return_asset(const std::string& email) {
 
 		if(assetID == 0) {
 			cout << "Return asset cancelled" << endl;
-			sysController->update_usage_log("Return asset cancelled");
+			if (sysController) sysController->update_usage_log("Return asset cancelled");
 			return false;
 		}
 
@@ -674,7 +674,7 @@ bool Assets::return_asset(const std::string& email) {
     }
 
     if (status == "overdue") {
-        sysController->update_usage_log("OVERDUE RETURN: User " + email + 
+        if (sysController) sysController->update_usage_log("OVERDUE RETURN: User " + email + 
                                        " returned Asset ID " + to_string(assetID) + 
                                        " (" + assetName + ")" +
                                        " - Was due: " + endDate);
@@ -724,7 +724,7 @@ bool Assets::return_asset(const std::string& email) {
     outAssetFile.close();
 
     cout << "Asset returned successfully!" << endl;
-		sysController->update_usage_log("User returned an asset");
+		if (sysController) sysController->update_usage_log("User returned an asset");
     return true;
 }
 
@@ -790,7 +790,7 @@ bool Assets::decrementConsumable(int assetID, int amount, bool &becameLow) {
 	if (!outFile.is_open()) return false;
 	outFile << std::setw(4) << assets << std::endl;
 	outFile.close();
-	sysController->update_usage_log("Consumable amount decrememted");
+	if (sysController) sysController->update_usage_log("Consumable amount decrememted");
 	return true;
 }
 bool Assets::incrementSeatCount(int assetID, int amount) {
@@ -821,7 +821,7 @@ bool Assets::incrementSeatCount(int assetID, int amount) {
 	if (!outFile.is_open()) return false;
 	outFile << std::setw(4) << assets << std::endl;
 	outFile.close();
-	sysController->update_usage_log("Seat count incremented");
+	if (sysController) sysController->update_usage_log("Seat count incremented");
 	return true;
 }
 
@@ -855,7 +855,7 @@ bool Assets::setLowStockThreshold(int assetID, int threshold) {
 	if (!outFile.is_open()) return false;
 	outFile << std::setw(4) << assets << std::endl;
 	outFile.close();
-	sysController->update_usage_log("Low threshold set");
+	if (sysController) sysController->update_usage_log("Low threshold set");
 	return true;
 }
 
@@ -904,6 +904,6 @@ bool Assets::adjustSeatUsage(int assetID, int amount, bool &becameFull) {
 	if (!outFile.is_open()) return false;
 	outFile << std::setw(4) << assets << std::endl;
 	outFile.close();
-	sysController->update_usage_log("Seat usage adjusted");
+	if (sysController) sysController->update_usage_log("Seat usage adjusted");
 	return true;
 }

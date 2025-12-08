@@ -9,7 +9,6 @@
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Documents.h"
 #include "../resources/Dashboard.h"
-static Assets a;
 using namespace std;
 using json = nlohmann::json;
 
@@ -88,7 +87,7 @@ void LabAssetManager::main(){
 			}
 		}
 		else if (choice == "5") {
-			if(a.addAsset()) {
+			if(Assets(system).addAsset()) {
 				cout << "Asset added successfully." << endl;
 				system->update_usage_log("Asset added by Lab Asset Manager");
 			} else {
@@ -96,7 +95,7 @@ void LabAssetManager::main(){
 			}
 		}
 		else if (choice == "6") {
-			if(a.updateAsset()) {
+			if(Assets(system).updateAsset()) {
 				cout << "Asset updated successfully." << endl;
 				system->update_usage_log("Asset updated by Lab Asset Manager");
 			} else {
@@ -104,7 +103,7 @@ void LabAssetManager::main(){
 			}
 		}
 		else if (choice == "7") {
-			if(a.removeAsset()) {
+			if(Assets(system).removeAsset()) {
 				cout << "Asset removed successfully." << endl;
 				system->update_usage_log("Asset removed by Lab Asset Manager");
 			} else {
@@ -112,7 +111,7 @@ void LabAssetManager::main(){
 			}
 		}
 		else if (choice == "8") {
-			if(a.listAssets()) {
+			if(Assets(system).listAssets()) {
 				cout << "Assets listed successfully." << endl;
 			} else {
 				cout << "Failed to list assets." << endl;
@@ -135,6 +134,9 @@ void LabAssetManager::main(){
 			viewLogs();
 		}
 		else if (choice == "12") {
+			viewAuditLog();
+		}
+		else if (choice == "13") {
 			if (setConsumableThreshold()){
 				cout << "Threshold updated." << endl;
 				system->update_usage_log("Low-stock threshold updated by Lab Asset Manager");
@@ -142,12 +144,12 @@ void LabAssetManager::main(){
 				cout << "Failed to update threshold." << endl;
 			}
 		}
-		else if (choice == "13") {
-			if (!a.searchAssets("", "")) {
+		else if (choice == "14") {
+			if (!Assets(system).searchAssets("", "")) {
 				cout << "Failed to search/filter assets." << endl;
 			}
 		}
-		else if (choice == "14") {
+		else if (choice == "15") {
 			if(displayDashboard()) {
 				cout << "Dashboard displayed successfully." << endl;
 			} else {
@@ -191,7 +193,7 @@ bool LabAssetManager::setConsumableThreshold() {
 	cin >> threshold;
 	cin.ignore();
 
-	bool ok = a.setLowStockThreshold(assetID, threshold);
+	bool ok = Assets(system).setLowStockThreshold(assetID, threshold);
 	if (ok) {
 		if (system) system->update_usage_log("Low-stock threshold updated for asset ID " + to_string(assetID));
 	}
@@ -479,6 +481,56 @@ bool LabAssetManager::viewLogs() {
 		cerr << "Error reading JSON: " << e.what() << endl;
 		return false;
 	}
+	inFile.close();
+
+	if (!logs.contains("usage") || !logs["usage"].is_array()) {
+		cout << "No reservation logs found." << endl;
+		return true;
+	}
+
+	const auto& usage = logs["usage"];
+
+	if (usage.empty()) {
+		cout << "No reservation logs found." << endl;
+		return true;
+	}
+
+	cout << "\n===== RESERVATION LOGS =====\n" << endl;
+	cout << left << setw(25) << "User Email" << setw(10) << "Asset ID" << setw(20) << "Start Date" << setw(20) << "End Date" << setw(15) << "Logged At" << "\n";
+	cout << string(90, '-') << "\n";
+
+	for (const auto& u : usage) {
+		string email = u.contains("email") ? u["email"].get<string>() : "(unknown)";
+		string assetid = u.contains("assetID") ? to_string(u["assetID"].get<int>()) : "(unknown)";
+		string start = u.contains("start") ? u["start"].get<string>() : "(unknown)";
+		string end = u.contains("end") ? u["end"].get<string>() : "(unknown)";
+		string logged = u.contains("loggedAt") ? u["loggedAt"].get<string>() : "(unknown)";
+		
+		cout << left << setw(25) << email << setw(10) << assetid << setw(20) << start << setw(20) << end << setw(15) << logged << "\n";
+	}
+
+	cout << "\nPress Enter to continue...";
+	cin.ignore();
+
+	return true;
+}
+
+bool LabAssetManager::viewAuditLog() {
+	json logs;
+	ifstream inFile(usageLogFile);
+
+	if (!inFile.is_open()) {
+		cerr << "Error: Could not open " << usageLogFile << endl;
+		return false;
+	}
+
+	try {
+		inFile >> logs;
+	} catch (const exception& e) {
+		cerr << "Error reading JSON: " << e.what() << endl;
+		return false;
+	}
+	inFile.close();
 
 	if (!logs.contains("events") || !logs["events"].is_array()) {
 		cerr << "Error: JSON does not contain 'events' array.\n";
@@ -488,67 +540,61 @@ bool LabAssetManager::viewLogs() {
 	const auto& events = logs["events"];
 
 	if (events.empty()) {
-		cout << "No logs found." << endl;
+		cout << "No audit log entries found." << endl;
 		return true;
 	}
 
-	// We'll display two kinds of entries if present:
-	// - system events (key: "events" or a top-level array of event objects)
-	// - usage entries (key: "usage") created when reservations are made
+	// Prompt for filtering options
+	cout << "\n===== AUDIT LOG VIEWER =====\n" << endl;
+	cout << "Would you like to filter logs? (y/n): ";
+	string filterChoice;
+	getline(cin, filterChoice);
+	
+	string actionFilter = "";
+	string actorFilter = "";
 
-	// Helper to find an array by key or top-level
-	auto find_array_by_key = [&](const json& j, const string& key) -> const json* {
-		if (j.is_object() && j.contains(key) && j[key].is_array()) return &j[key];
-		if (j.is_object()) {
-			for (auto it = j.begin(); it != j.end(); ++it) {
-				if (it.key() == key && it.value().is_array()) return &it.value();
-			}
-		}
-		return nullptr;
-	};
-
-	const json* eventsPtr = nullptr;
-	// Prefer explicit "events" array
-	eventsPtr = find_array_by_key(logs, "events");
-
-	// Print events if found
-	if (eventsPtr) {
-		cout << "Listing system events:\n" << endl;
-		for (const auto& ev : *eventsPtr) {
-			string e = ev.contains("event") ? ev["event"].get<string>() : "(no event)";
-			string ts = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "(no timestamp)";
-			cout << "Event: " << e << endl;
-			cout << "Timestamp: " << ts << endl;
-		}
-	} else {
-		cout << "No system events found." << endl;
+	if (filterChoice == "y" || filterChoice == "Y") {
+		cout << "Enter action keyword to filter (or leave blank for no filter): ";
+		getline(cin, actionFilter);
+		
+		cout << "Enter actor/email to filter (or leave blank for no filter): ";
+		getline(cin, actorFilter);
+		
+		// Convert to lowercase for case-insensitive matching
+		for (auto& c : actionFilter) c = tolower(c);
+		for (auto& c : actorFilter) c = tolower(c);
 	}
 
-	// Now display usage logs (reservations)
-	const json* usagePtr = find_array_by_key(logs, "usage");
-	if (!usagePtr && logs.is_object() && logs.contains("usage") && logs["usage"].is_array()) usagePtr = &logs["usage"];
+	cout << "\n===== AUDIT LOG =====\n" << endl;
+	cout << left << setw(60) << "Event" << setw(25) << "Timestamp" << "\n";
+	cout << string(85, '-') << "\n";
 
-	if (usagePtr && !usagePtr->empty()) {
-		cout << "\nListing usage logs (reservations):\n" << endl;
-		for (const auto& u : *usagePtr) {
-			string email = u.contains("email") ? u["email"].get<string>() : "(no email)";
-			string start = u.contains("start") ? u["start"].get<string>() : "(no start)";
-			string end = u.contains("end") ? u["end"].get<string>() : "(no end)";
-			string logged = u.contains("loggedAt") ? u["loggedAt"].get<string>() : "(no loggedAt)";
-			string assetid = u.contains("assetID") ? to_string(u["assetID"].get<int>()) : "(no assetID)";
-			cout << "User Email: " << email << endl;
-			cout << "Asset ID: " << assetid << endl;
-			cout << "Start: " << start << endl;
-			cout << "End: " << end << endl;
-			cout << "Logged At: " << logged << endl;
-			cout << "-----------------------------------" << endl;
-			
+	int matchCount = 0;
+	for (const auto& ev : events) {
+		string eventStr = ev.contains("event") ? ev["event"].get<string>() : "";
+		string timestamp = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "";
+
+		// Apply filters
+		string eventLower = eventStr;
+		for (auto& c : eventLower) c = tolower(c);
+
+		bool actionMatch = actionFilter.empty() || eventLower.find(actionFilter) != string::npos;
+		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
+
+		if (actionMatch && actorMatch) {
+			cout << left << setw(60) << eventStr.substr(0, 59) << setw(25) << timestamp << "\n";
+			matchCount++;
 		}
-			cout << "Press Enter to continue...";
-			cin.ignore();
-	} else {
-		cout << "\nNo usage logs found." << endl;
 	}
+
+	if (matchCount == 0) {
+		cout << "No audit log entries matching the filter criteria.\n";
+	} else {
+		cout << "\n" << matchCount << " audit log entries displayed.\n";
+	}
+
+	cout << "\nPress Enter to continue...";
+	cin.ignore();
 
 	return true;
 }
