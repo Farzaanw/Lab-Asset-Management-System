@@ -5,7 +5,7 @@
 
 //ASSETS
 //reserve an asset, returns a bool
-bool Reservations::reserveAsset(const std::string& email) {
+int Reservations::reserveAsset(const std::string& email) {
     cout << "--- Reserve Asset ---\n" << endl;
     
     // Get all available assets
@@ -14,7 +14,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (!inFile.is_open()) {
         cerr << "Error: Could not open assets.json" << endl;
         sysController->update_usage_log("Error opening json file");
-        return false; 
+        return -1; 
     }
     inFile >> assets;
     inFile.close();
@@ -25,7 +25,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (!accountsIn.is_open()) {
         cerr << "Error: Could not open accounts.json" << endl;
         sysController->update_usage_log("Error opening json file");
-        return false;
+        return -1;
     }
     accountsIn >> accounts;
     accountsIn.close();
@@ -75,11 +75,10 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (!hasAvailable) {
         cout << "No assets currently available for reservation." << endl;
         sysController->update_usage_log("Reservation canceled, no available assets");
-        return false;
+        return -1;
     }
 
     cout << "\n-----------------------------------\n" << endl;
-    
     int assetID;
     string startInput, endInput, reason, startDate, endDate;
     
@@ -90,7 +89,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if(assetID == 0) {
         cout << "Reserve asset cancelled" << endl;
         sysController->update_usage_log("Reserve asset cancelled");
-        return false;
+        return -1;
 	}
 
     //find the right asset
@@ -104,7 +103,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (!targetAsset) {
         cout << "Error: Asset ID " << assetID << " not found!" << endl;
         sysController->update_usage_log("Reservation canceled, asset not found");
-        return false;
+        return -1;
     }
 
     //check if its available
@@ -113,7 +112,7 @@ bool Reservations::reserveAsset(const std::string& email) {
         cout << "Error: Asset is not available!" << endl;
         cout << "Current Status: " << status << endl;
         sysController->update_usage_log("Reservation canceled, asset not availble");
-        return false;
+        return -1;
     }
 
     // Get reservation dates
@@ -136,7 +135,7 @@ bool Reservations::reserveAsset(const std::string& email) {
         cout << "Error: Invalid date format!" << endl;
         sysController->update_usage_log("Reservation canceled, invaild date format");
 
-        return false;
+        return -1;
     }
 
     //convert to actual time and date
@@ -146,7 +145,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     if (startTimeT == -1 || endTimeT == -1) {
         cout << "Error: Invalid date/time values!" << endl;
         sysController->update_usage_log("Reservation canceled, invalid date/time");
-        return false;
+        return -1;
     }   
 
     std::ostringstream startOut, endOut;
@@ -163,6 +162,11 @@ bool Reservations::reserveAsset(const std::string& email) {
             break;
         }
     }
+
+    // -----------------------------------------
+
+    // MAKING RESERVATION OR SENDING FOR APPROVAL
+
     // -----------------------------------------
     
     // Get user's clerance level (ADDED HERE)
@@ -171,8 +175,9 @@ bool Reservations::reserveAsset(const std::string& email) {
     // Get asset clearance level
     string assetClearanceLevel = (*targetAsset)["clearanceLevel"].get<string>();
     
-    // If user's clerance is lower than asset's, require reason (SEND REQUEST TO LAB MANAGER!!!!!!!!!1)
+    // USER NOT MEET CLEARANCE LEVEL -> REQUIRES APPROVAL
     if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel)) {
+        cout << "...You do not meet the clearance level required to reserve this asset." << endl;
         cout << "Enter reason for reservation: ";
         getline(cin, reason);
         cout << "This asset requires approval. You will be notified once reviewed." << endl;
@@ -199,49 +204,43 @@ bool Reservations::reserveAsset(const std::string& email) {
         if (!userFound) {
             cout << "Error: User account not found!" << endl;
             sysController->update_usage_log("Error: Account not found");
-            return false;
+            return -1;
         }
 
         // Save updated accounts
         ofstream accountsOut("../../data/accounts.json");
         accountsOut << setw(4) << accounts << endl;
         accountsOut.close();
-
         sysController->update_usage_log("Reservation pending, requires approval");
-        return true;
 
-        // Notify Lab Manager (TODO: implement notification system)
-        // cout << "NEED TO IMPLMENT ---- Notification sent to Lab Manager for approval." << endl;
-        // ---------------- NOTIFY ALL LAB ASSET MANAGERS ----------------
+        // ----- SEND NOTIFICATION TO ALL LAB ASSET MANAGERS -----
+        std::cout << "Sending notification to Lab Asset Manager for approval..." << std::endl;
+        Notifications notif;  // Create notification object
+
+        // Build notification JSON payload
+        json notifData = {
+            {"type", "reservation_request"},
+            {"message", "Reservation request requires approval for asset: " + 
+                        (*targetAsset)["name"].get<string>() +
+                        " (ID: " + std::to_string(assetID) + ") by user: " + email},
+            {"reason", reason},
+            {"timeStamp", startDate},
+            {"requester", email},
+            {"assetID", assetID},
+            {"startDate", startDate},
+            {"endDate", endDate}
+        };
+
+        // Call existing notification method
+        notif.send_notifications("", "lab asset manager", notifData);   // sends notification to all lab asset managers
+        sysController->update_usage_log("Notification sent to Lab Asset Manager for approval for asset ID: " + std::to_string(assetID) + " by user: " + email);
+        std::cout << "Notification sent." << std::endl;
+        return 2; // Indicate that approval is needed
     }
 
-    // needs to send approval request to Lab Asset Manager
-    Notifications notif;  // Create notification object
-
-    // Build notification JSON payload
-    json notifData = {
-        {"type", "reservation_request"},
-        {"message", "Reservation request requires approval for asset: " + 
-                     (*targetAsset)["name"].get<string>() +
-                     " (ID: " + std::to_string(assetID) + ") by user: " + email},
-        {"timeStamp", startDate},
-        {"requester", email},
-        {"assetID", assetID},
-        {"startDate", startDate},
-        {"endDate", endDate}
-    };
-
-    // Call existing notification method
-    notif.send_notifications("", "lab asset manager", notifData);
-
-    cout << "Notification sent to all Lab Asset Managers for approval." << endl;
-
-// ------------------------------------------------------------------------------------
-
-        // return false; // Indicate that approval is needed
-    
-    
-    // ELSE --- Create reservation entry
+    // ------------------------------------------------------------------------------------   
+    // ELSE --- APPROVE RESERVATION IMMEDIATELY
+    std::cout << "You meet the clearance level required to reserve this asset." << std::endl;
     json reservation = {
         {"assetID", assetID},
         {"assetName", (*targetAsset)["name"]},
@@ -260,7 +259,6 @@ bool Reservations::reserveAsset(const std::string& email) {
             break;
         }
     }
-
     if (!userFound) {
         cout << "Error: User account not found!" << endl;
         sysController->update_usage_log("Error: Account not found");
@@ -288,18 +286,11 @@ bool Reservations::reserveAsset(const std::string& email) {
         outAssetFile << setw(4) << assets << endl;
         outAssetFile.close();
     }
-    
-    /*
-    // Append usage log entry for this reservation
-    if (!ResearchStudent::appendUsageLog(email, assetID, startDate, endDate)) {
-        cerr << "Warning: Failed to write usage log entry." << endl;
-    }
-    */
 
    sysController->update_usage_log("Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate);
 
     cout << "Asset reserved successfully!" << endl;
-    return true;
+    return 0;
 }
 
 //Reserve multiple assets at once

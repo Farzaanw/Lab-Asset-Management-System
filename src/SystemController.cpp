@@ -9,6 +9,7 @@
 #include <limits>
 #include <cctype>
 #include <time.h>
+#include <functional>
 
 // needed for lockdown upon incorrect user login
 #ifdef _WIN32
@@ -320,10 +321,18 @@ bool SystemController::load_json_safe(const std::string& path, json& out) {
 void SystemController::load_accounts() {
     std::string path = DATA_DIR + "accounts.json";
     if (!load_json_safe(path, roleLoginJson)) {
-        // initialize as empty array, not object
-        roleLoginJson = json::array();
-        std::ofstream out(path);
-        if (out.is_open()) out << roleLoginJson.dump(4);
+        // Only initialize if file truly doesn't exist
+        std::ifstream testFile(path);
+        if (!testFile.good()) {
+            // File doesn't exist, create it
+            roleLoginJson = json::array();
+            std::ofstream out(path);
+            if (out.is_open()) out << roleLoginJson.dump(4);
+        } else {
+            // File exists but couldn't be parsed - don't overwrite!
+            std::cerr << "Warning: accounts.json exists but couldn't be loaded. Not overwriting.\n";
+            roleLoginJson = json::array(); // Use empty array in memory only
+        }
     }
 }
 
