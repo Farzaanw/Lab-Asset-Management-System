@@ -209,6 +209,7 @@ bool Assets::viewAssets(const std::string& email) {
                     hasAssets = true;
                 }
             }
+
             break;
         }
     }

@@ -14,8 +14,10 @@
 #include "ResearchStudent.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
+#include "../resources/Notifications.h"
 static Assets* a = nullptr;
 static Reservations* r = nullptr;
+static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
@@ -53,10 +55,11 @@ void ResearchStudent::main() {
         cout << "3. View Available Assets" << endl;
         cout << "4. Search/Filter Assets" << endl;
         cout << "5. View My Reservations" << endl;
-        cout << "6. Cancel Reservation" << endl;
-        //cout << "7. Submit Usage Feedback" << endl;
-        //cout << "8. Update Profile" << endl;
-        cout << "7. Logout" << endl;
+        cout << "6. View Notifications" << endl;
+        cout << "7. Cancel Reservation" << endl;
+        //cout << "8. Submit Usage Feedback" << endl;
+        //cout << "9. Update Profile" << endl;
+        cout << "8. Logout" << endl;
         cout << "Please enter your choice: ";
         
         string choice;
@@ -65,9 +68,10 @@ void ResearchStudent::main() {
 
         if (choice == "1") {
             string email = getEmail();
-            if (r->reserveAsset(email) == 0){
+            int result = r->reserveAsset(email);
+            if (result == 0){
                 cout << "Asset officially reserved." << endl;
-            } else if (r->reserveAsset(email) == 2) {
+            } else if (result == 2) {
                 cout << "Asset reservation requires approval. Request sent to Lab Manager." << endl;
             }
             else {
@@ -89,6 +93,9 @@ void ResearchStudent::main() {
             r->viewMyReservations(email);
         }
         else if (choice == "6") {
+            n.view_notifications(getEmail());      
+        }
+        else if (choice == "7") {
             string email = getEmail();
             r->cancelReservation(email); // Will prompt inside function
         }
@@ -113,7 +120,7 @@ void ResearchStudent::main() {
             updateUserProfile(newEmail);
         }
         */
-        else if (choice == "7") {
+        else if (choice == "8") {
             cout << "Logging out of Research Student." << endl;
             break;
         }

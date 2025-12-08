@@ -183,14 +183,27 @@ int Reservations::reserveAsset(const std::string& email) {
         cout << "This asset requires approval. You will be notified once reviewed." << endl;
 
         // Create reservation entry with "pending" status
+        // have asset be incremented from previous asset id
+        int newReservationID = 1;
+        if (!(*targetUser)["reservations"].empty()) {
+            newReservationID = (*targetUser)["reservations"].back()["reservationID"].get<int>() + 1;
+        }
         json reservation = {
-            {"assetID", assetID},
+            {"reservationID", newReservationID},
+            {"assetID", assetID},  
             {"assetName", (*targetAsset)["name"]},
             {"startDate", startDate},
             {"endDate", endDate},
             {"status", "pending"},
             {"reason", reason}
         };
+
+        // update the asset's operational status to "pending"
+        (*targetAsset)["operationalStatus"] = "pending";
+        ofstream outAssetFile("../../data/assets.json");
+        outAssetFile << setw(4) << assets << endl;
+        outAssetFile.close();
+        ////////////////////////////////////////////////////
 
         // Update user's reservations in accounts.json
         bool userFound = false;
@@ -232,8 +245,8 @@ int Reservations::reserveAsset(const std::string& email) {
         };
 
         // Call existing notification method
-        notif.send_notifications("", "lab asset manager", notifData);   // sends notification to all lab asset managers
-        sysController->update_usage_log("Notification sent to Lab Asset Manager for approval for asset ID: " + std::to_string(assetID) + " by user: " + email);
+        notif.send_notifications("", "lab manager", notifData);   // sends notification to all lab managers
+        sysController->update_usage_log("Notification sent to Lab Manager for approval for asset ID: " + std::to_string(assetID) + " by user: " + email);
         std::cout << "Notification sent." << std::endl;
         return 2; // Indicate that approval is needed
     }

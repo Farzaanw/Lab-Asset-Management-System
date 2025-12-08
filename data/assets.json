@@ -11,7 +11,7 @@
     },
     {
         "category": "consumable",
-        "clearanceLevel": "1",
+        "clearanceLevel": "3",
         "condition": "good",
         "description": "used for 3D printers",
         "id": 2,

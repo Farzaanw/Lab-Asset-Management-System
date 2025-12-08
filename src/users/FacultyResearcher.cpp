@@ -12,8 +12,10 @@
 #include "FacultyResearcher.h"
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
+#include "../resources/Notifications.h"
 static Assets* a = nullptr;
 static Reservations* r = nullptr;
+static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
@@ -52,10 +54,11 @@ void FacultyResearcher::main() {
         cout << "5. Search/Filter Assets" << endl;
         cout << "6. View My Reservations" << endl;
         cout << "7. Cancel Reservation" << endl;
-        cout << "8. View Student Reservations" << endl;
-        cout << "9. View Student Usage" << endl;
-        cout << "10. Generate Usage Report" << endl;
-        cout << "11. Logout" << endl;
+        cout << "8. View Notifications" << endl;
+        cout << "9. View Student Reservations" << endl;
+        cout << "10. View Student Usage" << endl;
+        cout << "11. Generate Usage Report" << endl;
+        cout << "12. Logout" << endl;
         cout << "Please enter your choice: ";
         
         string choice;
@@ -64,9 +67,10 @@ void FacultyResearcher::main() {
 
         if (choice == "1") {
             string email = getEmail();
-            if (r->reserveAsset(email) == 0){
+            int result = r->reserveAsset(email);
+            if (result == 0){
                 cout << "Asset officially reserved." << endl;
-            } else if (r->reserveAsset(email) == 2) {
+            } else if (result == 2) {
                 cout << "Asset reservation requires approval. Request sent to Lab Manager." << endl;
             }
             else {
@@ -98,15 +102,18 @@ void FacultyResearcher::main() {
         }
 
         else if (choice == "8") {
-            a->viewStudentAssets("");
+            n.view_notifications(getEmail());
         }
         else if (choice == "9") {
-            viewStudentUsage();
+            a->viewStudentAssets("");
         }
         else if (choice == "10") {
-            generateUsageReport(0);
+            viewStudentUsage();
         }
         else if (choice == "11") {
+            generateUsageReport(0);
+        }
+        else if (choice == "12") {
             cout << "Logging out of Faculty Researcher." << endl;
             break;
         }

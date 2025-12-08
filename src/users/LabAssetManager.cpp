@@ -177,7 +177,7 @@ void LabAssetManager::main(){
 				cout << "Failed to list reservations." << endl;
 			}
 		} 	else if (choice == "18") {
-			n.view_notifications("LAMemail");
+			n.view_notifications(getEmail());                     
 		}
 
 		else if (choice == "19") { // Upload and Attach
@@ -800,3 +800,68 @@ bool LabAssetManager::cancelReservation() {
 	system->update_usage_log("Reservation(s) for Asset ID " + to_string(assetID) + " canceled. Reason: " + reason);
     return true;
 }
+
+// ()) {
+// 		cout << "No assets found." << endl;
+// 		return true;
+// 	}
+
+// 	cout << "Listing all assets:\n" << endl;
+// 	for (const auto& asset : assets) {
+// 		cout << "ID: " << asset["id"] << endl;
+// 		cout << "Name: " << asset["name"] << endl;
+// 		cout << "Category: " << asset["category"] << endl;
+// 		cout << "Operational Status: " << asset["operationalStatus"] << endl;
+// 		cout << "Condition: " << asset["condition"] << endl;
+// 		cout << "Location: " << asset["location"] << endl;
+// 		cout << "Clearance Level: " << asset["clearanceLevel"] << endl;
+// 		if (asset["category"] == "consumable") {
+// 			cout << "Quantity On Hand (grams): " << asset["quantityOnHand(grams)"] << endl;
+// 			cout << "Minimum Threshold (grams): " << asset["minimumThreshold(grams)"] << endl;
+// 		}
+// 		cout << "Description: " << asset["description"] << endl;
+// 		cout << "-----------------------------------" << endl;
+// 	}
+// 	return true;
+// }
+
+// bool LabAssetManager::viewLogs() {
+// 	json logs;
+// 	ifstream inFile(usageLogFile);
+
+// 	if (!inFile.is_open()) {
+// 		cerr << "Error: Could not open " << usageLogFile << endl;
+// 		return false;
+// 	}
+
+// 	try {
+// 		inFile >> logs;
+// 	} catch (const std::exception& e) {
+// 		cerr << "Error reading JSON: " << e.what() << endl;
+// 		return false;
+// 	}
+
+// 	if (!logs.contains("events") || !logs["events"].is_array()) {
+// 		cerr << "Error: JSON does not contain 'events' array.\n";
+// 		return false;
+// 	}
+
+// 	const auto& events = logs["events"];
+
+// 	if (events.empty()) {
+// 		cout << "No logs found." << endl;
+// 		return true;
+// 	}
+
+// 	cout << "Listing all logs:\n" << endl;
+
+// 	for (const auto& log : events) {
+// 		cout << "Event: " << log.value("event", "UNKNOWN") << endl;
+// 		cout << "Timestamp: " << log.value("timestamp", "UNKNOWN") << endl;
+// 		cout << endl;
+// 	}
+
+// 	return true;
+// }
+
+
