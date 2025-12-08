@@ -7,7 +7,7 @@
 #include <ctime>
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
-
+#include "../resources/Dashboard.h"
 using namespace std;
 using json = nlohmann::json;
 
@@ -24,7 +24,8 @@ void LabManager::main(){
 		cout << endl << "---Lab Manager Main Menu---" << endl;
 		cout << "1. List Policies" << endl;
 		cout << "2. Change Policies" << endl;
-		cout << "3. Logout" << endl;
+		cout << "3. Display Dashboard" << endl;
+		cout << "4. Logout" << endl;
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
@@ -37,6 +38,9 @@ void LabManager::main(){
 			changePolicies();
 		}
 		else if (choice == "3") {
+			displayDashboard();
+		}
+		else if (choice == "4") {
 			cout << "Exiting Lab Manager." << endl;
 			break;
 		}
