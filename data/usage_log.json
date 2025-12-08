@@ -1263,6 +1263,150 @@
         {
             "event": "Lab Manager labmanageremail viewed notifications.",
             "timestamp": "2025-12-08 02:40:04"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:05:27"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 13:05:40"
+        },
+        {
+            "event": "Reservation canceled, invaild date format",
+            "timestamp": "2025-12-08 13:05:57"
+        },
+        {
+            "event": "Reservation pending, requires approval",
+            "timestamp": "2025-12-08 13:06:16"
+        },
+        {
+            "event": "Notification sent to Lab Manager for approval for asset ID: 1 by user: studentemail",
+            "timestamp": "2025-12-08 13:06:16"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 13:06:40"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:06:43"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2020-02-02 00:00:00",
+            "timestamp": "2025-12-08 13:06:44"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-08 13:07:13"
+        },
+        {
+            "event": "Lab Manager labmanageremail viewed notifications.",
+            "timestamp": "2025-12-08 13:08:39"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:10:18"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2020-02-02 00:00:00",
+            "timestamp": "2025-12-08 13:10:20"
+        },
+        {
+            "event": "Failed login attempt for email: studentpass",
+            "timestamp": "2025-12-08 13:10:28"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 13:10:54"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:14:21"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 13:14:30"
+        },
+        {
+            "event": "Reservation pending, requires approval",
+            "timestamp": "2025-12-08 13:14:42"
+        },
+        {
+            "event": "Notification sent to Lab Manager for approval for asset ID: 1 by user: studentemail",
+            "timestamp": "2025-12-08 13:14:42"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 13:14:46"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:14:52"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2020-02-02 00:00:00",
+            "timestamp": "2025-12-08 13:14:54"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-08 13:14:59"
+        },
+        {
+            "event": "Lab Manager labmanageremail viewed notifications.",
+            "timestamp": "2025-12-08 13:15:03"
+        },
+        {
+            "event": "Lab Manager labmanageremail viewed notifications.",
+            "timestamp": "2025-12-08 13:15:12"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 13:17:03"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:22:45"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 13:22:55"
+        },
+        {
+            "event": "Reservation pending, requires approval",
+            "timestamp": "2025-12-08 13:23:06"
+        },
+        {
+            "event": "Notification sent to Lab Manager for approval for asset ID: 1 by user: studentemail",
+            "timestamp": "2025-12-08 13:23:06"
+        },
+        {
+            "event": "User viewed available assets",
+            "timestamp": "2025-12-08 13:23:12"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 13:23:16"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 13:23:19"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 1 (Celestron EdgeHD 800 Microscope) - End Date: 2020-02-02 00:00:00",
+            "timestamp": "2025-12-08 13:23:20"
+        },
+        {
+            "event": "User logged in: labmanageremail",
+            "timestamp": "2025-12-08 13:23:28"
+        },
+        {
+            "event": "Lab Manager labmanageremail viewed notifications.",
+            "timestamp": "2025-12-08 13:23:38"
+        },
+        {
+            "event": "Lab Manager labmanageremail viewed notifications.",
+            "timestamp": "2025-12-08 13:23:56"
         }
     ]
 }

@@ -1,12 +1,3 @@
-# OS Detection
-ifeq ($(OS),Windows_NT)
-	RM = del /Q
-	FIXPATH = $(subst /,\\,$1)
-else
-	RM = rm -f
-	FIXPATH = $1
-endif
-
 # Compiler
 CXX = g++
 CXXFLAGS = -std=c++17 -I.. -I../library -I../users -O2
@@ -36,8 +27,8 @@ $(TARGET): $(OBJ)
 
 # Remove all compiled files
 clean:
-	$(RM) $(call FIXPATH,$(TARGET)) $(call FIXPATH,$(OBJ))
+	rm -f $(TARGET) $(OBJ)
 
 # Run the program
 run: $(TARGET)
-	$(call FIXPATH,./$(TARGET))
+	./$(TARGET)

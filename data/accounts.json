@@ -5,14 +5,24 @@
         "id": 1,
         "notifications": [],
         "password": "studentpass",
-        "reservations": [],
+        "reservations": [
+            {
+                "assetID": 1,
+                "assetName": "Celestron EdgeHD 800 Microscope",
+                "endDate": "2020-02-02 00:00:00",
+                "reason": "PPPPPPPPPP",
+                "reservationID": 1,
+                "startDate": "2020-02-02 00:00:00",
+                "status": "reserved"
+            }
+        ],
         "role": "research student"
     },
     {
         "clearanceLevel": "2",
         "email": "facultyemail",
         "id": 2,
-        "notifications": [  ],
+        "notifications": [],
         "password": "facultypass",
         "reservations": [],
         "role": "faculty researcher"
