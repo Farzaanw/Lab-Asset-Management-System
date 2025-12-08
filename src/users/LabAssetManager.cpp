@@ -44,7 +44,7 @@ void LabAssetManager::main(){
 		cout << "8. List Assets" << endl;
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
-		cout << "11. View Logs" << endl;
+		cout << "11. View Reservation Logs" << endl;
 		cout << "12. View Audit Logs" << endl;
 		cout << "13. Set Consumable Low-Stock Threshold" << endl;
 		cout << "14. Search/Filter Assets" << endl;

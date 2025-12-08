@@ -1303,6 +1303,102 @@
         {
             "event": "System shutdown",
             "timestamp": "2025-12-08 11:33:02"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 11:34:59"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-08 11:35:02"
+        },
+        {
+            "event": "Lab Asset Manager logged out",
+            "timestamp": "2025-12-08 11:35:20"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 11:35:20"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 11:35:22"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 11:35:30"
+        },
+        {
+            "event": "Reserve asset cancelled",
+            "timestamp": "2025-12-08 11:35:36"
+        },
+        {
+            "event": "User viewed their reservations",
+            "timestamp": "2025-12-08 11:35:38"
+        },
+        {
+            "event": "Reservation pending, requires approval",
+            "timestamp": "2025-12-08 11:36:52"
+        },
+        {
+            "event": "Notification sent to Lab Manager for approval for asset ID: 1 by user: studentemail",
+            "timestamp": "2025-12-08 11:36:52"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 11:36:54"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 11:36:55"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-08 11:36:58"
+        },
+        {
+            "event": "Lab Asset Manager logged out",
+            "timestamp": "2025-12-08 11:37:37"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 11:37:37"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 11:37:39"
+        },
+        {
+            "event": "User logged in: studentemail",
+            "timestamp": "2025-12-08 11:37:47"
+        },
+        {
+            "event": "Asset reserved by studentemail Asset ID: 3 Start Date: 1-12-31 00:00:00 End Date: 1-12-31 00:00:00",
+            "timestamp": "2025-12-08 11:37:56"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 11:37:59"
+        },
+        {
+            "event": "System started",
+            "timestamp": "2025-12-08 11:38:00"
+        },
+        {
+            "event": "OVERDUE: User studentemail - Asset ID 3 (V2.0 ViewMagnifier) - End Date: 1-12-31 00:00:00",
+            "timestamp": "2025-12-08 11:38:01"
+        },
+        {
+            "event": "User logged in: LAMemail",
+            "timestamp": "2025-12-08 11:38:03"
+        },
+        {
+            "event": "Lab Asset Manager logged out",
+            "timestamp": "2025-12-08 11:38:10"
+        },
+        {
+            "event": "System shutdown",
+            "timestamp": "2025-12-08 11:38:10"
         }
     ]
 }
