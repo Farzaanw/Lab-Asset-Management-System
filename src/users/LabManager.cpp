@@ -59,7 +59,7 @@ void LabManager::main(){
 		else if (choice == "4") {
 			if(changeUserPrivilege()){
 				cout << "User privilege changed successfully." << endl;
-				system->update_usage_log("Lab Manager " + getEmail() + " changed a user's privilege.");
+				// Log updated in changeUserPrivilege() no need to add here
 			} else {
 				cout << "Failed to change user privilege." << endl;
 			}
@@ -269,7 +269,12 @@ bool LabManager::changeUserPrivilege() {
             outFile << accounts.dump(4);
             outFile.close();
 
-            cout << "Privilege successfully updated!\n";
+            cout << "Privilege successfully updated! Please state the reason for this change: ";
+            string reason;
+            getline(cin, reason);
+            system->update_usage_log("Lab Manager " + getEmail() + " changed privilege of account ID " 
+									 + to_string(accountId) + " to level " + to_string(newLevel) 
+									 + ". Reason: " + reason);
             return true;
         }
     }
