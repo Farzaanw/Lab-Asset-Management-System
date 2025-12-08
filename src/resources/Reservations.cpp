@@ -269,7 +269,7 @@ bool Reservations::reserveAsset(const std::string& email) {
     }
     */
 
-   sysController->update_usage_log("Asset reserved");
+   sysController->update_usage_log("Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate);
 
     cout << "Asset reserved successfully!" << endl;
     return true;
