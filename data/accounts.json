@@ -1,10 +1,8 @@
 [
     {
-        "id": 1,
-        "email": "studentemail",
-        "password": "studentpass",
-        "role": "research student",
         "clearanceLevel": "1",
+        "email": "studentemail",
+        "id": 1,
         "notifications": [
             {
                 "message": "A research student attempted to reserve a restricted asset.",
@@ -17,6 +15,7 @@
                 "type": "restricted_reservation_attempt"
             }
         ],
+        "password": "studentpass",
         "reservations": [
             {
                 "assetID": 2,
@@ -41,33 +40,56 @@
                 "reason": "",
                 "startDate": "2027-01-01",
                 "status": "approved"
+            },
+            {
+                "assetID": 4,
+                "assetName": "gloves",
+                "endDate": "2025-12-15 00:00:00",
+                "reason": "protecting hands bruh",
+                "startDate": "2025-12-08 00:00:00",
+                "status": "pending"
+            },
+            {
+                "assetID": 4,
+                "assetName": "gloves",
+                "endDate": "2025-12-10 00:00:00",
+                "reason": "hand",
+                "startDate": "2025-12-08 00:00:00",
+                "status": "pending"
+            },
+            {
+                "assetID": 4,
+                "assetName": "gloves",
+                "endDate": "2025-12-10 00:00:00",
+                "reason": "hand",
+                "startDate": "2025-12-08 00:00:00",
+                "status": "approved"
             }
-        ]
+        ],
+        "role": "research student"
     },
     {
-        "id": 2,
-        "email": "facultyemail",
-        "password": "facultypass",
-        "role": "faculty researcher",
         "clearanceLevel": "2",
+        "email": "facultyemail",
+        "id": 2,
         "notifications": [],
-        "reservations": []
+        "password": "facultypass",
+        "reservations": [],
+        "role": "faculty researcher"
     },
     {
-        "id": 3,
+        "clearanceLevel": "",
         "email": "labmanageremail",
-        "password": "labmanagerpass",
-        "role": "lab manager",
-        "clearanceLevel": "",
+        "id": 3,
         "notifications": [],
-        "reservations": []
+        "password": "labmanagerpass",
+        "reservations": [],
+        "role": "lab manager"
     },
     {
-        "id": 4,
-        "email": "LAMemail",
-        "password": "LAMpass",
-        "role": "lab asset manager",
         "clearanceLevel": "",
+        "email": "LAMemail",
+        "id": 4,
         "notifications": [
             {
                 "message": "Multiple failed login attempts detected for email: qwe",
@@ -80,15 +102,17 @@
                 "type": "security_alert"
             }
         ],
-        "reservations": []
+        "password": "LAMpass",
+        "reservations": [],
+        "role": "lab asset manager"
     },
     {
-        "id": 5,
-        "email": "McToodle@oregonstate.edu",
-        "password": "ResearchStudent22!",
-        "role": "research student",
         "clearanceLevel": "1",
+        "email": "McToodle@oregonstate.edu",
+        "id": 5,
         "notifications": [],
-        "reservations": []
+        "password": "ResearchStudent22!",
+        "reservations": [],
+        "role": "research student"
     }
 ]

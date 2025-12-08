@@ -18,8 +18,8 @@
 
 Notifications::Notifications() {}
 
-void Notifications::send_notifications(std::string recipient, json data) const {
-    std::cout << "Notification Being Sent to " << recipient << "\n";
+void Notifications::send_notifications(std::string recipientEmail, std::string role, json data) const {
+    std::cout << "Notification Being Sent to " << recipientEmail << "\n";
     nlohmann::json accounts;
     std::ifstream inFile("../../data/accounts.json");
     if (!inFile.is_open()) {
@@ -29,15 +29,38 @@ void Notifications::send_notifications(std::string recipient, json data) const {
     inFile >> accounts;
     inFile.close();
 
-    ////// ----- NEED TO IMPLMENET --> 3 CASES OF SENDING NOTIFICATIONS (cash!!) /////
-    std::cout << "Cash : need to know the 3 cases of sending notifications and include them here" << std::endl;
-    return;
-    // 1. if sending to a specific user --> send to that user only
+    bool sent = false;
 
+    ////// ----- NEED TO IMPLMENET --> 3 CASES OF SENDING NOTIFICATIONS (cash!!) /////
+    // std::cout << "Cash : need to know the 3 cases of sending notifications and include them here" << std::endl;
+    // return;
+    // 1. if sending to a specific user --> send to that user only (recipentEmail inputted blank)
+    if (recipientEmail == "") {
+        for (auto& account : accounts) {
+            if (account["email"] == recipientEmail) {
+                if (!account.contains("notifications"))
+                    account["notifications"] = json::array();
+
+                account["notifications"].push_back(data);
+                sent = true;
+                break;
+            }
+        }
+    }
 
 
     // 2. if sending to all users of a specific role --> send to all users with that role
+    if (!sent) {
+        for (auto& account : accounts) {
+            if (account["role"] == role) {
+                if (!account.contains("notifications"))
+                    account["notifications"] = json::array();
 
+                account["notifications"].push_back(data);
+                sent = true;
+            }
+        }
+    }
 
 
     // 3. if sending to lab asset manager --> sends to all of them
@@ -55,6 +78,20 @@ void Notifications::send_notifications(std::string recipient, json data) const {
     //         account["notifications"].push_back(notification);
     //     }
     // }
+    // 3. Send to all Lab Asset Managers
+    // if (recipient == "LabAssetManager") {
+    //     for (auto& account : accounts) {
+    //         if (account.contains("role") && account["role"] == "LabAssetManager") {
+    //             // Ensure notifications array exists
+    //             if (!account.contains("notifications") || !account["notifications"].is_array()) {
+    //                 account["notifications"] = json::array();
+    //             }
+
+    //             account["notifications"].push_back(data);
+    //         }
+    //     }
+    // }
+
 
     // Save updated accounts
     std::ofstream outFile("../../data/accounts.json");
@@ -64,13 +101,38 @@ void Notifications::send_notifications(std::string recipient, json data) const {
     }
     outFile << std::setw(4) << accounts << std::endl;
     outFile.close();
+
+    std::cout << "✔ Notification successfully sent.\n";
 }
 
-void Notifications::view_notifications() const {
-    std::cout << "Notification ID: " << data["notificationID"] << "\n";
-    std::cout << "Message: " << data["message"] << "\n";
-    std::cout << "Type: " << data["type"] << "\n";
-    std::cout << "Timestamp: " << data["timeStamp"] << "\n";
+void Notifications::view_notifications(std::string personEmail) const {
+    nlohmann::json accounts;
+    std::ifstream inFile("../../data/accounts.json");
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open accounts.json" << std::endl;
+        return;
+    }
+    inFile >> accounts;
+    inFile.close();
+    
+    for (auto& account : accounts) {
+    if (account.contains("email") && account["email"] == personEmail) {
+
+        if (!account.contains("notifications") || !account["notifications"].is_array()) {
+            std::cout << "No notifications found.\n";
+            return;
+        }
+
+        for (const auto& notif : account["notifications"]) {
+            std::cout << "Notification ID: " << notif["notificationID"] << "\n";
+            std::cout << "Message: " << notif["message"] << "\n";
+            std::cout << "Type: " << notif["type"] << "\n";
+            std::cout << "Timestamp: " << notif["timeStamp"] << "\n";
+            std::cout << "------------------------------\n";
+        }
+    }
+}
+
 }
 
 // std::string Notifications::get_message() const {

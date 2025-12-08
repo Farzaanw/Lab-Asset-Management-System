@@ -36,15 +36,16 @@
     },
     {
         "category": "consumable",
-        "clearanceLevel": "1",
+        "clearanceLevel": "2",
         "condition": "perfect",
         "description": "latex gloves",
         "id": 4,
         "location": "Storage Room #6",
+        "lowStock": true,
         "minimumThreshold": 50,
         "name": "gloves",
         "operationalStatus": "available",
-        "stock": 51
+        "stock": 50
     },
     {
         "category": "software",
