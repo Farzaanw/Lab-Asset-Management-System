@@ -1,5 +1,4 @@
-// Header declaration for Dashboard display function
+// Kai Johnson
 #pragma once
 
-// Returns true if dashboard displayed successfully, false otherwise.
 bool displayDashboard();
