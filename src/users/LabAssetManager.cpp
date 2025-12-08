@@ -484,12 +484,12 @@ bool LabAssetManager::viewLogs() {
 	}
 	inFile.close();
 
-	if (!logs.contains("usage") || !logs["usage"].is_array()) {
+	if (!logs.contains("Asset reserved by") || !logs["Asset reserved by"].is_array()) {
 		cout << "No reservation logs found." << endl;
 		return true;
 	}
 
-	const auto& usage = logs["usage"];
+	const auto& usage = logs["Asset reserved by"];
 
 	if (usage.empty()) {
 		cout << "No reservation logs found." << endl;

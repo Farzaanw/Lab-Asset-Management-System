@@ -208,7 +208,7 @@ bool Reservations::reserveAsset(const std::string& email) {
         accountsOut.close();
 
         sysController->update_usage_log("Reservation pending, requires approval");
-        return true
+        return true;
 
         // Notify Lab Manager (TODO: implement notification system)
         // cout << "NEED TO IMPLMENT ---- Notification sent to Lab Manager for approval." << endl;
@@ -234,14 +234,14 @@ bool Reservations::reserveAsset(const std::string& email) {
     };
 
     // Call existing notification method
-    notif.send_notifications("", lab asset manager", notifData);
+    notif.send_notifications("", "lab asset manager", notifData);
 
     cout << "Notification sent to all Lab Asset Managers for approval." << endl;
-}
+
 // ------------------------------------------------------------------------------------
 
         // return false; // Indicate that approval is needed
-    }
+    
     
     // ELSE --- Create reservation entry
     json reservation = {
