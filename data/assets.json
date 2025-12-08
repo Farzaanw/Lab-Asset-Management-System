@@ -118,5 +118,15 @@
         "renewalDate": "2026-06-30",
         "seatCount": 30,
         "seatsInUse": 29
+    },
+    {
+        "category": "equipment",
+        "clearanceLevel": "2",
+        "condition": "excellent",
+        "description": "High-precision oscilloscope for measuring electrical signals in advanced research projects.",
+        "id": 11,
+        "location": "Henry Building, Lab 5001 Advanced Electronics",
+        "name": "Tektronix TBS2000 Oscilloscope",
+        "operationalStatus": "available"
     }
 ]
