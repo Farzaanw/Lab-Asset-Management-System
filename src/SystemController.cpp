@@ -177,7 +177,7 @@ bool SystemController::log_in() {
 
         // ----------------------- send message to LAM
         Notifications notif;
-        notif.send_notifications("lab asset manager", notification);
+        notif.send_notifications("", "lab asset manager", notification);
         // ------------------------------ //
 
         // pause for 10 minutes
