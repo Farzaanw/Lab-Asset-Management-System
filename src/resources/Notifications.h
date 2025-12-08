@@ -4,6 +4,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <ctime>
 #include "../library/nlohmann/json.hpp"
 
 using json = nlohmann::json;
@@ -23,6 +24,8 @@ void send_notifications(std::string recipientEmail, std::string role, json data)
     
     // Get current timestamp as string
     std::string get_current_time() const;
+
+    void renewalDateAlert() const;
 
 private:
     // Helper: Load JSON from file
@@ -48,4 +51,6 @@ private:
     // Helper: Reject a reservation
     void reject_reservation(const std::string& requesterEmail,
                            const json& notification) const;
+
+    
 };

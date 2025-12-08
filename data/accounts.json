@@ -12,7 +12,7 @@
         "clearanceLevel": "2",
         "email": "facultyemail",
         "id": 2,
-        "notifications": [  ],
+        "notifications": [],
         "password": "facultypass",
         "reservations": [],
         "role": "faculty researcher"
@@ -30,7 +30,14 @@
         "clearanceLevel": "",
         "email": "LAMemail",
         "id": 4,
-        "notifications": [],
+        "notifications": [
+            {
+                "message": "The license for Minecraft Educational Edition License has passed its renewal date.",
+                "notificationID": "1",
+                "timeStamp": "2025-12-08 11:31:43",
+                "type": "renewal_alert"
+            }
+        ],
         "password": "LAMpass",
         "reservations": [],
         "role": "lab asset manager"

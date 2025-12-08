@@ -58,5 +58,18 @@
         "operationalStatus": "available",
         "renewalDate": "2026-12-31",
         "seatCount": 10
+    },
+    {
+        "category": "software",
+        "clearanceLevel": "1",
+        "condition": "good",
+        "currentUsers": 127,
+        "description": "Minecraft Educational Edition License for classroom use.",
+        "id": 6,
+        "location": "Virtual Software Library",
+        "name": "Minecraft Educational Edition License",
+        "operationalStatus": "available",
+        "renewalDate": "2025-08-15 00:00",
+        "seatCount": 150
     }
 ]
