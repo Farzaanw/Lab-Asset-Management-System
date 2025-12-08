@@ -30,14 +30,7 @@
         "clearanceLevel": "",
         "email": "LAMemail",
         "id": 4,
-        "notifications": [
-            {
-                "message": "The license for Minecraft Educational Edition License has passed its renewal date.",
-                "notificationID": "1",
-                "timeStamp": "2025-12-08 11:31:43",
-                "type": "renewal_alert"
-            }
-        ],
+        "notifications": [],
         "password": "LAMpass",
         "reservations": [],
         "role": "lab asset manager"
