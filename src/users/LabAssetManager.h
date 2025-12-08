@@ -67,6 +67,10 @@ public:
 	bool viewLogs();
 
 	bool setConsumableThreshold();
+	
+	bool cancelReservation();
+	
+	bool listReservations();
 };
 
 #endif

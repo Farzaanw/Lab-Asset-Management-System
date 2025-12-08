@@ -47,7 +47,9 @@ void LabAssetManager::main(){
 		cout << "12. Set Consumable Low-Stock Threshold" << endl;
 		cout << "13. Search/Filter Assets" << endl;
 		cout << "14. Display Dashboard" << endl;
-		cout << "15. Logout" << endl;
+		cout << "15. Cancel Reservation" << endl;
+		cout << "16. List Reservations" << endl;
+		cout << "17. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
 		string choice;
@@ -152,7 +154,22 @@ void LabAssetManager::main(){
 				cout << "Failed to display dashboard." << endl;
 			}
 		}
-		else if (choice == "15") {
+		else if (choice == "15"){
+			if(cancelReservation()) {
+				cout << "Reservation cancelled successfully." << endl;
+				system->update_usage_log("Reservation cancelled by Lab Asset Manager");
+			} else {
+				cout << "Failed to cancel reservation." << endl;
+			}
+		}
+		else if (choice == "16") {
+			if(listReservations()) {
+				cout << "Reservations listed successfully." << endl;
+			} else {
+				cout << "Failed to list reservations." << endl;
+			}
+		}
+		else if (choice == "17") {
 			cout << "Exiting Lab Asset Manager." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
@@ -534,4 +551,132 @@ bool LabAssetManager::viewLogs() {
 	}
 
 	return true;
+}
+bool LabAssetManager::listReservations() {
+    json accounts;
+    ifstream inFile(accountsFile);
+
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open " << accountsFile << endl;
+        return false;
+    }
+
+    try {
+        inFile >> accounts;
+    } catch (exception& e) {
+        cerr << "Error reading JSON: " << e.what() << endl;
+        return false;
+    }
+    inFile.close();
+
+    cout << "\n===== ALL RESERVATIONS =====\n";
+
+    bool found = false;
+
+    for (const auto& user : accounts) {
+        if (!user.contains("reservations")) continue;
+
+        for (const auto& r : user["reservations"]) {
+            found = true;
+
+            cout << "User Email: " << user["email"] << "\n"
+                 << "  Asset ID: " << r["assetID"] << "\n"
+                 << "  Asset Name: " << r["assetName"] << "\n"
+                 << "  Start Date: " << r["startDate"] << "\n"
+                 << "  End Date: " << r["endDate"] << "\n"
+                 << "  Status: " << r["status"] << "\n"
+                 << "------------------------------------\n";
+        }
+    }
+
+    if (!found) {
+        cout << "No reservations found.\n";
+    }
+
+    return true;
+}
+
+bool LabAssetManager::cancelReservation() {
+    int assetID;
+    cout << "Enter the Asset ID of the reservation to cancel: ";
+    cin >> assetID;
+    cin.ignore();
+
+    json accounts;
+    ifstream inFile(accountsFile);
+
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open " << accountsFile << endl;
+        return false;
+    }
+
+    try {
+        inFile >> accounts;
+    } catch (exception& e) {
+        cerr << "Error reading JSON: " << e.what() << endl;
+        return false;
+    }
+    inFile.close();
+
+    bool found = false;
+    int deleteCount = 0;
+
+    // Count how many reservations we are about to remove
+    for (const auto& user : accounts) {
+        if (!user.contains("reservations")) continue;
+
+        for (const auto& r : user["reservations"]) {
+            if (r.contains("assetID") && r["assetID"] == assetID) {
+                found = true;
+                deleteCount++;
+            }
+        }
+    }
+
+    if (!found) {
+        cout << "No reservation found with Asset ID " << assetID << ".\n";
+        return false;
+    }
+
+    // Confirmation prompt
+    cout << "Are you sure you want to cancel " << deleteCount 
+         << " reservation(s) for Asset ID " << assetID << "? (Y/N): ";
+
+    char choice;
+    cin >> choice;
+    choice = tolower(choice);
+
+    if (choice != 'y') {
+        cout << "Cancellation aborted.\n";
+        return false;
+    }
+
+	// Remove reservations
+    for (auto& user : accounts) {
+        if (!user.contains("reservations")) continue;
+
+        auto& reservations = user["reservations"];
+
+        reservations.erase(
+            remove_if(reservations.begin(), reservations.end(),
+                [&](const json& r) {
+                    return r.contains("assetID") && r["assetID"] == assetID;
+                }),
+            reservations.end()
+        );
+    }
+
+    // Save updated JSON back to file
+    ofstream outFile(accountsFile);
+    if (!outFile.is_open()) {
+        cerr << "Error: Could not write to " << accountsFile << endl;
+        return false;
+    }
+
+    outFile << setw(4) << accounts;
+    outFile.close();
+
+    cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully.\n";
+
+    return true;
 }
