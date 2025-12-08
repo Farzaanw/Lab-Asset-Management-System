@@ -64,7 +64,12 @@ void FacultyResearcher::main() {
 
         if (choice == "1") {
             string email = getEmail();
-            r->reserveAsset(email);
+            if (r->reserveAsset(email)){
+                cout << "Asset officially reserved." << endl;
+            } else {
+                cout << "Asset reservation failed or request sent to Lab Manager for approval." << endl;
+                cout << "^Check which one true ---- Implment SEND NOTIFICATION TO LAB MANAGER in reserveAsset() function." << endl;
+            }
         }
         else if (choice == "2") {
             string email = getEmail();

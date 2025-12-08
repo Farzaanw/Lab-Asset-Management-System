@@ -41,6 +41,10 @@ void Notifications::send_notifications(std::string recipientEmail, std::string r
                 if (!account.contains("notifications"))
                     account["notifications"] = json::array();
 
+                // Generate unique notification ID based on current array size
+                int nextID = account["notifications"].size() + 1;
+                data["notificationID"] = std::to_string(nextID);
+
                 account["notifications"].push_back(data);
                 sent = true;
                 break;
@@ -56,42 +60,16 @@ void Notifications::send_notifications(std::string recipientEmail, std::string r
                 if (!account.contains("notifications"))
                     account["notifications"] = json::array();
 
-                account["notifications"].push_back(data);
+                // Generate unique notification ID based on current array size for this user
+                int nextID = account["notifications"].size() + 1;
+                json userNotification = data;  // Create a copy for this user
+                userNotification["notificationID"] = std::to_string(nextID);
+
+                account["notifications"].push_back(userNotification);
                 sent = true;
             }
         }
     }
-
-
-    // 3. if sending to lab asset manager --> sends to all of them
-    // for (auto& account : accounts) {
-    //     if (account["role"] == recipient) {
-    //         // Ensure notifications array exists (else create it)
-    //         if (!account.contains("notifications")) {
-    //             account["notifications"] = json::array();
-    //         }
-
-    //         // Generate unique notification ID based on current array size
-    //         int nextID = account["notifications"].size() + 1;
-
-    //         // Add to user's notifications
-    //         account["notifications"].push_back(notification);
-    //     }
-    // }
-    // 3. Send to all Lab Asset Managers
-    // if (recipient == "LabAssetManager") {
-    //     for (auto& account : accounts) {
-    //         if (account.contains("role") && account["role"] == "LabAssetManager") {
-    //             // Ensure notifications array exists
-    //             if (!account.contains("notifications") || !account["notifications"].is_array()) {
-    //                 account["notifications"] = json::array();
-    //             }
-
-    //             account["notifications"].push_back(data);
-    //         }
-    //     }
-    // }
-
 
     // Save updated accounts
     std::ofstream outFile("../../data/accounts.json");
