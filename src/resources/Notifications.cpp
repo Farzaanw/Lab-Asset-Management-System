@@ -342,3 +342,35 @@ int Notifications::handleRestrictedReservationRequests() const {
     }
     return 0;
 }
+
+void Notifications::renewalDateAlert() const {
+    json assets = load_json("../../data/assets.json");
+    if (assets.is_null()) return;
+
+    // Get current time for comparison
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    for (const auto& asset : assets) {
+        // Only check software categories with a renewal date
+        if (asset.contains("category") && asset["category"] == "software" && asset.contains("renewalDate")) {
+            std::string rDate = asset["renewalDate"];
+            
+            // Parse renewalDate (Format: YYYY-MM-DD)
+            std::tm tm = {};
+            std::istringstream ss(rDate);
+            ss >> std::get_time(&tm, "%Y-%m-%d");
+
+            if (std::mktime(&tm) < now_c) {
+                // Asset is expired, send notification to Lab Asset Manager role
+                json alertData = {
+                    {"message", "The license for " + asset["name"].get<std::string>() + " has passed its renewal date."},
+                    {"type", "renewal_alert"},
+                    {"timeStamp", get_current_time()}
+                };
+                // Targeted to Lab Asset Manager role 
+                send_notifications("", "lab asset manager", alertData);
+            }
+        }
+    }
+}

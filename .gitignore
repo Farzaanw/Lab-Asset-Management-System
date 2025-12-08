@@ -59,8 +59,14 @@ dkms.conf
 # The folder Database will need to be added here once we have all predetermined accounts and assets. This is so when testing we dont fill up the json files
 #   with testing data
 .vscode/
-#usage_log.json
-#data/assets.json
-#data/policies.json
-*.cvs
+usage_log.json
+data/assets.json
+data/policies.json
+data/documents.json
+.cvs
+
 # I removed the ignore for *.json we can change it back after we've finalised the structure of the json files
+data/assets.json
+*.json
+data/usage_log.json
+data/accounts.json

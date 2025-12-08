@@ -1,26 +1,33 @@
 [
     {
         "category": "equipment",
-        "clearanceLevel": "3",
+        "clearanceLevel": "1",
         "condition": "excellent",
         "description": "An 8-inch Schmidt-Cassegrain telescope with advanced coma-free optics. Ideal for deep-sky imaging and planetary observation.",
         "id": 1,
         "location": "Lab A - Astronomy Equipment Room",
         "name": "Celestron EdgeHD 800 Microscope",
-        "operationalStatus": "reserved"
+        "operationalStatus": "available"
     },
     {
-        "category": "consumable",
-        "clearanceLevel": "3",
+        "category": "equipment",
+        "clearanceLevel": "1",
         "condition": "good",
-        "description": "used for 3D printers",
+        "description": "A 500ml borosilicate glass boiling flask used for heating and boiling liquids in laboratory experiments.",
         "id": 2,
-        "location": "lab",
-        "lowStock": false,
-        "minimumThreshold": 20,
-        "name": "Fillament",
-        "operationalStatus": "available",
-        "stock": 27
+        "location": "Henry Building, Lab 3002 Mechanical Tools",
+        "name": "Boiling Flask",
+        "operationalStatus": "available"
+    },
+    {
+        "category": "equipment",
+        "clearanceLevel": "1",
+        "condition": "good",
+        "description": "A Hazmat Suit to protect against dangerous materials/chemicals",
+        "id": 3,
+        "location": "Gilbert 011 - Hazardous Materials Storage",
+        "name": "Hazmat Suit",
+        "operationalStatus": "available"
     },
     {
         "category": "equipment",
@@ -28,7 +35,7 @@
         "condition": "broken",
         "description": "Magnifying Glass used for closer inspections",
         "expectedReturnDate": "2026-01-01",
-        "id": 3,
+        "id": 4,
         "location": "Henry Building, Lab 4005 Extensive Research",
         "name": "V2.0 ViewMagnifier",
         "operationalStatus": "out of service",
@@ -37,26 +44,79 @@
     {
         "category": "consumable",
         "clearanceLevel": "1",
+        "condition": "good",
+        "description": "used for 3D printers",
+        "id": 5,
+        "location": "lab",
+        "lowStock": false,
+        "minimumThreshold": 20,
+        "name": "Fillament",
+        "operationalStatus": "available",
+        "stock": 100
+    },
+    {
+        "category": "consumable",
+        "clearanceLevel": "1",
         "condition": "perfect",
         "description": "latex gloves",
-        "id": 4,
+        "id": 6,
         "location": "Storage Room #6",
-        "minimumThreshold": 50,
+        "lowStock": true,
+        "minimumThreshold": 100,
         "name": "gloves",
         "operationalStatus": "available",
-        "stock": 51
+        "stock": 50
+    },
+    {
+        "category": "consumable",
+        "clearanceLevel": "1",
+        "condition": "new",
+        "description": "Standard lab notebooks for recording experimental data and observations.",
+        "id": 7,
+        "location": "Lab A - Supply Closet",
+        "lowStock": true,
+        "minimumThreshold": 50,
+        "name": "Lab Notebooks",
+        "operationalStatus": "available",
+        "stock": 1
     },
     {
         "category": "software",
         "clearanceLevel": "1",
         "condition": "good",
-        "currentUsers": 4,
         "description": "MATLAB R2023a License for engineering and scientific computing tasks.",
-        "id": 5,
+        "id": 8,
         "location": "Virtual Software Library",
         "name": "MATLAB R2023a License",
         "operationalStatus": "available",
         "renewalDate": "2026-12-31",
-        "seatCount": 10
+        "seatCount": 10,
+        "seatsInUse": 4
+    },
+    {
+        "category": "software",
+        "clearanceLevel": "1",
+        "condition": "good",
+        "description": "Minecraft Educational Edition License for classroom use.",
+        "id": 9,
+        "location": "Virtual Software Library",
+        "name": "Minecraft Educational Edition License",
+        "operationalStatus": "available",
+        "renewalDate": "2025-08-15 00:00",
+        "seatCount": 150,
+        "seatsInUse": 122
+    },
+    {
+        "category": "software",
+        "clearanceLevel": "1",
+        "condition": "good",
+        "description": "Adobe Creative Cloud License for design and multimedia projects.",
+        "id": 10,
+        "location": "Virtual Software Library",
+        "name": "Adobe Creative Cloud License",
+        "operationalStatus": "available",
+        "renewalDate": "2026-06-30",
+        "seatCount": 30,
+        "seatsInUse": 29
     }
 ]

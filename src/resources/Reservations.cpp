@@ -4,7 +4,7 @@
 #include "../SystemController.h"
 
 //ASSETS
-//reserve an asset, returns a bool
+//reserve an asset, returns a int
 int Reservations::reserveAsset(const std::string& email) {
     cout << "--- Reserve Asset ---\n" << endl;
     
@@ -114,6 +114,45 @@ int Reservations::reserveAsset(const std::string& email) {
         sysController->update_usage_log("Reservation canceled, asset not availble");
         return -1;
     }
+    // New Validation: Stock/Seat Availability Check
+    std::string category = (*targetAsset).value("category", std::string(""));
+
+    if (category == "consumable") {
+    int stock = 0;
+    if ((*targetAsset).contains("stock")) {
+        if ((*targetAsset)["stock"].is_number()) stock = (*targetAsset)["stock"].get<int>();
+        else if ((*targetAsset)["stock"].is_string()) {
+            try { stock = stoi((*targetAsset)["stock"].get<std::string>()); } catch(...) { stock = 0; }
+        }
+    }
+    // STOP if stock is zero
+    if (stock <= 0) {
+        std::cout << "Error: This consumable is out of stock and cannot be reserved." << std::endl;
+        sysController->update_usage_log("Reservation failed: Consumable out of stock");
+        return -1;
+    }
+} 
+    else if (category == "software") {
+        int seatCount = 0, inUse = 0;
+    if ((*targetAsset).contains("seatCount")) {
+        if ((*targetAsset)["seatCount"].is_number()) seatCount = (*targetAsset)["seatCount"].get<int>();
+        else if ((*targetAsset)["seatCount"].is_string()) {
+            try { seatCount = stoi((*targetAsset)["seatCount"].get<std::string>()); } catch(...) { seatCount = 0; }
+        }
+    }
+    if ((*targetAsset).contains("seatsInUse")) {
+        if ((*targetAsset)["seatsInUse"].is_number()) inUse = (*targetAsset)["seatsInUse"].get<int>();
+        else if ((*targetAsset)["seatsInUse"].is_string()) {
+            try { inUse = stoi((*targetAsset)["seatsInUse"].get<std::string>()); } catch(...) { inUse = 0; }
+        }
+    }
+    // STOP if seats are at capacity
+    if (seatCount > 0 && inUse >= seatCount) {
+        std::cout << "Error: All seats for this software are currently in use." << std::endl;
+        sysController->update_usage_log("Reservation failed: Software seats full");
+        return -1;
+    }
+}
 
     // Get reservation dates
     cout << "Enter Start Date and Time (YYYY-MM-DD HH:MM): ";
@@ -275,7 +314,7 @@ int Reservations::reserveAsset(const std::string& email) {
     if (!userFound) {
         cout << "Error: User account not found!" << endl;
         sysController->update_usage_log("Error: Account not found");
-        return false;
+        return -1;
     }
 
     // Save updated accounts
@@ -285,7 +324,6 @@ int Reservations::reserveAsset(const std::string& email) {
     
     // Update asset usage/status depending on type
     Assets a(sysController);
-    std::string category = (*targetAsset).value("category", string(""));
     if (category == "consumable") {
         bool becameLow = false;
         a.decrementConsumable(assetID, 1, becameLow);

@@ -44,7 +44,7 @@ void LabAssetManager::main(){
 		cout << "8. List Assets" << endl;
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
-		cout << "11. View Logs" << endl;
+		cout << "11. View Reservation Logs" << endl;
 		cout << "12. View Audit Logs" << endl;
 		cout << "13. Set Consumable Low-Stock Threshold" << endl;
 		cout << "14. Search/Filter Assets" << endl;
@@ -52,9 +52,10 @@ void LabAssetManager::main(){
 		cout << "16. Cancel Reservation" << endl;
 		cout << "17. List Reservations" << endl;
 		cout << "18. View notifications" << endl;
-		cout << "19. Upload and Attach Document to Asset" << endl;
+		cout << "19. Attach Document to Asset" << endl;
 		cout << "20. View Documents per Asset" << endl;
-		cout << "21. Logout" << endl;
+		cout << "21. Renewal Date Alert" << endl;
+		cout << "22. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
 		string choice;
@@ -207,6 +208,10 @@ void LabAssetManager::main(){
     	Assets(system).viewDocumentsPerAsset(aID);
 }
 		else if (choice == "21") {
+   		 n.renewalDateAlert(); 
+    	cout << "Renewal check complete. Check notifications for alerts." << endl;
+}
+		else if (choice == "22") {
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
