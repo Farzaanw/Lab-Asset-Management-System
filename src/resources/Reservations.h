@@ -29,7 +29,7 @@ public:
 
     Reservations(SystemController* sc) : sysController(sc) {}
 
-    bool reserveAsset(const std::string& email);
+    int reserveAsset(const std::string& email);
 
     bool reserveMultipleAssets(const std::string& email);
 

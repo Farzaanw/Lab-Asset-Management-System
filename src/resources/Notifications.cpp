@@ -2,14 +2,19 @@
 #include <iostream>
 #include <fstream>
 
-// // Private add_notification(notification: string): void
-// // Private get_unread_notifications(userID: string, readFlag: bool): vector<string>
-// // Private get_read_notifications(userID: string, readFlag: bool): vector<string>
-// // Private mark_notifications_read(notificationID: string): void
-// // Private clear_notifications(userID: string): void
-// // Private search_notifications(notificationID: string): string
-// // Private get_notification_metadata(notificationID: string): map<string, string>
-// // Private get_urgent_notifications(urgency: bool): vector<string>
+// Private add_notification(notification: string): void
+// Private get_unread_notifications(userID: string, readFlag: bool): vector<string>
+// Private get_read_notifications(userID: string, readFlag: bool): vector<string>
+// Private mark_notifications_read(notificationID: string): void
+// Private clear_notifications(userID: string): void
+// Private search_notifications(notificationID: string): string
+// Private get_notification_metadata(notificationID: string): map<string, string>
+// Private get_urgent_notifications(urgency: bool): vector<string>
+
+
+// /* Auth: Cash Limberg
+//  * Description: a class of 1 notification that is inside a user class
+//  */ 
 
 
 // // /* Auth: Cash Limberg
