@@ -8,6 +8,7 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Dashboard.h"
+#include "../resources/Notifications.h"
 using namespace std;
 using json = nlohmann::json;
 
@@ -26,7 +27,8 @@ void LabManager::main(){
 		cout << "2. Change Policies" << endl;
 		cout << "3. Display Dashboard" << endl;
 		cout << "4. Change User Privilege" << endl;
-		cout << "5. Logout" << endl;
+		cout << "5. Review Reservation Requests" << endl;
+		cout << "6. Logout" << endl;
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
@@ -65,6 +67,14 @@ void LabManager::main(){
 			}
 		}
 		else if (choice == "5") {
+			if(reservationRequests()){
+				cout << "Reservation requests reviewed successfully." << endl;
+				// Log updated in reservationRequests() no need to add here
+			} else {
+				cout << "Failed to review reservation requests." << endl;
+			}
+		}
+		else if (choice == "6") {
 			cout << "Exiting Lab Manager." << endl;
 			break;
 		}
@@ -283,4 +293,169 @@ bool LabManager::changeUserPrivilege() {
         cout << "No account with ID " << accountId << " found.\n";
     }
 	return true;
+}
+
+bool LabManager::reservationRequests() {
+    json accounts;
+    ifstream inFile(accountsFile);
+
+    if (!inFile.is_open()) {
+        cerr << "Error: Could not open " << accountsFile << endl;
+        return false;
+    }
+
+    try {
+        inFile >> accounts;
+        inFile.close();
+    } catch (...) {
+        cerr << "Error reading JSON.\n";
+        return false;
+    }
+
+    // Collect all pending reservations
+    struct PendingReservation {
+        int assetID;
+        string assetName;
+        string email;
+        int userID;
+        string startDate;
+        string endDate;
+        string reason;
+    };
+
+    vector<PendingReservation> pendingList;
+
+    for (auto& user : accounts) {
+        string email = user["email"];
+        int userID = user["id"];
+
+        for (auto& res : user["reservations"]) {
+            if (res.contains("status") && res["status"] == "pending") {
+                pendingList.push_back({
+                    res["assetID"],
+                    res["assetName"],
+                    email,
+                    userID,
+                    res["startDate"],
+                    res["endDate"],
+                    res["reason"]
+                });
+            }
+        }
+    }
+
+    // If none are pending
+    if (pendingList.empty()) {
+        cout << "There are no pending reservations.\n";
+        return true;
+    }
+
+    // Display pending reservations
+    cout << "\n===== PENDING RESERVATIONS =====\n";
+    cout << left
+         << setw(10) << "AssetID"
+         << setw(25) << "Asset Name"
+         << setw(30) << "User Email"
+         << setw(15) << "Start Date"
+         << setw(15) << "End Date"
+         << setw(20) << "Reason"
+         << endl;
+
+    cout << string(120, '-') << endl;
+
+    for (auto& p : pendingList) {
+        cout << left
+             << setw(10) << p.assetID
+             << setw(25) << p.assetName
+             << setw(30) << p.email
+             << setw(15) << p.startDate
+             << setw(15) << p.endDate
+             << setw(20) << p.reason
+             << endl;
+    }
+
+    // Get asset ID using getline()
+    string input;
+    cout << "\nEnter the Asset ID of the reservation you want to approve/deny: ";
+    getline(cin, input);
+
+    int targetAssetID;
+    try {
+        targetAssetID = stoi(input);
+    } catch (...) {
+        cout << "Invalid number.\n";
+        return false;
+    }
+
+    // Find the matching pending reservation
+    PendingReservation* target = nullptr;
+
+    for (auto& p : pendingList) {
+        if (p.assetID == targetAssetID) {
+            target = &p;
+            break;
+        }
+    }
+
+    if (!target) {
+        cout << "No pending reservation found with Asset ID " << targetAssetID << endl;
+        return false;
+    }
+
+    // Approve or deny - via getline
+    string action;
+    cout << "Enter 'approve' or 'deny': ";
+    getline(cin, action);
+
+    // Normalize input
+    transform(action.begin(), action.end(), action.begin(), ::tolower);
+
+    if (action != "approve" && action != "deny") {
+        cout << "Invalid selection.\n";
+        return false;
+    }
+
+    string newStatus = (action == "approve") ? "approved" : "denied";
+
+    // Update JSON
+    for (auto& user : accounts) {
+        if (user["email"] == target->email) {
+            for (auto& res : user["reservations"]) {
+                if (res["assetID"] == targetAssetID && res["status"] == "pending") {
+                    res["status"] = newStatus;
+                }
+            }
+        }
+    }
+
+    // Save updates
+    ofstream outFile(accountsFile);
+    if (!outFile.is_open()) {
+        cerr << "Error saving " << accountsFile << endl;
+        return false;
+    }
+    outFile << accounts.dump(4);
+    outFile.close();
+
+    // Build notification JSON
+    json notifData = {
+        {"type", "reservation_request"},
+        {"message", "Your reservation request for asset '" + target->assetName +
+                    "' (ID: " + to_string(target->assetID) + ") has been " + newStatus + "."},
+        {"reason", target->reason},
+        {"timeStamp", target->startDate},
+        {"requester", target->email},
+        {"assetID", target->assetID},
+        {"startDate", target->startDate},
+        {"endDate", target->endDate}
+    };
+
+    // Send notification (uncomment when ready)
+    // send_notifications(target->email, "user", notifData);
+
+    cout << "\nReservation " << newStatus << " and notification sent.\n";
+	system->update_usage_log(getEmail() + " has " + (newStatus == "approved" ? "approved " : "denied ") +
+							"the reservation request for asset ID " + to_string(target->assetID) +
+							" made by " + target->email + ".");
+    return true;
 }

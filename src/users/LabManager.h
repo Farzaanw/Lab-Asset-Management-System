@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include "../library/nlohmann/json.hpp"
-#include "../resources/Notifications.h"
 #include "User.h"
 
 using namespace std;
@@ -41,6 +40,8 @@ public:
 	int getPolicy(string policyType);
 
 	bool changeUserPrivilege();
+
+	bool reservationRequests();
 };
 
 #endif
