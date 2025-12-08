@@ -9,6 +9,8 @@
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Documents.h"
 #include "../resources/Dashboard.h"
+#include "../resources/Notifications.h"
+static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
@@ -43,12 +45,14 @@ void LabAssetManager::main(){
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
 		cout << "11. View Logs" << endl;
-		cout << "12. Set Consumable Low-Stock Threshold" << endl;
-		cout << "13. Search/Filter Assets" << endl;
-		cout << "14. Display Dashboard" << endl;
-		cout << "15. Cancel Reservation" << endl;
-		cout << "16. List Reservations" << endl;
-		cout << "17. Logout" << endl;
+		cout << "12. View Audit Logs" << endl;
+		cout << "13. Set Consumable Low-Stock Threshold" << endl;
+		cout << "14. Search/Filter Assets" << endl;
+		cout << "15. Display Dashboard" << endl;
+		cout << "16. Cancel Reservation" << endl;
+		cout << "17. List Reservations" << endl;
+		cout << "18. View notifications" << endl;
+		cout << "19. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
 		string choice;
@@ -133,7 +137,12 @@ void LabAssetManager::main(){
 		else if (choice == "11") {
 			viewLogs();
 		}
+
 		else if (choice == "12") {
+			viewAuditLog();
+		}
+
+		else if (choice == "13") {
 			if (setConsumableThreshold()){
 				cout << "Threshold updated." << endl;
 				system->update_usage_log("Low-stock threshold updated by Lab Asset Manager");
@@ -141,19 +150,19 @@ void LabAssetManager::main(){
 				cout << "Failed to update threshold." << endl;
 			}
 		}
-		else if (choice == "13") {
+		else if (choice == "14") {
 			if (!Assets(system).searchAssets("", "")) {
 				cout << "Failed to search/filter assets." << endl;
 			}
 		}
-		else if (choice == "14") {
+		else if (choice == "15") {
 			if(displayDashboard()) {
 				cout << "Dashboard displayed successfully." << endl;
 			} else {
 				cout << "Failed to display dashboard." << endl;
 			}
 		}
-		else if (choice == "15"){
+		else if (choice == "16"){
 			if(cancelReservation()) {
 				cout << "Reservation cancelled successfully." << endl;
 				// Log updated in cancelReservation() no need to add here
@@ -161,14 +170,16 @@ void LabAssetManager::main(){
 				cout << "Failed to cancel reservation." << endl;
 			}
 		}
-		else if (choice == "16") {
+		else if (choice == "17") {
 			if(listReservations()) {
 				cout << "Reservations listed successfully." << endl;
 			} else {
 				cout << "Failed to list reservations." << endl;
 			}
+		} 	else if (choice == "18") {
+			n.view_notifications("LAMemail");
 		}
-		else if (choice == "17") {
+		else if (choice == "19") {
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
