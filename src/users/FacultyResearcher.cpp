@@ -98,7 +98,7 @@ void FacultyResearcher::main() {
         else if (choice == "10") {
             generateUsageReport(0);
         }
-        else if (choice == "18") {
+        else if (choice == "11") {
             cout << "Logging out of Faculty Researcher." << endl;
             break;
         }

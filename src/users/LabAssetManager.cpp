@@ -484,30 +484,66 @@ bool LabAssetManager::viewLogs() {
 	}
 	inFile.close();
 
-	if (!logs.contains("Asset reserved by") || !logs["Asset reserved by"].is_array()) {
-		cout << "No reservation logs found." << endl;
+	if (!logs.contains("events") || !logs["events"].is_array()) {
+		cerr << "Error: JSON does not contain 'events' array.\n";
+		return false;
+	}
+
+	const auto& events = logs["events"];
+
+	if (events.empty()) {
+		cout << "No ASSET USAGE LOG entries found." << endl;
 		return true;
 	}
 
-	const auto& usage = logs["Asset reserved by"];
+	// Prompt for filtering options
+	cout << "\n===== ASSET USAGE LOG VIEWER =====\n" << endl;
+	cout << "Would you like to filter by email? (y/n): ";
+	string filterChoice;
+	getline(cin, filterChoice);
+	
+	string actionFilter = "Asset reserved by";
+	string actorFilter = "";
 
-	if (usage.empty()) {
-		cout << "No reservation logs found." << endl;
-		return true;
-	}
-
-	cout << "\n===== RESERVATION LOGS =====\n" << endl;
-	cout << left << setw(25) << "User Email" << setw(10) << "Asset ID" << setw(20) << "Start Date" << setw(20) << "End Date" << setw(15) << "Logged At" << "\n";
-	cout << string(90, '-') << "\n";
-
-	for (const auto& u : usage) {
-		string email = u.contains("email") ? u["email"].get<string>() : "(unknown)";
-		string assetid = u.contains("assetID") ? to_string(u["assetID"].get<int>()) : "(unknown)";
-		string start = u.contains("start") ? u["start"].get<string>() : "(unknown)";
-		string end = u.contains("end") ? u["end"].get<string>() : "(unknown)";
-		string logged = u.contains("loggedAt") ? u["loggedAt"].get<string>() : "(unknown)";
+	if (filterChoice == "y" || filterChoice == "Y") {
 		
-		cout << left << setw(25) << email << setw(10) << assetid << setw(20) << start << setw(20) << end << setw(15) << logged << "\n";
+		cout << "Enter email to filter (or leave blank for no filter): ";
+		getline(cin, actorFilter);
+		
+		// Convert to lowercase for case-insensitive matching
+		for (auto& c : actionFilter) c = tolower(c);
+		for (auto& c : actorFilter) c = tolower(c);
+	}
+	for (auto& c : actionFilter) c = tolower(c);
+
+	cout << "\n===== AUDIT LOG =====\n" << endl;
+	cout << left << setw(60) << "Event" << setw(25) << "Timestamp" << "\n";
+	cout << string(85, '-') << "\n";
+
+	int matchCount = 0;
+	for (const auto& ev : events) {
+		string eventStr = ev.contains("event") ? ev["event"].get<string>() : "";
+		string timestamp = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "";
+
+		// Apply filters
+		string eventLower = eventStr;
+		for (auto& c : eventLower) c = tolower(c);
+
+		bool actionMatch = actionFilter.empty() || eventLower.find(actionFilter) != string::npos;
+		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
+
+		if (actionMatch && actorMatch) {
+			cout << left << setw(60) << eventStr.substr(0, 59) << setw(25) << timestamp << "\n";
+			matchCount++;
+		}
+	}
+
+	
+
+	if (matchCount == 0) {
+		cout << "No audit log entries matching the filter criteria.\n";
+	} else {
+		cout << "\n" << matchCount << " audit log entries displayed.\n";
 	}
 
 	cout << "\nPress Enter to continue...";
