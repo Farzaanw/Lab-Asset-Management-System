@@ -18,6 +18,14 @@
         "password": "studentpass",
         "reservations": [
             {
+                "assetID": 2,
+                "assetName": "Fillament",
+                "endDate": "2026-11-15",
+                "reason": "",
+                "startDate": "2026-10-11",
+                "status": "approved"
+            },
+            {
                 "assetID": 4,
                 "assetName": "gloves",
                 "endDate": "2026-11-11",
@@ -32,6 +40,37 @@
                 "reason": "",
                 "startDate": "2027-01-01",
                 "status": "approved"
+            },
+            {
+                "assetID": 2,
+                "assetName": "Fillament",
+                "endDate": "2003-12-05 12:00:00",
+                "reason": "",
+                "startDate": "2003-12-04 00:00:00",
+                "status": "completed"
+            },
+            {
+                "assetID": 2,
+                "assetName": "Fillament",
+                "endDate": "2012-06-13 21:00:00",
+                "reason": "",
+                "startDate": "2012-06-13 01:00:00",
+                "status": "completed"
+            },
+            {
+                "assetID": 2,
+                "assetName": "Fillament",
+                "endDate": "2013-07-08 23:00:00",
+                "reason": "",
+                "startDate": "2013-07-08 13:00:00",
+                "status": "completed"
+            },
+            {
+                "assetID": 1,
+                "assetName": "Celestron EdgeHD 800 Microscope",
+                "endDate": "2003-10-13 4:00",
+                "startDate": "2003-10-12 12:00",
+                "status": "completed"
             }
         ],
         "role": "research student"
@@ -42,16 +81,7 @@
         "id": 2,
         "notifications": [],
         "password": "facultypass",
-        "reservations": [
-            {
-                "assetID": 1,
-                "assetName": "Celestron EdgeHD 800 Microscope",
-                "endDate": "2024-03-03 00:00:00",
-                "reason": "",
-                "startDate": "2025-03-03 00:00:00",
-                "status": "approved"
-            }
-        ],
+        "reservations": [],
         "role": "faculty researcher"
     },
     {
@@ -69,12 +99,13 @@
         "id": 4,
         "notifications": [
             {
-                "message": "Multiple failed login attempts detected for email: sad",
+                "message": "Multiple failed login attempts detected for email: qwe",
                 "metaData": {
                     "attempts": 5,
-                    "email": "sad"
+                    "email": "qwe"
                 },
-                "timeStamp": "2025-12-07 21:29:02",
+                "notificationID": "1",
+                "timeStamp": "2025-12-06 21:03:39",
                 "type": "security_alert"
             }
         ],
