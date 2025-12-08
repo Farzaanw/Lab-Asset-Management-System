@@ -19,7 +19,7 @@
 Notifications::Notifications() {}
 
 void Notifications::send_notifications(std::string recipientEmail, std::string role, json data) const {
-    std::cout << "Notification Being Sent to " << recipientEmail << "\n";
+    // std::cout << "Notification Being Sent to " << recipientEmail << "\n";
     nlohmann::json accounts;
     std::ifstream inFile("../../data/accounts.json");
     if (!inFile.is_open()) {

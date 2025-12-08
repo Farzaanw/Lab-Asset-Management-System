@@ -60,20 +60,28 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
     string stat = status;
     
     if (cat.empty()) {
-        cout << "Enter category (leave blank for no filter, type \"back\" to return to menu): ";
+        cout << "Enter category (leave blank for no filter, type \"0\" to return to menu): ";
+		cout << "Category Options: equipment, consumable, software" << endl;
         getline(cin, cat);
     }
 
-		if(cat == "back") {
+		if(cat == "0") {
 			cout << "Reservation cancelled, returning to menu" << endl;
 			if (sysController) sysController->update_usage_log("User cancelled reservation");
 			return false;
 		}
 
     if (stat.empty()) {
-        cout << "Enter status (leave blank for no filter): ";
+        cout << "Enter status (leave blank for no filter, type \"0\" to return to menu): ";
+		cout << "Status Options: available, reserved, out of service" << endl;
         getline(cin, stat);
     }
+
+		if(stat == "0") {
+			cout << "Action cancelled, returning to menu" << endl;
+			if (sysController) sysController->update_usage_log("User cancelled action");
+			return false;
+		}
     
     json assets;
     ifstream inFile("../../data/assets.json");
@@ -655,7 +663,7 @@ bool Assets::return_asset(const std::string& email) {
 			return false;
 		}
 
-		string assetName, status, endDate;
+	string assetName, status, endDate;
     bool foundReservation = false;
     
     for (const auto& res : (*userAccount)["reservations"]) {
