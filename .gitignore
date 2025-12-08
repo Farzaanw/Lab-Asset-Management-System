@@ -67,3 +67,4 @@ data/documents.json
 
 # I removed the ignore for *.json we can change it back after we've finalised the structure of the json files
 data/assets.json
+*.json
