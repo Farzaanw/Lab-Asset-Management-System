@@ -179,7 +179,32 @@ void LabAssetManager::main(){
 		} 	else if (choice == "18") {
 			n.view_notifications("LAMemail");
 		}
-		else if (choice == "19") {
+
+		else if (choice == "19") { // Upload and Attach
+    	
+        // After successful upload, ask for Asset ID to link
+        cout << "Enter Asset ID you want to link a Document to: ";
+        int aID, dID;
+        cin >> aID;
+        cout << "Enter Document ID to attach: ";
+        cin >> dID;
+        cin.ignore();
+        
+        if(Assets(system).attachDocumentToAsset(aID, dID)) {
+            cout << "Document linked to Asset successfully." << endl;
+        } else {
+            cout << "Failed to link document to asset record." << endl;
+        }
+  	  	
+		}
+		else if (choice == "20") { // NEW option: View Documents per Asset
+   	 	cout << "Enter Asset ID to view attachments: ";
+    	int aID;
+    	cin >> aID;
+    	cin.ignore();
+    	Assets(system).viewDocumentsPerAsset(aID);
+}
+		else if (choice == "21") {
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
