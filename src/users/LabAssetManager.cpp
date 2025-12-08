@@ -52,7 +52,9 @@ void LabAssetManager::main(){
 		cout << "16. Cancel Reservation" << endl;
 		cout << "17. List Reservations" << endl;
 		cout << "18. View notifications" << endl;
-		cout << "19. Logout" << endl;
+		cout << "19. Upload and Attach Document to Asset" << endl;
+		cout << "20. View Documents per Asset" << endl;
+		cout << "21. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
 		string choice;
