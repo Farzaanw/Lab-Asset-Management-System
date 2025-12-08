@@ -43,6 +43,7 @@ void LabAssetManager::main(){
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
 		cout << "11. View Logs" << endl;
+<<<<<<< Updated upstream
 		cout << "12. View Audit Log" << endl;
 		cout << "13. Set Consumable Low-Stock Threshold" << endl;
 		cout << "14. Search/Filter Assets" << endl;
@@ -50,6 +51,16 @@ void LabAssetManager::main(){
 		cout << "16. Cancel Reservation" << endl;
 		cout << "17. List Reservations" << endl;
 		cout << "18. Logout" << endl;
+=======
+		cout << "12. Set Consumable Low-Stock Threshold" << endl;
+		cout << "13. Search/Filter Assets" << endl;
+		cout << "14. Display Dashboard" << endl;
+		cout << "15. Cancel Reservation" << endl;
+		cout << "16. List Reservations" << endl;
+		cout << "17. Upload and Attach Document to Asset" << endl;
+		cout << "18. View Documents per Asset" << endl;
+		cout << "19. Logout" << endl;
+>>>>>>> Stashed changes
 		
 		cout << "Please enter your choice: ";
 		string choice;
@@ -172,11 +183,41 @@ void LabAssetManager::main(){
 				cout << "Failed to list reservations." << endl;
 			}
 		}
+<<<<<<< Updated upstream
 		else if (choice == "18") {
 			cout << "Exiting Lab Asset Manager." << endl;
+=======
+		else if (choice == "17") { // Upload and Attach
+    	
+        // After successful upload, ask for Asset ID to link
+        cout << "Enter Asset ID you want to link a Document to: ";
+        int aID, dID;
+        cin >> aID;
+        cout << "Enter Document ID to attach: ";
+        cin >> dID;
+        cin.ignore();
+        
+        if(Assets(system).attachDocumentToAsset(aID, dID)) {
+            cout << "Document linked to Asset successfully." << endl;
+        } else {
+            cout << "Failed to link document to asset record." << endl;
+        }
+  	  	
+		}
+		else if (choice == "18") { // NEW option: View Documents per Asset
+   	 	cout << "Enter Asset ID to view attachments: ";
+    	int aID;
+    	cin >> aID;
+    	cin.ignore();
+    	Assets(system).viewDocumentsPerAsset(aID);
+}
+		else if (choice == "19") {
+			cout << "Logging out..." << endl;
+>>>>>>> Stashed changes
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
 		}
+		
 		else {
 			cout << "Invalid choice. Please try again." << endl;
 		}

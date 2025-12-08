@@ -101,6 +101,10 @@ public:
 
     bool return_asset(const std::string& email);
 
+    // FR-17: Attachments
+    bool attachDocumentToAsset(int assetID, int documentID);
+    bool viewDocumentsPerAsset(int assetID);
+
 };
 
 
