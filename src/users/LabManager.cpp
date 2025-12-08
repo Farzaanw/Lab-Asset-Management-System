@@ -8,6 +8,7 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Dashboard.h"
+#include "../resources/Notifications.h"
 using namespace std;
 using json = nlohmann::json;
 
@@ -25,8 +26,9 @@ void LabManager::main(){
 		cout << "1. List Policies" << endl;
 		cout << "2. Change Policies" << endl;
 		cout << "3. Display Dashboard" << endl;
-		cout << "4. Change User Privilege" << endl;
-		cout << "5. Logout" << endl;
+		cout << "4. View Notifications" << endl;
+		cout << "5. Change User Privilege" << endl;
+		cout << "6. Logout" << endl;
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
@@ -56,7 +58,13 @@ void LabManager::main(){
 				cout << "Failed to display dashboard." << endl;
 			}
 		}
+		
 		else if (choice == "4") {
+			Notifications n;
+			n.view_notifications(getEmail());
+			system->update_usage_log("Lab Manager " + getEmail() + " viewed notifications.");
+		}
+		else if (choice == "5") {
 			if(changeUserPrivilege()){
 				cout << "User privilege changed successfully." << endl;
 				// Log updated in changeUserPrivilege() no need to add here
@@ -64,7 +72,7 @@ void LabManager::main(){
 				cout << "Failed to change user privilege." << endl;
 			}
 		}
-		else if (choice == "5") {
+		else if (choice == "6") {
 			cout << "Exiting Lab Manager." << endl;
 			break;
 		}
