@@ -65,9 +65,10 @@ void ResearchStudent::main() {
 
         if (choice == "1") {
             string email = getEmail();
-            if (r->reserveAsset(email) == 0){
+            int number = r->reserveAsset(email);
+            if (number == 0){
                 cout << "Asset officially reserved." << endl;
-            } else if (r->reserveAsset(email) == 2) {
+            } else if (number == 2) {
                 cout << "Asset reservation requires approval. Request sent to Lab Manager." << endl;
             }
             else {
