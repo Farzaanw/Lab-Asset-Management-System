@@ -655,12 +655,38 @@ bool Assets::return_asset(const std::string& email) {
 			return false;
 		}
 
+		string assetName, status, endDate;
+    bool foundReservation = false;
+    
+    for (const auto& res : (*userAccount)["reservations"]) {
+			if (res["assetID"].get<int>() == assetID) {
+				assetName = res["assetName"].get<string>();
+				status = res["status"].get<string>();
+				endDate = res["endDate"].get<string>();
+				foundReservation = true;
+				break;
+			}
+    }
+
+		if (!foundReservation) {
+			cout << "Error: You don't have this asset reserved" << endl;
+			return false;
+    }
+
+    if (status == "overdue") {
+        sysController->update_usage_log("OVERDUE RETURN: User " + email + 
+                                       " returned Asset ID " + to_string(assetID) + 
+                                       " (" + assetName + ")" +
+                                       " - Was due: " + endDate);
+        cout << "\nReturned an overdue asset\n" << endl;
+    }
+
     // Update asset status to available
     json assets;
     ifstream assetFile("../../data/assets.json");
     if (!assetFile.is_open()) {
-        cerr << "Error: Could not open assets.json" << endl;
-        return false;
+			cerr << "Error: Could not open assets.json" << endl;
+			return false;
     }
     assetFile >> assets;
     assetFile.close();

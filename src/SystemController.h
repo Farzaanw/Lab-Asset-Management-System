@@ -54,6 +54,7 @@ private:
     void load_policies();
     void load_usage_log();
     void load_accounts();
+    void check_overdue_reservations();
 
     // ================
     // HELPER FUNCTIONS

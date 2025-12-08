@@ -117,6 +117,7 @@ int SystemController::main() {
 // Log-In Handler
 /////////////////////////////////////////////////////////////////
 bool SystemController::log_in() {
+    check_overdue_reservations();
     time_t start = time(NULL);
 
     const int MAX_ATTEMPTS = 5;
@@ -186,6 +187,47 @@ bool SystemController::log_in() {
     } else {
         std::cout << "Maximum login attempts reached. Exiting.\n";
         return false; // failed login after 3 attempts
+    }
+}
+
+void SystemController::check_overdue_reservations() {
+    json accounts;
+    ifstream accountsIn("../../data/accounts.json");
+    if (!accountsIn.is_open()) return;
+    accountsIn >> accounts;
+    accountsIn.close();
+
+    time_t currentTime = time(nullptr);
+    bool foundOverdue = false;
+
+    for (auto& account : accounts) {
+        if (!account.contains("reservations")) continue;
+
+        string userEmail = account["email"].get<string>();
+
+        for (auto& res : account["reservations"]) {
+            if (res["status"] == "overdue") continue;
+
+            tm endTm = {};
+            istringstream ss(res["endDate"].get<string>());
+            ss >> get_time(&endTm, "%Y-%m-%d %H:%M:%S");
+            
+            time_t endTime = mktime(&endTm);
+
+            if (endTime != -1 && currentTime > endTime) {
+                res["status"] = "overdue";
+                foundOverdue = true;
+
+                string assetName = res["assetName"].get<string>();
+                int assetID = res["assetID"].get<int>();
+                string endDate = res["endDate"].get<string>();
+                
+                update_usage_log("OVERDUE: User " + userEmail + 
+                                " - Asset ID " + to_string(assetID) + 
+                                " (" + assetName + ")" +
+                                " - End Date: " + endDate);
+            }
+        }
     }
 }
 
