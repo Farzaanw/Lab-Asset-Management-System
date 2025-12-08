@@ -37,10 +37,18 @@ public:
 
     bool cancelReservation(const std::string& email);
 
+    bool autoExpireReservations();
 
+    bool hasOverlapForAsset(int assetID, std::time_t startT, std::time_t endT, const nlohmann::json& accounts) const;
+
+    bool markOverdueAndNotify(int graceMinutes = 0);
+
+    bool viewAllReservations();  
+
+    bool overrideReservation(int assetID, const std::string& reason);
+
+    bool approvePending(int assetID, const std::string& userEmail, bool approve);
 
 };
-
-
 
 #endif

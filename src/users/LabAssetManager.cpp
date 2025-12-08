@@ -9,6 +9,8 @@
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Documents.h"
 #include "../resources/Dashboard.h"
+#include "../resources/Notifications.h"
+static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
@@ -43,13 +45,13 @@ void LabAssetManager::main(){
 		cout << "9. List Documents" << endl;
 		cout << "10. Upload Document" << endl;
 		cout << "11. View Logs" << endl;
-		cout << "12. Set Consumable Low-Stock Threshold" << endl;
-		cout << "13. Search/Filter Assets" << endl;
-		cout << "14. Display Dashboard" << endl;
-		cout << "15. Cancel Reservation" << endl;
-		cout << "16. List Reservations" << endl;
-		cout << "17. Upload and Attach Document to Asset" << endl;
-		cout << "18. View Documents per Asset" << endl;
+		cout << "12. View Audit Logs" << endl;
+		cout << "13. Set Consumable Low-Stock Threshold" << endl;
+		cout << "14. Search/Filter Assets" << endl;
+		cout << "15. Display Dashboard" << endl;
+		cout << "16. Cancel Reservation" << endl;
+		cout << "17. List Reservations" << endl;
+		cout << "18. View notifications" << endl;
 		cout << "19. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
@@ -135,9 +137,11 @@ void LabAssetManager::main(){
 		else if (choice == "11") {
 			viewLogs();
 		}
+
 		else if (choice == "12") {
 			viewAuditLog();
 		}
+
 		else if (choice == "13") {
 			if (setConsumableThreshold()){
 				cout << "Threshold updated." << endl;
@@ -161,7 +165,7 @@ void LabAssetManager::main(){
 		else if (choice == "16"){
 			if(cancelReservation()) {
 				cout << "Reservation cancelled successfully." << endl;
-				system->update_usage_log("Reservation cancelled by Lab Asset Manager");
+				// Log updated in cancelReservation() no need to add here
 			} else {
 				cout << "Failed to cancel reservation." << endl;
 			}
@@ -172,8 +176,11 @@ void LabAssetManager::main(){
 			} else {
 				cout << "Failed to list reservations." << endl;
 			}
+		} 	else if (choice == "18") {
+			n.view_notifications("LAMemail");
 		}
-		else if (choice == "17") { // Upload and Attach
+
+		else if (choice == "19") { // Upload and Attach
     	
         // After successful upload, ask for Asset ID to link
         cout << "Enter Asset ID you want to link a Document to: ";
@@ -190,14 +197,14 @@ void LabAssetManager::main(){
         }
   	  	
 		}
-		else if (choice == "18") { // NEW option: View Documents per Asset
+		else if (choice == "20") { // NEW option: View Documents per Asset
    	 	cout << "Enter Asset ID to view attachments: ";
     	int aID;
     	cin >> aID;
     	cin.ignore();
     	Assets(system).viewDocumentsPerAsset(aID);
 }
-		else if (choice == "19") {
+		else if (choice == "21") {
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
@@ -749,7 +756,7 @@ bool LabAssetManager::cancelReservation() {
 
     // Confirmation prompt
     cout << "Are you sure you want to cancel " << deleteCount 
-         << " reservation(s) for Asset ID " << assetID << "? (Y/N): ";
+         << " reservation(s) for Asset ID " << assetID << "? (y/n): ";
 
     char choice;
     cin >> choice;
@@ -759,7 +766,11 @@ bool LabAssetManager::cancelReservation() {
         cout << "Cancellation aborted.\n";
         return false;
     }
-
+	
+	string reason;
+	cout << "Enter reason for cancellation: ";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	getline(cin, reason);
 	// Remove reservations
     for (auto& user : accounts) {
         if (!user.contains("reservations")) continue;
@@ -785,7 +796,7 @@ bool LabAssetManager::cancelReservation() {
     outFile << setw(4) << accounts;
     outFile.close();
 
-    cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully.\n";
-
+    cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully. with reason: " << reason << endl;
+	system->update_usage_log("Reservation(s) for Asset ID " + to_string(assetID) + " canceled. Reason: " + reason);
     return true;
 }
