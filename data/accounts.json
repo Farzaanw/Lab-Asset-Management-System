@@ -1,10 +1,8 @@
 [
     {
-        "id": 1,
-        "email": "studentemail",
-        "password": "studentpass",
-        "role": "research student",
         "clearanceLevel": "1",
+        "email": "studentemail",
+        "id": 1,
         "notifications": [
             {
                 "message": "A research student attempted to reserve a restricted asset.",
@@ -17,15 +15,8 @@
                 "type": "restricted_reservation_attempt"
             }
         ],
+        "password": "studentpass",
         "reservations": [
-            {
-                "assetID": 2,
-                "assetName": "Fillament",
-                "endDate": "2026-11-15",
-                "reason": "",
-                "startDate": "2026-10-11",
-                "status": "approved"
-            },
             {
                 "assetID": 4,
                 "assetName": "gloves",
@@ -42,53 +33,62 @@
                 "startDate": "2027-01-01",
                 "status": "approved"
             }
-        ]
+        ],
+        "role": "research student"
     },
     {
-        "id": 2,
-        "email": "facultyemail",
-        "password": "facultypass",
-        "role": "faculty researcher",
         "clearanceLevel": "2",
+        "email": "facultyemail",
+        "id": 2,
         "notifications": [],
-        "reservations": []
+        "password": "facultypass",
+        "reservations": [
+            {
+                "assetID": 1,
+                "assetName": "Celestron EdgeHD 800 Microscope",
+                "endDate": "2024-03-03 00:00:00",
+                "reason": "",
+                "startDate": "2025-03-03 00:00:00",
+                "status": "approved"
+            }
+        ],
+        "role": "faculty researcher"
     },
     {
-        "id": 3,
+        "clearanceLevel": "",
         "email": "labmanageremail",
-        "password": "labmanagerpass",
-        "role": "lab manager",
-        "clearanceLevel": "",
+        "id": 3,
         "notifications": [],
-        "reservations": []
+        "password": "labmanagerpass",
+        "reservations": [],
+        "role": "lab manager"
     },
     {
-        "id": 4,
-        "email": "LAMemail",
-        "password": "LAMpass",
-        "role": "lab asset manager",
         "clearanceLevel": "",
+        "email": "LAMemail",
+        "id": 4,
         "notifications": [
             {
-                "message": "Multiple failed login attempts detected for email: qwe",
+                "message": "Multiple failed login attempts detected for email: sad",
                 "metaData": {
                     "attempts": 5,
-                    "email": "qwe"
+                    "email": "sad"
                 },
-                "notificationID": "1",
-                "timeStamp": "2025-12-06 21:03:39",
+                "timeStamp": "2025-12-07 21:29:02",
                 "type": "security_alert"
             }
         ],
-        "reservations": []
+        "password": "LAMpass",
+        "reservations": [],
+        "role": "lab asset manager"
     },
     {
-        "id": 5,
-        "email": "McToodle@oregonstate.edu",
-        "password": "ResearchStudent22!",
-        "role": "research student",
         "clearanceLevel": "1",
+        "email": "McToodle@oregonstate.edu",
+        "id": 5,
         "notifications": [],
-        "reservations": []
+        "password": "ResearchStudent22!",
+        "reservations": [],
+        "role": "research student"
     }
 ]

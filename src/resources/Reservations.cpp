@@ -220,13 +220,11 @@ bool Reservations::reserveAsset(const std::string& email) {
 
     // Build notification JSON payload
     json notifData = {
-        {"notificationID", "LAM-" + std::to_string(time(nullptr))},
         {"type", "reservation_request"},
         {"message", "Reservation request requires approval for asset: " + 
                      (*targetAsset)["name"].get<string>() +
                      " (ID: " + std::to_string(assetID) + ") by user: " + email},
         {"timeStamp", startDate},
-        {"urgency", true},
         {"requester", email},
         {"assetID", assetID},
         {"startDate", startDate},
