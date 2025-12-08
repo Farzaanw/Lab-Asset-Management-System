@@ -44,6 +44,8 @@ void Notifications::display_notification(const json& notif) const {
         std::cout << "Type: " << notif["type"] << "\n";
     if (notif.contains("timeStamp") && !notif["timeStamp"].is_null())
         std::cout << "Timestamp: " << notif["timeStamp"] << "\n";
+    if (notif.contains("reason") && !notif["reason"].is_null())
+        std::cout << "Reason: " << notif["reason"] << "\n";
     std::cout << "------------------------------\n";
 }
 
@@ -195,13 +197,6 @@ void Notifications::approve_reservation(const std::string& managerEmail,
                                         const std::string& requesterEmail,
                                         const json& notification,
                                         json& accounts) const {
-    // Send approval notification
-    send_notifications(requesterEmail, "", {
-        {"message", "Your reservation request has been approved."},
-        {"type", "reservation_update"},
-        {"timeStamp", get_current_time()}
-    });
-
     // Extract notification details
     int assetID = notification["assetID"];
     std::string startDate = notification["startDate"];
@@ -221,6 +216,12 @@ void Notifications::approve_reservation(const std::string& managerEmail,
                     }
                 }
             }
+            // send notification to the user that their reservation was approved
+            send_notifications(requesterEmail, "", {
+                {"message", "Your reservation request has been approved."},
+                {"type", "reservation_update"},
+                {"timeStamp", get_current_time()}
+            });
             break;
         }
     }
@@ -261,13 +262,6 @@ void Notifications::approve_reservation(const std::string& managerEmail,
 // Helper: Reject a reservation
 void Notifications::reject_reservation(const std::string& requesterEmail,
                                        const json& notification) const {
-    // Send rejection notification
-    send_notifications(requesterEmail, "", {
-        {"message", "Your reservation request has been rejected."},
-        {"type", "reservation_update"},
-        {"timeStamp", get_current_time()}
-    });
-
     // Extract notification details
     int assetID = notification["assetID"];
     std::string startDate = notification["startDate"];
@@ -301,6 +295,12 @@ void Notifications::reject_reservation(const std::string& requesterEmail,
                     }
                 }
             }
+            // send notification to the user that their reservation was rejected
+            send_notifications(requesterEmail, "", {
+                {"message", "Your reservation request has been rejected."},
+                {"type", "reservation_update"},
+                {"timeStamp", get_current_time()}
+            });
             break;
         }
     }
