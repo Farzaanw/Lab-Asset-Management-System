@@ -907,3 +907,78 @@ bool Assets::adjustSeatUsage(int assetID, int amount, bool &becameFull) {
 	if (sysController) sysController->update_usage_log("Seat usage adjusted");
 	return true;
 }
+
+bool Assets::attachDocumentToAsset(int assetID, int documentID) {
+    json assets;
+    ifstream inFile("../../data/assets.json");
+    if (!inFile.is_open()) return false;
+    inFile >> assets;
+    inFile.close();
+
+    bool found = false;
+    for (auto& asset : assets) {
+        if (asset["id"] == assetID) {
+            // Check if document field exists, if not, create array
+            if (!asset.contains("documents")) {
+                asset["documents"] = json::array();
+            }
+            
+            // Check for duplicates
+            bool exists = false;
+            for(auto& docId : asset["documents"]) {
+                if(docId == documentID) exists = true;
+            }
+
+            if (!exists) {
+                asset["documents"].push_back(documentID);
+                found = true;
+            } else {
+                cout << "Document already attached to this asset." << endl;
+                return false;
+            }
+            break;
+        }
+    }
+
+    if (found) {
+        ofstream outFile("../../data/assets.json");
+        outFile << setw(4) << assets << endl;
+        return true;
+    }
+    return false;
+}
+
+bool Assets::viewDocumentsPerAsset(int assetID) {
+    // 1. Find asset in assets.json to get its attached doc IDs
+    json assets, docs;
+    ifstream assetFile("../../data/assets.json");
+    ifstream docFile("../../data/documents.json");
+    if (!assetFile.is_open() || !docFile.is_open()) return false;
+    
+    assetFile >> assets;
+    docFile >> docs;
+    assetFile.close(); docFile.close();
+
+    for (const auto& asset : assets) {
+        if (asset["id"] == assetID) {
+            if (!asset.contains("documents") || asset["documents"].empty()) {
+                cout << "No documents attached to this asset." << endl;
+                return true;
+            }
+
+            cout << "\n--- Documents for Asset: " << asset["name"] << " ---\n";
+            for (auto& docId : asset["documents"]) {
+                for (const auto& doc : docs) {
+                    if (doc["documentId"] == docId) {
+                        cout << "Doc ID: " << doc["documentId"] 
+                             << " | Type: " << doc["type"] 
+                             << " | Path: " << doc["filePath"] << endl;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+    cout << "Asset not found." << endl;
+    return false;
+}
