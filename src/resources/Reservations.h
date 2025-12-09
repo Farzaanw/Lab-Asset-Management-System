@@ -20,35 +20,38 @@ using namespace std;
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-
-class Reservations {
+class Reservations
+{
 private:
     // empty
-    SystemController* sysController;
+    SystemController *sysController;
+
 public:
+    Reservations(SystemController *sc) : sysController(sc) {}
 
-    Reservations(SystemController* sc) : sysController(sc) {}
+    int reserveAsset(const std::string &email);
 
-    int reserveAsset(const std::string& email);
+    bool reserveMultipleAssets(const std::string &email);
 
-    bool reserveMultipleAssets(const std::string& email);
+    bool viewMyReservations(const std::string &email);
 
-    bool viewMyReservations(const std::string& email);
-
-    bool cancelReservation(const std::string& email);
+    bool cancelReservation(const std::string &email);
 
     bool autoExpireReservations();
 
-    bool hasOverlapForAsset(int assetID, std::time_t startT, std::time_t endT, const nlohmann::json& accounts) const;
+    bool hasOverlapForAsset(int assetID, std::time_t startT, std::time_t endT, const nlohmann::json &accounts) const;
 
-    bool markOverdueAndNotify(int graceMinutes = 0);
+    bool markOverdueAndNotify(int graceMinutes = 15);
 
-    bool viewAllReservations();  
+    bool viewAllReservations();
 
-    bool overrideReservation(int assetID, const std::string& reason);
+    bool overrideReservation(int assetID, const std::string &reason);
 
-    bool approvePending(int assetID, const std::string& userEmail, bool approve);
+    bool approvePending(int assetID, const std::string &userEmail, bool approve);
 
+    bool checkOut(const std::string &email);
+
+    bool checkIn(const std::string &email);
 };
 
 #endif

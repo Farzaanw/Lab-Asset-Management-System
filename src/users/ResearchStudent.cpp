@@ -1,7 +1,7 @@
-//CS-2: ResearchStudent.cpp
-//Author: Jacob Munly
-//Supports: UR-200 to UR-230, UR-303, UR-331
-//Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
+// CS-2: ResearchStudent.cpp
+// Author: Jacob Munly
+// Supports: UR-200 to UR-230, UR-303, UR-331
+// Collaborators: LabManager[1], FacultyResearcher[1], Reservation[*], Assets[*]
 
 #include <iostream>
 #include <fstream>
@@ -15,41 +15,48 @@
 #include "../SystemController.h"
 #include "../library/nlohmann/json.hpp"
 #include "../resources/Notifications.h"
-static Assets* a = nullptr;
-static Reservations* r = nullptr;
+static Assets *a = nullptr;
+static Reservations *r = nullptr;
 static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
-//Constructor
-ResearchStudent::ResearchStudent(const std::string& email,
-                                 SystemController* sys)
+// Constructor
+ResearchStudent::ResearchStudent(const std::string &email,
+                                 SystemController *sys)
     : User(email, sys),
       system(sys) {}
 
-//Destructor
+// Destructor
 ResearchStudent::~ResearchStudent() {}
 
-//Override getRole
-std::string ResearchStudent::getRole() const {
+// Override getRole
+std::string ResearchStudent::getRole() const
+{
     return "research student";
 }
 
-//Main menu
-void ResearchStudent::main() {
-    if (r == nullptr) {
+// Main menu
+void ResearchStudent::main()
+{
+    if (r == nullptr)
+    {
         r = new Reservations(system);
     }
-    if (a == nullptr) {
+    if (a == nullptr)
+    {
         a = new Assets(system);
     }
 
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() << endl;
-    cout << "=============================================" << endl;
+    cout << "=============================================\n"
+         << endl;
 
-    while(true) {
-        cout << endl << "---Research Student Main Menu---" << endl;
+    while (true)
+    {
+        cout << endl
+             << "---Research Student Main Menu---" << endl;
         cout << "1. Reserve Asset" << endl;
         cout << "2. Return Asset" << endl;
         cout << "3. View Available Assets" << endl;
@@ -57,45 +64,58 @@ void ResearchStudent::main() {
         cout << "5. View My Reservations" << endl;
         cout << "6. View Notifications" << endl;
         cout << "7. Cancel Reservation" << endl;
-        //cout << "8. Submit Usage Feedback" << endl;
-        //cout << "9. Update Profile" << endl;
-        cout << "8. Logout" << endl;
+        // cout << "8. Submit Usage Feedback" << endl;
+        // cout << "9. Update Profile" << endl;
+        cout << "8. Check-Out (start)" << endl;
+        cout << "9. Check-In (return)" << endl;
+        cout << "10. Logout" << endl;
         cout << "Please enter your choice: ";
-        
+
         string choice;
         getline(cin, choice);
         cout << endl;
 
-        if (choice == "1") {
+        if (choice == "1")
+        {
             string email = getEmail();
             int result = r->reserveAsset(email);
-            if (result == 0){
+            if (result == 0)
+            {
                 cout << "Asset officially reserved." << endl;
-            } else if (result == 2) {
+            }
+            else if (result == 2)
+            {
                 cout << "Asset reservation requires approval. Request sent to Lab Manager." << endl;
             }
-            else {
+            else
+            {
                 cout << "Asset reservation failed." << endl;
             }
         }
-        else if (choice == "2") {
+        else if (choice == "2")
+        {
             string email = getEmail();
             a->return_asset(email);
         }
-        else if (choice == "3") {
+        else if (choice == "3")
+        {
             a->viewAvailableAssets();
         }
-        else if (choice == "4") {
+        else if (choice == "4")
+        {
             a->searchAssets("", ""); // Will prompt inside function
         }
-        else if (choice == "5") {
+        else if (choice == "5")
+        {
             string email = getEmail();
             r->viewMyReservations(email);
         }
-        else if (choice == "6") {
-            n.view_notifications(getEmail());      
+        else if (choice == "6")
+        {
+            n.view_notifications(getEmail());
         }
-        else if (choice == "7") {
+        else if (choice == "7")
+        {
             string email = getEmail();
             r->cancelReservation(email); // Will prompt inside function
         }
@@ -120,17 +140,25 @@ void ResearchStudent::main() {
             updateUserProfile(newEmail);
         }
         */
-        else if (choice == "8") {
+        else if (choice == "8")
+        {
+            Reservations(system).checkOut(getEmail());
+        }
+        else if (choice == "9")
+        {
+            Reservations(system).checkIn(getEmail());
+        }
+        else if (choice == "10")
+        {
             cout << "Logging out of Research Student." << endl;
             break;
         }
-        else {
+        else
+        {
             cout << "Invalid choice. Please try again." << endl;
         }
     }
 }
-
-
 /*
 // Append a usage log entry describing the reservation
 bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, const std::string& startTime, const std::string& endTime) {
@@ -220,12 +248,12 @@ bool ResearchStudent::appendUsageLog(const std::string& email, int assetID, cons
 //record feedback on an asset after use
 bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& comments, int rating) {
     cout << "--- Submit Usage Feedback ---\n" << endl;
-    
+
     if (rating < 1 || rating > 5) {
         cout << "Error: Rating must be between 1 and 5!" << endl;
         return false;
     }
-    
+
     // Load existing feedback
     json feedbackData;
     ifstream inFile("../../data/feedback.json");
@@ -235,7 +263,7 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
     } else {
         feedbackData = json::array();
     }
-    
+
     // Create new feedback entry
     json newFeedback = {
         {"equipmentID", equipmentID},
@@ -243,14 +271,14 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
         {"rating", rating},
         {"timestamp", time(nullptr)}
     };
-    
+
     feedbackData.push_back(newFeedback);
-    
+
     // Save back to file
     ofstream outFile("../../data/feedback.json");
     outFile << setw(4) << feedbackData << endl;
     outFile.close();
-    
+
     cout << "Feedback submitted successfully!" << endl;
     system->update_usage_log("User submitted feedback");
     return true;
@@ -258,12 +286,11 @@ bool ResearchStudent::submitUsageFeedback(int equipmentID, const std::string& co
 
 */
 
-
 /*
 //update profile information
 bool ResearchStudent::updateUserProfile(const std::string& newEmail) {
     cout << "--- Update User Profile ---\n" << endl;
-    
+
     json accounts;
     ifstream inFile("../../data/accounts.json");
     if (!inFile.is_open()) {
@@ -272,7 +299,7 @@ bool ResearchStudent::updateUserProfile(const std::string& newEmail) {
     }
     inFile >> accounts;
     inFile.close();
-    
+
     // Find and update the student's profile
     bool found = false;
     for (auto& account : accounts) {
@@ -282,17 +309,17 @@ bool ResearchStudent::updateUserProfile(const std::string& newEmail) {
             break;
         }
     }
-    
+
     if (!found) {
         cout << "Error: Could not find user profile!" << endl;
         return false;
     }
-    
+
     // Save back
     ofstream outFile("../../data/accounts.json");
     outFile << setw(4) << accounts << endl;
     outFile.close();
-    
+
     cout << "Profile updated successfully!" << endl;
     system->update_usage_log("User updated profile");
     return true;

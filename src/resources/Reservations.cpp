@@ -2,21 +2,49 @@
 #include "../users/ResearchStudent.h"
 #include "Assets.h"
 #include "../SystemController.h"
+#include "../resources/Notifications.h"
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+#include <fstream>
 
-using namespace std;
+// Helps to read int policy values that might be string/number.
+static int read_policy_int(const nlohmann::json &j, const std::string &key, int defVal)
+{
+    if (!j.contains(key))
+        return defVal;
+    const auto &v = j.at(key);
+    if (v.is_number_integer())
+        return v.get<int>();
+    if (v.is_string())
+    {
+        try
+        {
+            return std::stoi(v.get<std::string>());
+        }
+        catch (...)
+        {
+            return defVal;
+        }
+    }
+    return defVal;
+}
 
-//ASSETS
-//reserve an asset, returns a int
-int Reservations::reserveAsset(const std::string& email) {
-    cout << "--- Reserve Asset ---" << endl;
-    
+// ASSETS
+// reserve an asset, returns a int
+int Reservations::reserveAsset(const std::string &email)
+{
+    cout << "--- Reserve Asset ---\n"
+         << endl;
+
     // Get all available assets
     json assets;
     ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
+    if (!inFile.is_open())
+    {
         cerr << "Error: Could not open assets.json" << endl;
         sysController->update_usage_log("Error opening json file");
-        return -1; 
+        return -1;
     }
     inFile >> assets;
     inFile.close();
@@ -24,7 +52,8 @@ int Reservations::reserveAsset(const std::string& email) {
     // ---------- get all accounts ----------
     json accounts;
     ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
+    if (!accountsIn.is_open())
+    {
         cerr << "Error: Could not open accounts.json" << endl;
         sysController->update_usage_log("Error opening json file");
         return -1;
@@ -34,83 +63,128 @@ int Reservations::reserveAsset(const std::string& email) {
     // --------------------------------------------------
 
     // First, show available assets
-    cout << "Available Assets:\n" << endl;
+    cout << "Available Assets:\n"
+         << endl;
     bool hasAvailable = false;
-    for (const auto& asset : assets) {
+    for (const auto &asset : assets)
+    {
         std::string category = asset.value("category", string(""));
         bool available = false;
         std::string status = asset.value("operationalStatus", string(""));
-        if (status == "available") available = true;
-        if (category == "consumable") {
+        if (status == "available")
+            available = true;
+        if (category == "consumable")
+        {
             int stock = 0;
-            if (asset.contains("stock")) {
-                if (asset["stock"].is_number()) stock = asset["stock"].get<int>();
-                else if (asset["stock"].is_string()) {
-                    try { stock = stoi(asset["stock"].get<string>()); } catch(...) { stock = 0; }
+            if (asset.contains("stock"))
+            {
+                if (asset["stock"].is_number())
+                    stock = asset["stock"].get<int>();
+                else if (asset["stock"].is_string())
+                {
+                    try
+                    {
+                        stock = stoi(asset["stock"].get<string>());
+                    }
+                    catch (...)
+                    {
+                        stock = 0;
+                    }
                 }
             }
-            if (stock > 0) available = true;
+            if (stock > 0)
+                available = true;
         }
-        if (category == "software") {
+        if (category == "software")
+        {
             int seatCount = 0, inUse = 0;
-            if (asset.contains("seatCount")) {
-                if (asset["seatCount"].is_number()) seatCount = asset["seatCount"].get<int>();
-                else if (asset["seatCount"].is_string()) {
-                    try { seatCount = stoi(asset["seatCount"].get<string>()); } catch(...) { seatCount = 0; }
+            if (asset.contains("seatCount"))
+            {
+                if (asset["seatCount"].is_number())
+                    seatCount = asset["seatCount"].get<int>();
+                else if (asset["seatCount"].is_string())
+                {
+                    try
+                    {
+                        seatCount = stoi(asset["seatCount"].get<string>());
+                    }
+                    catch (...)
+                    {
+                        seatCount = 0;
+                    }
                 }
             }
-            if (asset.contains("seatsInUse")) {
-                if (asset["seatsInUse"].is_number()) inUse = asset["seatsInUse"].get<int>();
-                else if (asset["seatsInUse"].is_string()) {
-                    try { inUse = stoi(asset["seatsInUse"].get<string>()); } catch(...) { inUse = 0; }
+            if (asset.contains("seatsInUse"))
+            {
+                if (asset["seatsInUse"].is_number())
+                    inUse = asset["seatsInUse"].get<int>();
+                else if (asset["seatsInUse"].is_string())
+                {
+                    try
+                    {
+                        inUse = stoi(asset["seatsInUse"].get<string>());
+                    }
+                    catch (...)
+                    {
+                        inUse = 0;
+                    }
                 }
             }
-            if (seatCount == 0 || inUse < seatCount) available = true;
+            if (seatCount == 0 || inUse < seatCount)
+                available = true;
         }
-        if (available) {
-            cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
+        if (available)
+        {
+            cout << "ID: " << asset["id"] << " | Name: " << asset["name"]
                  << " | Category: " << asset["category"] << endl;
             hasAvailable = true;
         }
     }
 
-    if (!hasAvailable) {
+    if (!hasAvailable)
+    {
         cout << "No assets currently available for reservation." << endl;
         sysController->update_usage_log("Reservation canceled, no available assets");
         return -1;
     }
 
-    cout << "\n-----------------------------------\n" << endl;
+    cout << "\n-----------------------------------\n"
+         << endl;
     int assetID;
     string startInput, endInput, reason, startDate, endDate;
-    
+
     cout << "Please enter the AssetID you would like to reserve(type \"0\" to return to menu): ";
     cin >> assetID;
     cin.ignore();
 
-    if(assetID == 0) {
+    if (assetID == 0)
+    {
         cout << "Reserve asset cancelled" << endl;
         sysController->update_usage_log("Reserve asset cancelled");
         return -1;
-	}
+    }
 
-    //find the right asset
-    json* targetAsset = nullptr;
-    for (auto& asset : assets) {
-        if (asset["id"].get<int>() == assetID) {
+    // find the right asset
+    json *targetAsset = nullptr;
+    for (auto &asset : assets)
+    {
+        if (asset["id"].get<int>() == assetID)
+        {
             targetAsset = &asset;
             break;
         }
     }
-    if (!targetAsset) {
+    if (!targetAsset)
+    {
         cout << "Error: Asset ID " << assetID << " not found!" << endl;
         sysController->update_usage_log("Reservation canceled, asset not found");
         return -1;
     }
 
-    //check if its available
+    // check if its available
     string status = (*targetAsset)["operationalStatus"].get<string>();
-    if (status != "available") {
+    if (status != "available")
+    {
         cout << "Error: Asset is not available!" << endl;
         cout << "Current Status: " << status << endl;
         sysController->update_usage_log("Reservation canceled, asset not availble");
@@ -119,37 +193,71 @@ int Reservations::reserveAsset(const std::string& email) {
     // New Validation: Stock/Seat Availability Check
     std::string category = (*targetAsset).value("category", std::string(""));
 
-    if (category == "consumable") {
+    if (category == "consumable")
+    {
         int stock = 0;
-        if ((*targetAsset).contains("stock")) {
-            if ((*targetAsset)["stock"].is_number()) stock = (*targetAsset)["stock"].get<int>();
-            else if ((*targetAsset)["stock"].is_string()) {
-                try { stock = stoi((*targetAsset)["stock"].get<std::string>()); } catch(...) { stock = 0; }
+        if ((*targetAsset).contains("stock"))
+        {
+            if ((*targetAsset)["stock"].is_number())
+                stock = (*targetAsset)["stock"].get<int>();
+            else if ((*targetAsset)["stock"].is_string())
+            {
+                try
+                {
+                    stock = stoi((*targetAsset)["stock"].get<std::string>());
+                }
+                catch (...)
+                {
+                    stock = 0;
+                }
             }
         }
         // STOP if stock is zero
-        if (stock <= 0) {
+        if (stock <= 0)
+        {
             std::cout << "Error: This consumable is out of stock and cannot be reserved." << std::endl;
             sysController->update_usage_log("Reservation failed: Consumable out of stock");
             return -1;
         }
-    } else if (category == "software") {
+    }
+    else if (category == "software")
+    {
         int seatCount = 0, inUse = 0;
-        
-        if ((*targetAsset).contains("seatCount")) {
-            if ((*targetAsset)["seatCount"].is_number()) seatCount = (*targetAsset)["seatCount"].get<int>();
-            else if ((*targetAsset)["seatCount"].is_string()) {
-                try { seatCount = stoi((*targetAsset)["seatCount"].get<std::string>()); } catch(...) { seatCount = 0; }
+        if ((*targetAsset).contains("seatCount"))
+        {
+            if ((*targetAsset)["seatCount"].is_number())
+                seatCount = (*targetAsset)["seatCount"].get<int>();
+            else if ((*targetAsset)["seatCount"].is_string())
+            {
+                try
+                {
+                    seatCount = stoi((*targetAsset)["seatCount"].get<std::string>());
+                }
+                catch (...)
+                {
+                    seatCount = 0;
+                }
             }
         }
-        if ((*targetAsset).contains("seatsInUse")) {
-            if ((*targetAsset)["seatsInUse"].is_number()) inUse = (*targetAsset)["seatsInUse"].get<int>();
-            else if ((*targetAsset)["seatsInUse"].is_string()) {
-                try { inUse = stoi((*targetAsset)["seatsInUse"].get<std::string>()); } catch(...) { inUse = 0; }
+        if ((*targetAsset).contains("seatsInUse"))
+        {
+            if ((*targetAsset)["seatsInUse"].is_number())
+                inUse = (*targetAsset)["seatsInUse"].get<int>();
+            else if ((*targetAsset)["seatsInUse"].is_string())
+            {
+                try
+                {
+                    inUse = stoi((*targetAsset)["seatsInUse"].get<std::string>());
+                }
+                catch (...)
+                {
+                    inUse = 0;
+                }
             }
         }
         // STOP if seats are at capacity
-        if (seatCount > 0 && inUse >= seatCount) {
+        if (seatCount > 0 && inUse >= seatCount)
+        {
             std::cout << "Error: All seats for this software are currently in use." << std::endl;
             sysController->update_usage_log("Reservation failed: Software seats full");
             return -1;
@@ -161,7 +269,7 @@ int Reservations::reserveAsset(const std::string& email) {
     getline(cin, startInput);
     cout << "Enter End Time (YYYY-MM-DD HH:MM): ";
     getline(cin, endInput);
-    //This gets the time and date as strings, this is correct format
+    // This gets the time and date as strings, this is correct format
 
     tm startTm = {};
     tm endTm = {};
@@ -172,22 +280,24 @@ int Reservations::reserveAsset(const std::string& email) {
     endStream >> get_time(&endTm, "%Y-%m-%d %H:%M");
 
     // Validate dates
-    if (startStream.fail() || endStream.fail()) {
+    if (startStream.fail() || endStream.fail())
+    {
         cout << "Error: Invalid date format!" << endl;
         sysController->update_usage_log("Reservation canceled, invaild date format");
 
         return -1;
     }
 
-    //convert to actual time and date
+    // convert to actual time and date
     time_t startTimeT = mktime(&startTm);
     time_t endTimeT = mktime(&endTm);
 
-    if (startTimeT == -1 || endTimeT == -1) {
+    if (startTimeT == -1 || endTimeT == -1)
+    {
         cout << "Error: Invalid date/time values!" << endl;
         sysController->update_usage_log("Reservation canceled, invalid date/time");
         return -1;
-    }   
+    }
 
     std::ostringstream startOut, endOut;
     startOut << std::put_time(&startTm, "%Y-%m-%d %H:%M:%S");
@@ -195,30 +305,95 @@ int Reservations::reserveAsset(const std::string& email) {
     startDate = startOut.str();
     endDate = endOut.str();
 
+    {
+        nlohmann::json policies;
+        std::ifstream polIn("../../data/policies.json");
+        if (polIn.is_open())
+        {
+            try
+            {
+                polIn >> policies;
+            }
+            catch (...)
+            {
+                policies = nlohmann::json::object();
+            }
+            polIn.close();
+        }
+        else
+        {
+            policies = nlohmann::json::object();
+        }
+
+        // Use your helper to read ints whether stored as "123" or 123
+        int maxHours = read_policy_int(policies, "MAXBOOKINGDURATION", 999999);
+        int horizonDays = read_policy_int(policies, "ADVANCEBOOKINGHORIZON", 999999);
+
+        // You already computed startTimeT / endTimeT above
+        std::time_t now = std::time(nullptr);
+        double hours = std::difftime(endTimeT, startTimeT) / 3600.0;
+        double daysAhead = std::difftime(startTimeT, now) / 86400.0;
+
+        if (hours > maxHours)
+        {
+            std::cout << "Reservation rejected: exceeds max booking duration of "
+                      << maxHours << " hour(s).\n";
+            if (sysController)
+                sysController->update_usage_log(
+                    "Reservation rejected (MAXBOOKINGDURATION) for " + email);
+            return -1;
+        }
+        if (daysAhead > horizonDays)
+        {
+            std::cout << "Reservation rejected: start time exceeds advance booking horizon of "
+                      << horizonDays << " day(s).\n";
+            if (sysController)
+                sysController->update_usage_log(
+                    "Reservation rejected (ADVANCEBOOKINGHORIZON) for " + email);
+            return -1;
+        }
+    }
+
     // --------- find the user's account info
-    json* targetUser = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == email) {
+    json *targetUser = nullptr;
+    for (auto &account : accounts)
+    {
+        if (account.contains("email") && account["email"].is_string() && account["email"].get<std::string>() == email)
+        {
             targetUser = &account;
             break;
         }
     }
-
+    if (!targetUser)
+    {
+        std::cout << "Error: User account not found!" << std::endl;
+        if (sysController)
+            sysController->update_usage_log("Error: Account not found");
+        return -1;
+    }
     // -----------------------------------------
-
     // MAKING RESERVATION OR SENDING FOR APPROVAL
-
     // -----------------------------------------
-    
     // Get user's clerance level (ADDED HERE)
-    string userClearanceLevel = (*targetUser)["clearanceLevel"].get<string>();
+    auto read_clearance = [](const json &obj, const std::string &key, const std::string &def) -> std::string
+    {
+        if (!obj.contains(key) || obj[key].is_null())
+            return def;
+        if (obj[key].is_string())
+            return obj[key].get<std::string>();
+        if (obj[key].is_number_integer())
+            return std::to_string(obj[key].get<int>());
+        if (obj[key].is_number())
+            return std::to_string(static_cast<int>(obj[key].get<double>()));
+        return def;
+    };
+    std::string userClearanceLevel = read_clearance(*targetUser, "clearanceLevel", "1");
+    std::string assetClearanceLevel = read_clearance(*targetAsset, "clearanceLevel", "1");
 
-    // Get asset clearance level
-    string assetClearanceLevel = (*targetAsset)["clearanceLevel"].get<string>();
-    
     // USER NOT MEET CLEARANCE LEVEL -> REQUIRES APPROVAL
-    if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel)) {
-        cout << "...You do not meet the clearance level required to reserve this asset...\n" << endl;
+    if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel))
+    {
+        cout << "...You do not meet the clearance level required to reserve this asset." << endl;
         cout << "Enter reason for reservation: ";
         getline(cin, reason);
         cout << "This asset requires approval and request has been sent. You will be notified once reviewed." << endl;
@@ -226,18 +401,18 @@ int Reservations::reserveAsset(const std::string& email) {
         // Create reservation entry with "pending" status
         // have asset be incremented from previous asset id
         int newReservationID = 1;
-        if (!(*targetUser)["reservations"].empty()) {
+        if (!(*targetUser)["reservations"].empty())
+        {
             newReservationID = (*targetUser)["reservations"].back()["reservationID"].get<int>() + 1;
         }
         json reservation = {
             {"reservationID", newReservationID},
-            {"assetID", assetID},  
+            {"assetID", assetID},
             {"assetName", (*targetAsset)["name"]},
             {"startDate", startDate},
             {"endDate", endDate},
             {"status", "pending"},
-            {"reason", reason}
-        };
+            {"reason", reason}};
 
         // update the asset's operational status to "pending"
         (*targetAsset)["operationalStatus"] = "pending";
@@ -248,14 +423,18 @@ int Reservations::reserveAsset(const std::string& email) {
 
         // Update user's reservations in accounts.json
         bool userFound = false;
-        for (auto& account : accounts) {
-            if (account["email"].get<string>() == email) {
+        for (auto &account : accounts)
+        {
+            if (account.contains("email") && account["email"].is_string() &&
+                account["email"].get<std::string>() == email)
+            {
                 account["reservations"].push_back(reservation);
                 userFound = true;
                 break;
             }
         }
-        if (!userFound) {
+        if (!userFound)
+        {
             cout << "Error: User account not found!" << endl;
             sysController->update_usage_log("Error: Account not found");
             return -1;
@@ -268,31 +447,30 @@ int Reservations::reserveAsset(const std::string& email) {
         sysController->update_usage_log("Reservation pending, requires approval");
 
         // ----- SEND NOTIFICATION TO ALL LAB ASSET MANAGERS -----
-        // std::cout << "Sending notification to Lab Asset Manager for approval..." << std::endl;
-        Notifications notif;  // Create notification object
+        std::cout << "Sending notification to Lab Asset Manager for approval..." << std::endl;
+        Notifications notif; // Create notification object
 
         // Build notification JSON payload
         json notifData = {
             {"type", "reservation_request"},
-            {"message", "Reservation request requires approval for asset: " + 
-                        (*targetAsset)["name"].get<string>() +
-                        " (ID: " + std::to_string(assetID) + ") by user: " + email},
+            {"message", "Reservation request requires approval for asset: " +
+                            (*targetAsset)["name"].get<string>() +
+                            " (ID: " + std::to_string(assetID) + ") by user: " + email},
             {"reason", reason},
             {"timeStamp", startDate},
             {"requester", email},
             {"assetID", assetID},
             {"startDate", startDate},
-            {"endDate", endDate}
-        };
+            {"endDate", endDate}};
 
         // Call existing notification method
-        notif.send_notifications("", "lab manager", notifData);   // sends notification to all lab managers
+        notif.send_notifications("", "lab manager", notifData); // sends notification to all lab managers
         sysController->update_usage_log("Notification sent to Lab Manager for approval for asset ID: " + std::to_string(assetID) + " by user: " + email);
         // std::cout << "Notification sent." << std::endl;
         return 2; // Indicate that approval is needed
     }
 
-    // ------------------------------------------------------------------------------------   
+    // ------------------------------------------------------------------------------------
     // ELSE --- APPROVE RESERVATION IMMEDIATELY
     std::cout << "You meet the clearance level required to reserve this asset." << std::endl;
     json reservation = {
@@ -301,19 +479,22 @@ int Reservations::reserveAsset(const std::string& email) {
         {"startDate", startDate},
         {"endDate", endDate},
         {"status", "approved"},
-        {"reason", ""}
-    };
+        {"reason", reason}};
 
     // Update user's reservations (reuse already loaded accounts)
     bool userFound = false;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == email) {
+    for (auto &account : accounts)
+    {
+        if (account.contains("email") && account["email"].is_string() &&
+            account["email"].get<std::string>() == email)
+        {
             account["reservations"].push_back(reservation);
             userFound = true;
             break;
         }
     }
-    if (!userFound) {
+    if (!userFound)
+    {
         cout << "Error: User account not found!" << endl;
         sysController->update_usage_log("Error: Account not found");
         return -1;
@@ -323,16 +504,21 @@ int Reservations::reserveAsset(const std::string& email) {
     ofstream accountsOut("../../data/accounts.json");
     accountsOut << setw(4) << accounts << endl;
     accountsOut.close();
-    
+
     // Update asset usage/status depending on type
     Assets a(sysController);
-    if (category == "consumable") {
+    if (category == "consumable")
+    {
         bool becameLow = false;
         a.decrementConsumable(assetID, 1, becameLow);
-    } else if (category == "software") {
+    }
+    else if (category == "software")
+    {
         bool becameFull = false;
         a.adjustSeatUsage(assetID, 1, becameFull);
-    } else {
+    }
+    else
+    {
         // equipment or others -> mark as reserved
         (*targetAsset)["operationalStatus"] = "reserved";
         ofstream outAssetFile("../../data/assets.json");
@@ -340,20 +526,23 @@ int Reservations::reserveAsset(const std::string& email) {
         outAssetFile.close();
     }
 
-   sysController->update_usage_log("Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate);
+    sysController->update_usage_log("Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate);
 
     cout << "Asset reserved successfully!" << endl;
     return 0;
 }
 
-//Reserve multiple assets at once
-bool Reservations::reserveMultipleAssets(const std::string& email) {
-    cout << "--- Reserve Multiple Assets ---\n" << endl;
-    
+// Reserve multiple assets at once
+bool Reservations::reserveMultipleAssets(const std::string &email)
+{
+    cout << "--- Reserve Multiple Assets ---\n"
+         << endl;
+
     // Show available assets
     json assets;
     ifstream inFile("../../data/assets.json");
-    if (!inFile.is_open()) {
+    if (!inFile.is_open())
+    {
         cerr << "Error: Could not open assets.json" << endl;
         sysController->update_usage_log("Error opening json file");
         return false;
@@ -361,38 +550,45 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     inFile >> assets;
     inFile.close();
 
-    cout << "Available Assets:\n" << endl;
+    cout << "Available Assets:\n"
+         << endl;
     bool hasAvailable = false;
-    for (const auto& asset : assets) {
-        if (asset["operationalStatus"] == "available") {
-            cout << "ID: " << asset["id"] << " | Name: " << asset["name"] 
+    for (const auto &asset : assets)
+    {
+        if (asset["operationalStatus"] == "available")
+        {
+            cout << "ID: " << asset["id"] << " | Name: " << asset["name"]
                  << " | Category: " << asset["category"] << endl;
             hasAvailable = true;
         }
     }
 
-    if (!hasAvailable) {
+    if (!hasAvailable)
+    {
         cout << "No assets currently available for reservation." << endl;
         sysController->update_usage_log("Reservation canceled, no available assets");
         return false;
     }
 
-    cout << "\n-----------------------------------\n" << endl;
-    
+    cout << "\n-----------------------------------\n"
+         << endl;
+
     cout << "How many assets would you like to reserve(type \"0\" to return to menu)?";
     int numAssets;
     cin >> numAssets;
     cin.ignore();
 
-    if(numAssets == 0) {
+    if (numAssets == 0)
+    {
         cout << "Reserve assets cancelled" << endl;
         sysController->update_usage_log("Reserve assets cancelled");
         return false;
-	}
-    
-    if (numAssets < 0) {
+    }
+
+    if (numAssets < 0)
+    {
         cout << "Invalid number of assets." << endl;
-        sysController->update_usage_log("Reservation canceled, invalid input");        
+        sysController->update_usage_log("Reservation canceled, invalid input");
         return false;
     }
 
@@ -402,10 +598,76 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     cout << "Enter End Date (YYYY-MM-DD) for all assets: ";
     getline(cin, endDate);
 
+    {
+        // Parse YYYY-MM-DD into time_t (00:00:00 local time)
+        std::tm sTm{};
+        std::istringstream ssS(startDate);
+        ssS >> std::get_time(&sTm, "%Y-%m-%d");
+        std::tm eTm{};
+        std::istringstream ssE(endDate);
+        ssE >> std::get_time(&eTm, "%Y-%m-%d");
+        std::time_t startT = std::mktime(&sTm);
+        std::time_t endT = std::mktime(&eTm);
+
+        if (ssS.fail() || ssE.fail() || startT == -1 || endT == -1)
+        {
+            std::cout << "Error: Invalid batch date format.\n";
+            if (sysController)
+                sysController->update_usage_log("Batch reservation rejected: invalid dates");
+            return false;
+        }
+
+        nlohmann::json policies;
+        std::ifstream polIn("../../data/policies.json");
+        if (polIn.is_open())
+        {
+            try
+            {
+                polIn >> policies;
+            }
+            catch (...)
+            {
+                policies = nlohmann::json::object();
+            }
+            polIn.close();
+        }
+        else
+        {
+            policies = nlohmann::json::object();
+        }
+
+        int maxHours = read_policy_int(policies, "MAXBOOKINGDURATION", 999999);
+        int horizonDays = read_policy_int(policies, "ADVANCEBOOKINGHORIZON", 999999);
+
+        std::time_t now = std::time(nullptr);
+        double hours = std::difftime(endT, startT) / 3600.0;
+        double daysAhead = std::difftime(startT, now) / 86400.0;
+
+        if (hours > maxHours)
+        {
+            std::cout << "Reservation rejected: exceeds max booking duration of "
+                      << maxHours << " hour(s) for batch request.\n";
+            if (sysController)
+                sysController->update_usage_log(
+                    "Batch reservation rejected (MAXBOOKINGDURATION) for " + email);
+            return false;
+        }
+        if (daysAhead > horizonDays)
+        {
+            std::cout << "Reservation rejected: start time exceeds advance booking horizon of "
+                      << horizonDays << " day(s) for batch request.\n";
+            if (sysController)
+                sysController->update_usage_log(
+                    "Batch reservation rejected (ADVANCEBOOKINGHORIZON) for " + email);
+            return false;
+        }
+    }
+
     // Load accounts
     json accounts;
     ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
+    if (!accountsIn.is_open())
+    {
         cerr << "Error: Could not open accounts.json" << endl;
         sysController->update_usage_log("Error opening json file");
         return false;
@@ -414,24 +676,28 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     accountsIn.close();
 
     vector<int> assetIDs;
-    for (int i = 0; i < numAssets; i++) {
+    for (int i = 0; i < numAssets; i++)
+    {
         int assetID;
         cout << "Enter Asset ID #" << (i + 1) << ": ";
         cin >> assetID;
         cin.ignore();
-        
+
         // Verify asset exists and is available
         bool found = false;
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID && 
-                asset["operationalStatus"] == "available") {
+        for (auto &asset : assets)
+        {
+            if (asset["id"].get<int>() == assetID &&
+                asset["operationalStatus"] == "available")
+            {
                 assetIDs.push_back(assetID);
                 found = true;
                 break;
             }
         }
-        
-        if (!found) {
+
+        if (!found)
+        {
             cout << "Asset ID " << assetID << " not found or unavailable!" << endl;
             sysController->update_usage_log("Reservation canceled, assetID not found");
             return false;
@@ -439,10 +705,13 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     }
 
     // Reserve all assets
-    for (int assetID : assetIDs) {
+    for (int assetID : assetIDs)
+    {
         // Find asset
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID) {
+        for (auto &asset : assets)
+        {
+            if (asset["id"].get<int>() == assetID)
+            {
                 // Create reservation
                 json reservation = {
                     {"assetID", assetID},
@@ -450,12 +719,14 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
                     {"startDate", startDate},
                     {"endDate", endDate},
                     {"status", "confirmed"},
-                    {"reason", ""}
-                };
+                    {"reason", ""}};
 
                 // Add to user's reservations
-                for (auto& account : accounts) {
-                    if (account["email"].get<string>() == email) {
+                for (auto &account : accounts)
+                {
+                    if (account.contains("email") && account["email"].is_string() &&
+                        account["email"].get<std::string>() == email)
+                    {
                         account["reservations"].push_back(reservation);
                         break;
                     }
@@ -464,13 +735,18 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
                 // Update asset usage/status depending on type
                 std::string category = asset.value("category", string(""));
                 Assets a(sysController);
-                if (category == "consumable") {
+                if (category == "consumable")
+                {
                     bool becameLow = false;
                     a.decrementConsumable(assetID, 1, becameLow);
-                } else if (category == "software") {
+                }
+                else if (category == "software")
+                {
                     bool becameFull = false;
                     a.adjustSeatUsage(assetID, 1, becameFull);
-                } else {
+                }
+                else
+                {
                     asset["operationalStatus"] = "reserved";
                 }
                 break;
@@ -492,13 +768,16 @@ bool Reservations::reserveMultipleAssets(const std::string& email) {
     return true;
 }
 
-//RESERVATION MANAGEMENT
-bool Reservations::viewMyReservations(const std::string& email) {
-    cout << "--- My Reservations ---\n" << endl;
-    
+// RESERVATION MANAGEMENT
+bool Reservations::viewMyReservations(const std::string &email)
+{
+    cout << "--- My Reservations ---\n"
+         << endl;
+
     json accounts;
     ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
+    if (!accountsIn.is_open())
+    {
         cerr << "Error: Could not open accounts.json" << endl;
         sysController->update_usage_log("Error opening json file");
         return false;
@@ -507,23 +786,29 @@ bool Reservations::viewMyReservations(const std::string& email) {
     accountsIn.close();
 
     bool hasReservations = false;
-    for (const auto& account : accounts) {
-        if (account["email"].get<string>() == email) {
-            if (account["reservations"].empty()) {
+    for (const auto &account : accounts)
+    {
+        if (account.contains("email") && account["email"].is_string() &&
+            account["email"].get<std::string>() == email)
+        {
+            if (account["reservations"].empty())
+            {
                 cout << "No active reservations found." << endl;
                 sysController->update_usage_log("User viewed their reservations");
                 return true;
             }
 
             int index = 1;
-            for (const auto& res : account["reservations"]) {
+            for (const auto &res : account["reservations"])
+            {
                 cout << "Reservation #" << index << endl;
                 cout << "Asset ID: " << res["assetID"] << endl;
                 cout << "Asset Name: " << res["assetName"] << endl;
                 cout << "Start Date: " << res["startDate"] << endl;
                 cout << "End Date: " << res["endDate"] << endl;
                 cout << "Status: " << res["status"] << endl;
-                if (res.contains("reason") && !res["reason"].get<string>().empty()) {
+                if (res.contains("reason") && !res["reason"].get<string>().empty())
+                {
                     cout << "Reason: " << res["reason"] << endl;
                 }
                 cout << "-----------------------------------" << endl;
@@ -534,7 +819,8 @@ bool Reservations::viewMyReservations(const std::string& email) {
         }
     }
 
-    if (!hasReservations) {
+    if (!hasReservations)
+    {
         cout << "No active reservations found." << endl;
     }
 
@@ -542,14 +828,17 @@ bool Reservations::viewMyReservations(const std::string& email) {
     return true;
 }
 
-//Cancel own reservation
-bool Reservations::cancelReservation(const std::string& email) {
-    cout << "--- Cancel Reservation ---\n" << endl;
-    
+// Cancel own reservation
+bool Reservations::cancelReservation(const std::string &email)
+{
+    cout << "--- Cancel Reservation ---\n"
+         << endl;
+
     // Load accounts
     json accounts;
     ifstream accountsIn("../../data/accounts.json");
-    if (!accountsIn.is_open()) {
+    if (!accountsIn.is_open())
+    {
         cerr << "Error: Could not open accounts.json" << endl;
         sysController->update_usage_log("Error opening json file");
         return false;
@@ -558,24 +847,30 @@ bool Reservations::cancelReservation(const std::string& email) {
     accountsIn.close();
 
     // Find user and list their reservations
-    json* userAccount = nullptr;
-    for (auto& account : accounts) {
-        if (account["email"].get<string>() == email) {
+    json *userAccount = nullptr;
+    for (auto &account : accounts)
+    {
+        if (account.contains("email") && account["email"].is_string() &&
+            account["email"].get<std::string>() == email)
+        {
             userAccount = &account;
             break;
         }
     }
 
-    if (!userAccount || (*userAccount)["reservations"].empty()) {
+    if (!userAccount || (*userAccount)["reservations"].empty())
+    {
         cout << "You have no reservations to cancel." << endl;
         sysController->update_usage_log("User tried to cancel a reservation");
         return false;
     }
 
-    cout << "Your Reservations:\n" << endl;
+    cout << "Your Reservations:\n"
+         << endl;
     int index = 1;
-    for (const auto& res : (*userAccount)["reservations"]) {
-        cout << index << ". Asset ID: " << res["assetID"] << " | Name: " << res["assetName"] 
+    for (const auto &res : (*userAccount)["reservations"])
+    {
+        cout << index << ". Asset ID: " << res["assetID"] << " | Name: " << res["assetName"]
              << " | Status: " << res["status"] << endl;
         index++;
     }
@@ -585,13 +880,15 @@ bool Reservations::cancelReservation(const std::string& email) {
     cin >> choice;
     cin.ignore();
 
-    if(choice == 0) {
+    if (choice == 0)
+    {
         cout << "Cancel asset cancelled" << endl;
         sysController->update_usage_log("Cancel asset cancelled");
         return false;
-	}
+    }
 
-    if (choice < 1 || choice > (*userAccount)["reservations"].size()) {
+    if (choice < 1 || choice > (*userAccount)["reservations"].size())
+    {
         cout << "Invalid selection." << endl;
         sysController->update_usage_log("User tried to cancel a reservation");
         return false;
@@ -601,28 +898,36 @@ bool Reservations::cancelReservation(const std::string& email) {
     int assetID = (*userAccount)["reservations"][choice - 1]["assetID"].get<int>();
 
     // Remove reservation
-    auto& reservations = (*userAccount)["reservations"];
+    auto &reservations = (*userAccount)["reservations"];
     reservations.erase(reservations.begin() + (choice - 1));
 
     // Update asset status back to available
     json assets;
     ifstream assetFile("../../data/assets.json");
-    if (assetFile.is_open()) {
+    if (assetFile.is_open())
+    {
         assetFile >> assets;
         assetFile.close();
 
-        for (auto& asset : assets) {
-            if (asset["id"].get<int>() == assetID) {
+        for (auto &asset : assets)
+        {
+            if (asset["id"].get<int>() == assetID)
+            {
                 std::string category = asset.value("category", string(""));
                 Assets a(sysController);
-                if (category == "consumable") {
+                if (category == "consumable")
+                {
                     bool dummy = false;
                     // restore one unit back to stock
                     a.decrementConsumable(assetID, -1, dummy);
-                } else if (category == "software") {
+                }
+                else if (category == "software")
+                {
                     bool becameFull = false;
                     a.adjustSeatUsage(assetID, -1, becameFull);
-                } else {
+                }
+                else
+                {
                     asset["operationalStatus"] = "available";
                 }
                 break;
@@ -638,9 +943,331 @@ bool Reservations::cancelReservation(const std::string& email) {
     ofstream accountsOut("../../data/accounts.json");
     accountsOut << setw(4) << accounts << endl;
     accountsOut.close();
-    
+
     sysController->update_usage_log("User canceled reservation");
     cout << "Reservation cancelled successfully!" << endl;
-    
+
     return true;
+}
+
+// Allows a user to check out an "approved/confirmed" reservation whose start time has arrived.
+bool Reservations::checkOut(const std::string &email)
+{
+    json accounts;
+    std::ifstream inAcc("../../data/accounts.json");
+    if (!inAcc.is_open())
+    {
+        cerr << "Error: Could not open accounts.json" << endl;
+        if (sysController)
+            sysController->update_usage_log("FR-18 checkout failed: accounts.json open error");
+        return false;
+    }
+    inAcc >> accounts;
+    inAcc.close();
+
+    // locate user's account
+    json *user = nullptr;
+    for (auto &a : accounts)
+    {
+        if (a.value("email", "") == email)
+        {
+            user = &a;
+            break;
+        }
+    }
+    if (!user)
+    {
+        cout << "Account not found." << endl;
+        return false;
+    }
+    if (!user->contains("reservations") || (*user)["reservations"].empty())
+    {
+        cout << "No reservations to check out." << endl;
+        return false;
+    }
+
+    // list eligible reservations
+    std::time_t now = std::time(nullptr);
+    std::vector<size_t> eligible;
+    cout << "--- Eligible to Check-Out ---\n"
+         << endl;
+    size_t idx = 0;
+    for (const auto &r : (*user)["reservations"])
+    {
+        std::string st = r.value("status", "");
+        if (st == "approved" || st == "confirmed")
+        {
+            std::tm startTm{};
+            std::istringstream ss(r.value("startDate", ""));
+            ss >> std::get_time(&startTm, "%Y-%m-%d %H:%M:%S");
+            std::time_t startT = mktime(&startTm);
+            if (startT != -1 && now >= startT)
+            {
+                eligible.push_back(idx);
+                cout << (eligible.size()) << ". Asset ID: " << r.value("assetID", 0)
+                     << " | " << r.value("assetName", "")
+                     << " | Starts: " << r.value("startDate", "") << endl;
+            }
+        }
+        ++idx;
+    }
+    if (eligible.empty())
+    {
+        cout << "Nothing is ready for check-out." << endl;
+        return false;
+    }
+
+    cout << "\nEnter number to check-out (type \"0\" to return): ";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+    if (choice == 0)
+    {
+        cout << "Check-out cancelled." << endl;
+        return false;
+    }
+    if (choice < 1 || choice > (int)eligible.size())
+    {
+        cout << "Invalid selection." << endl;
+        return false;
+    }
+
+    size_t rIndex = eligible[choice - 1];
+    auto &res = (*user)["reservations"][rIndex];
+
+    // mark as checked_out + actualStart
+    std::ostringstream ts;
+    ts << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S");
+    res["status"] = "checked_out";
+    res["actualStart"] = ts.str();
+
+    // persist
+    std::ofstream outAcc("../../data/accounts.json");
+    outAcc << std::setw(4) << accounts << std::endl;
+    outAcc.close();
+
+    if (sysController)
+        sysController->update_usage_log("FR-18: Checked OUT asset ID " + std::to_string(res.value("assetID", 0)) + " by " + email);
+    cout << "Checked out successfully." << endl;
+    return true;
+}
+
+// Allows a user to check in a previously checked-out reservation (captures actualEnd).
+bool Reservations::checkIn(const std::string &email)
+{
+    json accounts;
+    std::ifstream inAcc("../../data/accounts.json");
+    if (!inAcc.is_open())
+    {
+        cerr << "Error: Could not open accounts.json" << endl;
+        if (sysController)
+            sysController->update_usage_log("FR-18 checkin failed: accounts.json open error");
+        return false;
+    }
+    inAcc >> accounts;
+    inAcc.close();
+
+    json *user = nullptr;
+    for (auto &a : accounts)
+    {
+        if (a.value("email", "") == email)
+        {
+            user = &a;
+            break;
+        }
+    }
+    if (!user)
+    {
+        cout << "Account not found." << endl;
+        return false;
+    }
+
+    if (!user->contains("reservations") || (*user)["reservations"].empty())
+    {
+        cout << "No checked-out assets to return." << endl;
+        return false;
+    }
+
+    // list checked_out reservations
+    std::vector<size_t> eligible;
+    cout << "--- Ready to Check-In ---\n"
+         << endl;
+    size_t idx = 0;
+    for (const auto &r : (*user)["reservations"])
+    {
+        if (r.value("status", "") == "checked_out")
+        {
+            cout << (eligible.size() + 1) << ". Asset ID: " << r.value("assetID", 0)
+                 << " | " << r.value("assetName", "")
+                 << " | Due: " << r.value("endDate", "") << endl;
+            eligible.push_back(idx);
+        }
+        ++idx;
+    }
+    if (eligible.empty())
+    {
+        cout << "No items are currently checked out." << endl;
+        return false;
+    }
+
+    cout << "\nEnter number to check-in (type \"0\" to return): ";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+    if (choice == 0)
+    {
+        cout << "Check-in cancelled." << endl;
+        return false;
+    }
+    if (choice < 1 || choice > (int)eligible.size())
+    {
+        cout << "Invalid selection." << endl;
+        return false;
+    }
+
+    size_t rIndex = eligible[choice - 1];
+    auto res = (*user)["reservations"][rIndex]; // copy (we’ll log before removal)
+
+    // actual end time
+    std::time_t now = std::time(nullptr);
+    std::ostringstream ts;
+    ts << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S");
+    std::string actualEnd = ts.str();
+
+    // overdue?
+    std::tm endTm{};
+    std::istringstream ss(res.value("endDate", ""));
+    ss >> std::get_time(&endTm, "%Y-%m-%d %H:%M:%S");
+    std::time_t endT = mktime(&endTm);
+    bool overdue = (endT != -1 && now > endT);
+
+    // optional notes
+    cout << "Add incident/damage notes (or press Enter to skip): ";
+    std::string notes;
+    getline(cin, notes);
+
+    // ---- write a usage log record before deletion ----
+    if (sysController)
+    {
+        std::string msg = "FR-18: Checked IN asset ID " + std::to_string(res.value("assetID", 0)) +
+                          " by " + email + (overdue ? " (OVERDUE) " : " ") +
+                          "actualEnd=" + actualEnd;
+        if (!notes.empty())
+            msg += " notes=" + notes;
+        sysController->update_usage_log(msg);
+    }
+
+    // flip asset back to available (mirrors Assets::return_asset)
+    json assets;
+    std::ifstream inAssets("../../data/assets.json");
+    if (inAssets.is_open())
+    {
+        inAssets >> assets;
+        inAssets.close();
+        for (auto &a : assets)
+        {
+            if (a.value("id", -1) == res.value("assetID", 0))
+            {
+                a["operationalStatus"] = "available";
+                break;
+            }
+        }
+        std::ofstream outAssets("../../data/assets.json");
+        outAssets << std::setw(4) << assets << std::endl;
+        outAssets.close();
+    }
+
+    // remove reservation (keep history in usage_log)
+    auto &arr = (*user)["reservations"];
+    arr.erase(arr.begin() + static_cast<long>(rIndex));
+
+    // persist accounts
+    std::ofstream outAcc("../../data/accounts.json");
+    outAcc << std::setw(4) << accounts << std::endl;
+    outAcc.close();
+
+    cout << (overdue ? "Checked in (OVERDUE)." : "Checked in successfully.") << endl;
+    return true;
+}
+
+// Mark reservations overdue if now > end + grace; notify LAM + user; log incident.
+bool Reservations::markOverdueAndNotify(int graceMinutes)
+{
+    json accounts;
+    std::ifstream inAcc("../../data/accounts.json");
+    if (!inAcc.is_open())
+        return false;
+    inAcc >> accounts;
+    inAcc.close();
+
+    const std::time_t now = std::time(nullptr);
+    bool changed = false;
+
+    for (auto &account : accounts)
+    {
+        if (!account.contains("reservations"))
+            continue;
+        const std::string userEmail = account.value("email", "");
+
+        for (auto &res : account["reservations"])
+        {
+            std::string st = res.value("status", "");
+            if (st == "completed" || st == "overdue")
+                continue;
+
+            std::tm endTm{};
+            std::istringstream ss(res.value("endDate", ""));
+            ss >> std::get_time(&endTm, "%Y-%m-%d %H:%M:%S");
+            std::time_t endT = mktime(&endTm);
+
+            if (endT == -1)
+                continue;
+            if (now > (endT + graceMinutes * 60))
+            {
+                res["status"] = "overdue";
+                changed = true;
+
+                // log & notify
+                const int assetID = res.value("assetID", 0);
+                const std::string assetName = res.value("assetName", "");
+                const std::string due = res.value("endDate", "");
+
+                if (sysController)
+                {
+                    sysController->update_usage_log(
+                        "FR-18: OVERDUE asset ID " + std::to_string(assetID) +
+                        " (" + assetName + ") user=" + userEmail + " due=" + due);
+                }
+
+                Notifications notif;
+
+                // notify LAM (role-wide)
+                json lamMsg = {
+                    {"type", "overdue_alert"},
+                    {"message", "Overdue: " + assetName + " (ID " + std::to_string(assetID) + ") for " + userEmail},
+                    {"timeStamp", (sysController ? sysController->get_current_time() : "")},
+                    {"assetID", assetID},
+                    {"user", userEmail},
+                    {"due", due}};
+                notif.send_notifications("", "lab asset manager", lamMsg);
+
+                // notify user
+                json userMsg = {
+                    {"type", "overdue_notice"},
+                    {"message", "Your reservation is overdue: " + assetName + " (ID " + std::to_string(assetID) + ")"},
+                    {"timeStamp", (sysController ? sysController->get_current_time() : "")},
+                    {"assetID", assetID},
+                    {"due", due}};
+                notif.send_notifications(userEmail, "", userMsg);
+            }
+        }
+    }
+
+    if (changed)
+    {
+        std::ofstream outAcc("../../data/accounts.json");
+        outAcc << std::setw(4) << accounts << std::endl;
+        outAcc.close();
+    }
+    return changed;
 }
