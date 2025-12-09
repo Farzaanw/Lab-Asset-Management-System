@@ -31,7 +31,7 @@ string LabAssetManager::getRole() const {
 void LabAssetManager::main(){
 	cout << "\n=============================================" << endl;
 	cout << "Welcome " << getEmail() << endl;
-	cout << "=============================================\n" << endl;
+	cout << "=============================================" << endl;
 	while(true){
 		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
 		cout << "1. Create Account" << endl;

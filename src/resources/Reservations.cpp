@@ -3,10 +3,12 @@
 #include "Assets.h"
 #include "../SystemController.h"
 
+using namespace std;
+
 //ASSETS
 //reserve an asset, returns a int
 int Reservations::reserveAsset(const std::string& email) {
-    cout << "--- Reserve Asset ---\n" << endl;
+    cout << "--- Reserve Asset ---" << endl;
     
     // Get all available assets
     json assets;
@@ -118,41 +120,41 @@ int Reservations::reserveAsset(const std::string& email) {
     std::string category = (*targetAsset).value("category", std::string(""));
 
     if (category == "consumable") {
-    int stock = 0;
-    if ((*targetAsset).contains("stock")) {
-        if ((*targetAsset)["stock"].is_number()) stock = (*targetAsset)["stock"].get<int>();
-        else if ((*targetAsset)["stock"].is_string()) {
-            try { stock = stoi((*targetAsset)["stock"].get<std::string>()); } catch(...) { stock = 0; }
+        int stock = 0;
+        if ((*targetAsset).contains("stock")) {
+            if ((*targetAsset)["stock"].is_number()) stock = (*targetAsset)["stock"].get<int>();
+            else if ((*targetAsset)["stock"].is_string()) {
+                try { stock = stoi((*targetAsset)["stock"].get<std::string>()); } catch(...) { stock = 0; }
+            }
         }
-    }
-    // STOP if stock is zero
-    if (stock <= 0) {
-        std::cout << "Error: This consumable is out of stock and cannot be reserved." << std::endl;
-        sysController->update_usage_log("Reservation failed: Consumable out of stock");
-        return -1;
-    }
-} 
-    else if (category == "software") {
+        // STOP if stock is zero
+        if (stock <= 0) {
+            std::cout << "Error: This consumable is out of stock and cannot be reserved." << std::endl;
+            sysController->update_usage_log("Reservation failed: Consumable out of stock");
+            return -1;
+        }
+    } else if (category == "software") {
         int seatCount = 0, inUse = 0;
-    if ((*targetAsset).contains("seatCount")) {
-        if ((*targetAsset)["seatCount"].is_number()) seatCount = (*targetAsset)["seatCount"].get<int>();
-        else if ((*targetAsset)["seatCount"].is_string()) {
-            try { seatCount = stoi((*targetAsset)["seatCount"].get<std::string>()); } catch(...) { seatCount = 0; }
+        
+        if ((*targetAsset).contains("seatCount")) {
+            if ((*targetAsset)["seatCount"].is_number()) seatCount = (*targetAsset)["seatCount"].get<int>();
+            else if ((*targetAsset)["seatCount"].is_string()) {
+                try { seatCount = stoi((*targetAsset)["seatCount"].get<std::string>()); } catch(...) { seatCount = 0; }
+            }
+        }
+        if ((*targetAsset).contains("seatsInUse")) {
+            if ((*targetAsset)["seatsInUse"].is_number()) inUse = (*targetAsset)["seatsInUse"].get<int>();
+            else if ((*targetAsset)["seatsInUse"].is_string()) {
+                try { inUse = stoi((*targetAsset)["seatsInUse"].get<std::string>()); } catch(...) { inUse = 0; }
+            }
+        }
+        // STOP if seats are at capacity
+        if (seatCount > 0 && inUse >= seatCount) {
+            std::cout << "Error: All seats for this software are currently in use." << std::endl;
+            sysController->update_usage_log("Reservation failed: Software seats full");
+            return -1;
         }
     }
-    if ((*targetAsset).contains("seatsInUse")) {
-        if ((*targetAsset)["seatsInUse"].is_number()) inUse = (*targetAsset)["seatsInUse"].get<int>();
-        else if ((*targetAsset)["seatsInUse"].is_string()) {
-            try { inUse = stoi((*targetAsset)["seatsInUse"].get<std::string>()); } catch(...) { inUse = 0; }
-        }
-    }
-    // STOP if seats are at capacity
-    if (seatCount > 0 && inUse >= seatCount) {
-        std::cout << "Error: All seats for this software are currently in use." << std::endl;
-        sysController->update_usage_log("Reservation failed: Software seats full");
-        return -1;
-    }
-}
 
     // Get reservation dates
     cout << "Enter Start Date and Time (YYYY-MM-DD HH:MM): ";
@@ -216,10 +218,10 @@ int Reservations::reserveAsset(const std::string& email) {
     
     // USER NOT MEET CLEARANCE LEVEL -> REQUIRES APPROVAL
     if (std::stoi(userClearanceLevel) < std::stoi(assetClearanceLevel)) {
-        cout << "...You do not meet the clearance level required to reserve this asset." << endl;
+        cout << "...You do not meet the clearance level required to reserve this asset...\n" << endl;
         cout << "Enter reason for reservation: ";
         getline(cin, reason);
-        cout << "This asset requires approval. You will be notified once reviewed." << endl;
+        cout << "This asset requires approval and request has been sent. You will be notified once reviewed." << endl;
 
         // Create reservation entry with "pending" status
         // have asset be incremented from previous asset id
@@ -266,7 +268,7 @@ int Reservations::reserveAsset(const std::string& email) {
         sysController->update_usage_log("Reservation pending, requires approval");
 
         // ----- SEND NOTIFICATION TO ALL LAB ASSET MANAGERS -----
-        std::cout << "Sending notification to Lab Asset Manager for approval..." << std::endl;
+        // std::cout << "Sending notification to Lab Asset Manager for approval..." << std::endl;
         Notifications notif;  // Create notification object
 
         // Build notification JSON payload
@@ -286,7 +288,7 @@ int Reservations::reserveAsset(const std::string& email) {
         // Call existing notification method
         notif.send_notifications("", "lab manager", notifData);   // sends notification to all lab managers
         sysController->update_usage_log("Notification sent to Lab Manager for approval for asset ID: " + std::to_string(assetID) + " by user: " + email);
-        std::cout << "Notification sent." << std::endl;
+        // std::cout << "Notification sent." << std::endl;
         return 2; // Indicate that approval is needed
     }
 
@@ -299,7 +301,7 @@ int Reservations::reserveAsset(const std::string& email) {
         {"startDate", startDate},
         {"endDate", endDate},
         {"status", "approved"},
-        {"reason", reason}
+        {"reason", ""}
     };
 
     // Update user's reservations (reuse already loaded accounts)

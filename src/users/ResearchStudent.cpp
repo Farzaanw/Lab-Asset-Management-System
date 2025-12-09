@@ -46,7 +46,7 @@ void ResearchStudent::main() {
 
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() << endl;
-    cout << "=============================================\n" << endl;
+    cout << "=============================================" << endl;
 
     while(true) {
         cout << endl << "---Research Student Main Menu---" << endl;

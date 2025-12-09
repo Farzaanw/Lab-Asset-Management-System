@@ -54,7 +54,9 @@ SystemController::SystemController() : isOpen(true), currentUser(nullptr) {
 // CLI Entry Point !!!!
 /////////////////////////////////////////////////////////////////
 void SystemController::run() {
+    std::cout << "=============================================\n";
     std::cout << "Welcome to the Lab Asset Management System!\n";
+    std::cout << "=============================================\n";
     update_usage_log("System started");
 
     while (isOpen) {
@@ -86,7 +88,7 @@ int SystemController::main() {
             case '1': {
                 userCreated = log_in();          // <------ returns bool (T/F) if user successfully created
                 if (userCreated) {
-                    std::cout << "User Logged in.\n";
+                    std::cout << "User SuccessfullyLogged in.\n";
                     isOpen = false;
                     break;  // exit switch
                 } else {
@@ -146,7 +148,7 @@ bool SystemController::log_in() {
             update_usage_log("User logged in: " + email);
             userActive = true;
 
-            std::cout << "CHECK:: User is a " << role << std::endl;
+            // std::cout << "CHECK:: User is a " << role << std::endl;
 
             // --------------- Create User instance -------------- //
             currentUser = create_user(email, role);
@@ -310,7 +312,7 @@ bool SystemController::load_json_safe(const std::string& path, json& out) {
             std::cerr << "JSON file is empty: " << path << "\n";
             return false;
         }
-        std::cout << "JSON loaded successfully from " << path << "\n";
+        // std::cout << "JSON loaded successfully from " << path << "\n";
         return true;
     } catch (const std::exception& e) {
         std::cerr << "JSON parsing error in " << path << ": " << e.what() << "\n";
@@ -343,7 +345,7 @@ void SystemController::load_assets() {
     if (!load_json_safe(path, assetJson))
         return;
 
-    std::cout << "Loaded " << assetJson.size() << " assets from assets.json\n";
+    // std::cout << "Loaded " << assetJson.size() << " assets from assets.json\n";
 }
 
 void SystemController::load_policies() {

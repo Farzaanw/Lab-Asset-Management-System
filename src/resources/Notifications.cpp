@@ -36,6 +36,7 @@ bool Notifications::save_json(const std::string& filepath, const json& data) con
 
 // Helper: Display a single notification
 void Notifications::display_notification(const json& notif) const {
+    std::cout << "------------------------------";
     if (notif.contains("notificationID") && !notif["notificationID"].is_null())
         std::cout << "Notification ID: " << notif["notificationID"] << "\n";
     if (notif.contains("message") && !notif["message"].is_null())
@@ -211,17 +212,11 @@ void Notifications::approve_reservation(const std::string& managerEmail,
                     if (res["assetID"] == assetID && 
                         res["startDate"] == startDate && 
                         res["endDate"] == endDate) {
-                        res["status"] = "reserved";
+                        res["status"] = "reserved";            // <--- main update
                         break;
                     }
                 }
             }
-            // send notification to the user that their reservation was approved
-            send_notifications(requesterEmail, "", {
-                {"message", "Your reservation request has been approved."},
-                {"type", "reservation_update"},
-                {"timeStamp", get_current_time()}
-            });
             break;
         }
     }
@@ -242,12 +237,14 @@ void Notifications::approve_reservation(const std::string& managerEmail,
         }
     }
 
-    // Update asset status
+    // Update asset status and get asset name
+    std::string assetName = "";
     json assets = load_json("../../data/assets.json");
     if (!assets.is_null()) {
         for (auto& asset : assets) {
             if (asset["id"] == assetID) {
                 asset["operationalStatus"] = "reserved";
+                assetName = asset["name"];
                 break;
             }
         }
@@ -256,6 +253,14 @@ void Notifications::approve_reservation(const std::string& managerEmail,
 
     // Save updated accounts
     save_json("../../data/accounts.json", accounts);
+    
+    // Send notification to the user AFTER all file saves are complete
+    send_notifications(requesterEmail, "", {
+        {"message", "Your reservation request for " + assetName + " (ID: " + std::to_string(assetID) + ") has been approved."},
+        {"type", "reservation_update"},
+        {"timeStamp", get_current_time()}
+    });
+    
     std::cout << "Reservation request approved.\n";
 }
 
@@ -295,12 +300,6 @@ void Notifications::reject_reservation(const std::string& requesterEmail,
                     }
                 }
             }
-            // send notification to the user that their reservation was rejected
-            send_notifications(requesterEmail, "", {
-                {"message", "Your reservation request has been rejected."},
-                {"type", "reservation_update"},
-                {"timeStamp", get_current_time()}
-            });
             break;
         }
     }
@@ -325,6 +324,22 @@ void Notifications::reject_reservation(const std::string& requesterEmail,
     // Save both files
     save_json("../../data/assets.json", assets);
     save_json("../../data/accounts.json", accounts);
+    
+    // Get asset name for notification
+    std::string assetName = "";
+    for (const auto& asset : assets) {
+        if (asset["id"] == assetID) {
+            assetName = asset["name"];
+            break;
+        }
+    }
+    
+    // send notification to the user that their reservation was rejected
+    send_notifications(requesterEmail, "", {
+        {"message", "Your reservation request for " + assetName + " (ID: " + std::to_string(assetID) + ") has been rejected."},
+        {"type", "reservation_update"},
+        {"timeStamp", get_current_time()}
+    });
     std::cout << "Reservation request rejected.\n";
 }
 

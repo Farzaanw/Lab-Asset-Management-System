@@ -7,7 +7,7 @@
 #include "../SystemController.h"
 
 int main(){
-    std::cout << "...starting up system..." << std::endl;
+    // std::cout << "...starting up system..." << std::endl;
 
     SystemController system;
     system.run();

@@ -54,34 +54,34 @@ bool Assets::viewAvailableAssets() {
 
 //Search and filter assets
 bool Assets::searchAssets(const std::string& category, const std::string& status) {
-    cout << "--- Search/Filter Assets ---\n" << endl;
+    cout << "--- Search/Filter Assets ---" << endl;
 
     string cat = category;
     string stat = status;
     
     if (cat.empty()) {
-        cout << "Enter category (leave blank for no filter, type \"0\" to return to menu): ";
-		cout << "Category Options: equipment, consumable, software" << endl;
-        getline(cin, cat);
+        cout << "Enter category (leave blank for no filter, type \"0\" to return to menu): " << endl;
+		cout << "Category Options: equipment, consumable, software (select one): ";
+		getline(cin, cat);
     }
 
-		if(cat == "0") {
-			cout << "Reservation cancelled, returning to menu" << endl;
-			if (sysController) sysController->update_usage_log("User cancelled reservation");
-			return false;
-		}
+	if(cat == "0") {
+		cout << "Reservation cancelled, returning to menu" << endl;
+		if (sysController) sysController->update_usage_log("User cancelled reservation");
+		return false;
+	}
 
     if (stat.empty()) {
-        cout << "Enter status (leave blank for no filter, type \"0\" to return to menu): ";
-		cout << "Status Options: available, reserved, out of service" << endl;
+        cout << "Enter status (leave blank for no filter, type \"0\" to return to menu): " << endl;
+		cout << "Status Options: available, reserved, out of service (select one): ";
         getline(cin, stat);
     }
 
-		if(stat == "0") {
-			cout << "Action cancelled, returning to menu" << endl;
-			if (sysController) sysController->update_usage_log("User cancelled action");
-			return false;
-		}
+	if(stat == "0") {
+		cout << "Action cancelled, returning to menu" << endl;
+		if (sysController) sysController->update_usage_log("User cancelled action");
+		return false;
+	}
     
     json assets;
     ifstream inFile("../../data/assets.json");
@@ -99,6 +99,7 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
         
         
 		 if (matchCategory && matchStatus) {
+			cout << "\n-----------------------------------" << endl;
             cout << "ID: " << asset["id"] << endl;
             cout << "Name: " << asset["name"] << endl;
             cout << "Category: " << asset["category"] << endl;

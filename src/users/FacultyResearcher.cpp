@@ -43,7 +43,7 @@ void FacultyResearcher::main() {
     }
     cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() <<  "!" << endl;
-    cout << "=============================================\n" << endl;
+    cout << "=============================================" << endl;
 
     while(true) {
         cout << endl << "---Faculty Researcher Main Menu---" << endl;

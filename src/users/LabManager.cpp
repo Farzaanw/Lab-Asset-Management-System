@@ -20,7 +20,7 @@ LabManager::LabManager(const std::string& email,
 void LabManager::main(){
 	cout << "\n=============================================" << endl;
     cout << "Welcome " << getEmail() << endl;
-    cout << "=============================================\n" << endl;
+    cout << "=============================================" << endl;
 	while(true){
 		cout << endl << "---Lab Manager Main Menu---" << endl;
 		cout << "1. List Policies" << endl;

@@ -1,7 +1,7 @@
 [
     {
         "category": "equipment",
-        "clearanceLevel": "1",
+        "clearanceLevel": "3",
         "condition": "excellent",
         "description": "An 8-inch Schmidt-Cassegrain telescope with advanced coma-free optics. Ideal for deep-sky imaging and planetary observation.",
         "id": 1,
@@ -11,7 +11,7 @@
     },
     {
         "category": "equipment",
-        "clearanceLevel": "1",
+        "clearanceLevel": "3",
         "condition": "good",
         "description": "A 500ml borosilicate glass boiling flask used for heating and boiling liquids in laboratory experiments.",
         "id": 2,
