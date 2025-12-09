@@ -97,12 +97,15 @@ bool Assets::searchAssets(const std::string& category, const std::string& status
         bool matchCategory = cat.empty() || asset["category"] == cat;
         bool matchStatus = stat.empty() || asset["operationalStatus"] == stat;
         
-        if (matchCategory && matchStatus) {
+        
+		 if (matchCategory && matchStatus) {
             cout << "ID: " << asset["id"] << endl;
             cout << "Name: " << asset["name"] << endl;
             cout << "Category: " << asset["category"] << endl;
             cout << "Status: " << asset["operationalStatus"] << endl;
             cout << "Location: " << asset["location"] << endl;
+			if(cat == "software"){ cout << "Seat Count: " << asset["seatCount"] << endl;
+				cout << "Current Seats in Use: " << asset["seatsInUse"] << endl;}
             cout << "-----------------------------------" << endl;
             found = true;
         }
