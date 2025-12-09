@@ -118,7 +118,7 @@
         "minimumThreshold": 50,
         "name": "Lab Notebooks",
         "operationalStatus": "available",
-        "stock": 1
+        "stock": 0
     },
     {
         "category": "software",
@@ -131,7 +131,7 @@
         "operationalStatus": "available",
         "renewalDate": "2026-12-31",
         "seatCount": 10,
-        "seatsInUse": 4
+        "seatsInUse": 5
     },
     {
         "category": "software",
