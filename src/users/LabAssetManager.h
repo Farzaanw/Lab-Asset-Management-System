@@ -73,6 +73,8 @@ public:
 	bool cancelReservation();
 	
 	bool listReservations();
+
+	bool logIncident();
 };
 
 #endif

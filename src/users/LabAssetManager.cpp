@@ -55,7 +55,8 @@ void LabAssetManager::main(){
 		cout << "19. Attach Document to Asset" << endl;
 		cout << "20. View Documents per Asset" << endl;
 		cout << "21. Renewal Date Alert" << endl;
-		cout << "22. Logout" << endl;
+		cout << "22. Log Incident" << endl;
+		cout << "23. Logout" << endl;
 		
 		cout << "Please enter your choice: ";
 		string choice;
@@ -212,6 +213,13 @@ void LabAssetManager::main(){
     	cout << "Renewal check complete. Check notifications for alerts." << endl;
 }
 		else if (choice == "22") {
+   		if(logIncident()) {
+				cout << "Incident logged successfully." << endl;
+    	} else {
+        cout << "Failed to log incident." << endl;
+			} 
+}
+		else if (choice == "23") {
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
@@ -806,6 +814,20 @@ bool LabAssetManager::cancelReservation() {
     cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully. with reason: " << reason << endl;
 	system->update_usage_log("Reservation(s) for Asset ID " + to_string(assetID) + " canceled. Reason: " + reason);
     return true;
+}
+
+bool LabAssetManager::logIncident() {
+	string description;
+	cout << "Enter incident description: ";
+	getline(cin, description);
+	
+	if (description.empty()) {
+			cout << "Incident description cannot be empty." << endl;
+			return false;
+	}
+	
+	system->update_usage_log("INCIDENT: " + description);
+	return true;
 }
 
 // ()) {
