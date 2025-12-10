@@ -187,6 +187,11 @@ int Reservations::reserveAsset(const std::string &email)
     {
         cout << "Error: Asset is not available!" << endl;
         cout << "Current Status: " << status << endl;
+        if (status == "out of service" && (*targetAsset).contains("outOfServiceReason"))
+        {
+            cout << "Reason: " << (*targetAsset)["outOfServiceReason"].get<string>() << endl;
+            cout << "Expected return date: " << (*targetAsset).value("expectedReturnDate", "N/A") << endl;
+        }
         sysController->update_usage_log("Reservation canceled, asset not availble");
         return -1;
     }
