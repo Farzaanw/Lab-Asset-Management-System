@@ -1206,6 +1206,8 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
     const std::time_t now = std::time(nullptr);
     bool changed = false;
 
+    vector<tuple<string, json, json>> pendingNotifications;
+
     for (auto &account : accounts)
     {
         if (!account.contains("reservations"))
@@ -1242,7 +1244,7 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
                         " (" + assetName + ") user=" + userEmail + " due=" + due);
                 }
 
-                Notifications notif;
+            
 
                 // notify LAM (role-wide)
                 json lamMsg = {
@@ -1252,7 +1254,7 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
                     {"assetID", assetID},
                     {"user", userEmail},
                     {"due", due}};
-                notif.send_notifications("", "lab asset manager", lamMsg);
+                //notif.send_notifications("", "lab asset manager", lamMsg);
 
                 // notify user
                 json userMsg = {
@@ -1261,7 +1263,9 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
                     {"timeStamp", (sysController ? sysController->get_current_time() : "")},
                     {"assetID", assetID},
                     {"due", due}};
-                notif.send_notifications(userEmail, "", userMsg);
+                //notif.send_notifications(userEmail, "", userMsg);
+
+                pendingNotifications.push_back(std::make_tuple(userEmail, lamMsg, userMsg));
             }
         }
     }
@@ -1272,5 +1276,17 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
         outAcc << std::setw(4) << accounts << std::endl;
         outAcc.close();
     }
+
+    Notifications notif;
+    for (const auto &notifTuple : pendingNotifications){
+        std::string userEmail = std::get<0>(notifTuple);
+        json lamMsg = std::get<1>(notifTuple);
+        json userMsg = std::get<2>(notifTuple);
+
+        notif.send_notifications("", "lab asset manager", lamMsg);
+        
+        notif.send_notifications(userEmail, "", userMsg);
+    }
+    
     return changed;
 }
