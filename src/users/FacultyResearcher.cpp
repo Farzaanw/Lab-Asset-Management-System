@@ -136,7 +136,7 @@ void FacultyResearcher::main()
         {
             viewStudentUsage();
         }
-        else if (choice == "11")
+        else if (choice == "10")
         {
             generateUsageReport(0);
         }
