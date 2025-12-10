@@ -35,7 +35,31 @@ std::string FacultyResearcher::getRole() const
     return "faculty researcher";
 }
 
-// Main menu
+/**
+ * Main menu:
+ * Presents the Faculty Researcher command menu and dispatches to the appropriate
+ * actions. Lazily constructs shared helpers (Reservations, Assets) on first use.
+ *
+ * What each option does connects to:
+ * Menu options:
+ *  1) Reserve Asset                → Reservations::reserveAsset()
+ *  2) Reserve Multiple Assets      → Reservations::reserveMultipleAssets()
+ *  3) Return Asset                 → Assets::return_asset()
+ *  4) View Available Assets        → Assets::viewAvailableAssets()
+ *  5) Search/Filter Assets         → Assets::searchAssets("", "")
+ *  6) View My Reservations         → Reservations::viewMyReservations()
+ *  7) Cancel Reservation           → Reservations::cancelReservation()
+ *  8) View Notifications           → Notifications::view_notifications()
+ *  9) View Student Reservations    → Assets::viewStudentAssets("")
+ * 10) Check-Out (start)            → Reservations(system).checkOut()
+ * 11) Check-In (return)            → Reservations(system).checkIn()
+ * 12) Logout                       → exits loop
+ *
+ * Prints the status messages for success/failure and uses SystemController (via
+ * underlying methods) to log important actions.
+ *
+ * Returns nothing (this runs until user selects Logout).
+ */
 void FacultyResearcher::main()
 {
     if (r == nullptr)
@@ -134,23 +158,13 @@ void FacultyResearcher::main()
         }
         else if (choice == "9")
         {
-            viewStudentUsage();
+            Reservations(system).checkOut(getEmail());
         }
         else if (choice == "10")
         {
-            generateUsageReport(0);
-        }
-        else if (choice == "11")
-        {
-            // Check-Out: will list eligible reservations that have started
-            Reservations(system).checkOut(getEmail());
-        }
-        else if (choice == "12")
-        {
-            // Check-In: will list currently checked_out reservations
             Reservations(system).checkIn(getEmail());
         }
-        else if (choice == "13")
+        else if (choice == "12")
         {
             cout << "Logging out of Faculty Researcher." << endl;
             break;
@@ -162,7 +176,14 @@ void FacultyResearcher::main()
     }
 }
 
-// NAVIGATION/DISPLAY
+/**
+ * Display page:
+ * Prints a minimal dashboard header for the Faculty Researcher including
+ * the user’s email and role.
+ *
+ * Returns nothing (prints to std::cout).
+ */
+
 void FacultyResearcher::display_page()
 {
     cout << "--- Faculty Researcher Dashboard ---" << endl;
@@ -170,28 +191,14 @@ void FacultyResearcher::display_page()
     cout << "Role: " << getRole() << endl;
 }
 
+/**
+ * User actions:
+ * Prints a short description that the faculty member can perform actions.
+ * Intended as a hook for future UI/help output.
+ *
+ * Returns nothing.
+ */
 void FacultyResearcher::user_actions()
 {
     cout << "Faculty member can perform various actions." << endl;
-}
-
-// Cancel group reservation
-bool FacultyResearcher::viewStudentUsage()
-{
-    cout << "--- View Student Usage ---\n"
-         << endl;
-    cout << "TODO: Implement viewStudentUsage" << endl;
-    system->update_usage_log("User viewed student usage logs");
-    return true;
-}
-
-// DOCUMENTS/REPORTS
-// Generate usage report for resource usage by a group
-bool FacultyResearcher::generateUsageReport(int labGroupID)
-{
-    cout << "--- Generate Usage Report ---\n"
-         << endl;
-    cout << "TODO: Implement generateUsageReport" << endl;
-    system->update_usage_log("User generated a usage report");
-    return true;
 }

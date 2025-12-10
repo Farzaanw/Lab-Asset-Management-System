@@ -1,5 +1,29 @@
 #include "Documents.h"
 
+/**
+ * Upload a document:
+ *
+ * This function uploads a PDF document and associates it with a specific asset.
+ * It loads the existing documents.json and assets.json files, validates user input,
+ * confirms the asset exists, copies the PDF into the asset’s document folder,
+ * and creates a new document entry in documents.json.
+ *
+ * Steps performed:
+ *  - Load and parse documents.json (create array if needed)
+ *  - Load and parse assets.json to validate asset ID
+ *  - Prompt user for a PDF file path and validate:
+ *      * File exists
+ *      * File is a .pdf
+ *  - Prompt for a valid asset ID and confirm the asset exists
+ *  - Copy the PDF into the correct destination folder (../documents/<assetID>/)
+ *  - Ask user for document type and clearance level (validated)
+ *  - Generate a unique document ID (max existing + 1)
+ *  - Record metadata including timestamp, uploader, type, and clearance level
+ *  - Append the new document entry to documents.json and save it
+ *
+ * Returns true on successful upload and save.
+ * Returns false on invalid input, missing files, JSON errors, or if the user cancels.
+ */
 bool Documents::uploadDocument() {
 	string filePath;
 	string assetId;
@@ -164,7 +188,24 @@ bool Documents::uploadDocument() {
 	return true;
 }
 
-
+/**
+ * List all documents:
+ *
+ * Loads the documents.json file and prints a formatted list of all stored
+ * document entries. Each entry displays:
+ *   - Document ID
+ *   - Asset ID it belongs to
+ *   - Document type
+ *   - File path on disk
+ *   - Uploader identity
+ *   - Clearance level
+ *   - Timestamp of upload (UTC)
+ *
+ * If no documents exist, a friendly message is shown.
+ *
+ * Returns true on success (including when the list is empty),
+ * false on file I/O or JSON parse errors.
+ */
 bool Documents::listDocuments(){
 	json documents;
 

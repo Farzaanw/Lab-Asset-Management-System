@@ -36,7 +36,26 @@ std::string ResearchStudent::getRole() const
     return "research student";
 }
 
-// Main menu
+/**
+ * Main interactive loop for the Research Student.
+ *
+ * Renders a CLI menu with capabilities:
+ *   1) Reserve Asset (with policy/clearance checks; may go pending)
+ *   2) Return Asset
+ *   3) View Available Assets
+ *   4) Search/Filter Assets (prompts inside the function)
+ *   5) View My Reservations
+ *   6) View Notifications
+ *   7) Cancel Reservation
+ *   8) Check-Out (start) — marks an approved/confirmed reservation as checked out
+ *   9) Check-In (return) — completes a checked-out reservation, logs incident/overdue
+ *  10) Logout
+ *
+ * Many successful actions append entries to usage_log via SystemController.
+ * Returns only when the user selects Logout.
+ *
+ * Return void
+ */
 void ResearchStudent::main()
 {
     if (r == nullptr)
