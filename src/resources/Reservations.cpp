@@ -527,8 +527,11 @@ int Reservations::reserveAsset(const std::string &email)
     }
 
     sysController->update_usage_log("Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate);
-
+    cout << "Reservation log created and stored." << endl;
+    cout << "Reservation log entry : Asset reserved by " + email + " " + "Asset ID: " + std::to_string(assetID) + " Start Date: " + startDate + " End Date: " + endDate << endl;
+    cout << "\n-----------------------------------\n" << endl;
     cout << "Asset reserved successfully!" << endl;
+    
     return 0;
 }
 

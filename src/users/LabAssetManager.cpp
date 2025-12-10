@@ -557,8 +557,8 @@ bool LabAssetManager::viewLogs() {
 	for (auto& c : actionFilter) c = tolower(c);
 
 	cout << "\n===== AUDIT LOG =====\n" << endl;
-	cout << left << setw(60) << "Event" << setw(25) << "Timestamp" << "\n";
-	cout << string(85, '-') << "\n";
+	cout << left << setw(100) << "Event" << setw(25) << "Timestamp" << "\n";
+	cout << string(125, '-') << "\n";
 
 	int matchCount = 0;
 	for (const auto& ev : events) {
@@ -573,7 +573,7 @@ bool LabAssetManager::viewLogs() {
 		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
 
 		if (actionMatch && actorMatch) {
-			cout << left << setw(60) << eventStr.substr(0, 59) << setw(25) << timestamp << "\n";
+			cout << left << setw(115) << eventStr << setw(25) << timestamp << "\n";
 			matchCount++;
 		}
 	}
@@ -643,8 +643,8 @@ bool LabAssetManager::viewAuditLog() {
 	}
 
 	cout << "\n===== AUDIT LOG =====\n" << endl;
-	cout << left << setw(60) << "Event" << setw(25) << "Timestamp" << "\n";
-	cout << string(85, '-') << "\n";
+	cout << left << setw(120) << "Event" << setw(30) << "Timestamp" << "\n";
+	cout << string(150, '-') << "\n";
 
 	int matchCount = 0;
 	for (const auto& ev : events) {
@@ -659,7 +659,7 @@ bool LabAssetManager::viewAuditLog() {
 		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
 
 		if (actionMatch && actorMatch) {
-			cout << left << setw(60) << eventStr.substr(0, 59) << setw(25) << timestamp << "\n";
+			cout << left << setw(125) << eventStr << setw(30) << timestamp << "\n";
 			matchCount++;
 		}
 	}
