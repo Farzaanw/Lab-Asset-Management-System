@@ -88,11 +88,9 @@ void FacultyResearcher::main()
         cout << "6. Cancel Reservation" << endl;
         cout << "7. View Notifications" << endl;
         cout << "8. View Student Reservations" << endl;
-        cout << "9. View Student Usage" << endl;
-        cout << "10. Generate Usage Report" << endl;
-        cout << "11. Check-Out (start)" << endl;
-        cout << "12. Check-In (return)" << endl;
-        cout << "13. Logout" << endl;
+        cout << "9. Check-Out (start)" << endl;
+        cout << "10. Check-In (return)" << endl;
+        cout << "11. Logout" << endl;
         cout << "Please enter your choice: ";
 
         string choice;
@@ -164,7 +162,7 @@ void FacultyResearcher::main()
         {
             Reservations(system).checkIn(getEmail());
         }
-        else if (choice == "12")
+        else if (choice == "11")
         {
             cout << "Logging out of Faculty Researcher." << endl;
             break;
