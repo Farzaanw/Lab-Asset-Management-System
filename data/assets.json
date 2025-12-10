@@ -31,7 +31,7 @@
     },
     {
         "category": "equipment",
-        "clearanceLevel": "3",
+        "clearanceLevel": "1",
         "condition": "good",
         "description": "A high-powered flamethrower for controlled burns and experimental applications.",
         "id": 4,
@@ -118,7 +118,7 @@
         "minimumThreshold": 50,
         "name": "Lab Notebooks",
         "operationalStatus": "available",
-        "stock": 0
+        "stock": 1
     },
     {
         "category": "software",

@@ -58,17 +58,17 @@ void ResearchStudent::main()
         cout << endl
              << "---Research Student Main Menu---" << endl;
         cout << "1. Reserve Asset" << endl;
-        cout << "2. Return Asset" << endl;
-        cout << "3. View Available Assets" << endl;
-        cout << "4. Search/Filter Assets" << endl;
-        cout << "5. View My Reservations" << endl;
-        cout << "6. View Notifications" << endl;
-        cout << "7. Cancel Reservation" << endl;
+        //cout << "2. Return Asset" << endl;
+        cout << "2. View Available Assets" << endl;
+        cout << "3. Search/Filter Assets" << endl;
+        cout << "4. View My Reservations" << endl;
+        cout << "5. View Notifications" << endl;
+        cout << "6. Cancel Reservation" << endl;
         // cout << "8. Submit Usage Feedback" << endl;
         // cout << "9. Update Profile" << endl;
-        cout << "8. Check-Out (start)" << endl;
-        cout << "9. Check-In (return)" << endl;
-        cout << "10. Logout" << endl;
+        cout << "7. Check-Out (start)" << endl;
+        cout << "8. Check-In (return)" << endl;
+        cout << "9. Logout" << endl;
         cout << "Please enter your choice: ";
 
         string choice;
@@ -92,29 +92,31 @@ void ResearchStudent::main()
                 cout << "Asset reservation failed." << endl;
             }
         }
+        /*
         else if (choice == "2")
         {
             string email = getEmail();
             a->return_asset(email);
         }
-        else if (choice == "3")
+        */
+        else if (choice == "2")
         {
             a->viewAvailableAssets();
         }
-        else if (choice == "4")
+        else if (choice == "3")
         {
             a->searchAssets("", ""); // Will prompt inside function
         }
-        else if (choice == "5")
+        else if (choice == "4")
         {
             string email = getEmail();
             r->viewMyReservations(email);
         }
-        else if (choice == "6")
+        else if (choice == "5")
         {
             n.view_notifications(getEmail());
         }
-        else if (choice == "7")
+        else if (choice == "6")
         {
             string email = getEmail();
             r->cancelReservation(email); // Will prompt inside function
@@ -140,15 +142,15 @@ void ResearchStudent::main()
             updateUserProfile(newEmail);
         }
         */
-        else if (choice == "8")
+        else if (choice == "7")
         {
             Reservations(system).checkOut(getEmail());
         }
-        else if (choice == "9")
+        else if (choice == "8")
         {
             Reservations(system).checkIn(getEmail());
         }
-        else if (choice == "10")
+        else if (choice == "9")
         {
             cout << "Logging out of Research Student." << endl;
             break;
