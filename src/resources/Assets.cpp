@@ -541,12 +541,14 @@ bool Assets::addAsset()
 	}
 	if (category == "consumable")
 	{
-		cout << "Because this asset is a consumeable please enter:" << endl;
+		cout << "Because this asset is a consumable please enter:" << endl;
 		cout << "stock: ";
-		int stockInt;
-		cin >> stockInt;
+		string tempstring;
+		getline(cin, tempstring);
+		stockInt = stoi(tempstring);
 		cout << "minimum threshold: ";
-		cin >> minThresholdInt;
+		getline(cin, tempstring);
+		minThresholdInt = stoi(tempstring);
 	}
 	if (category == "software")
 	{
