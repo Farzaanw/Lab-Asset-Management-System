@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "../library/nlohmann/json.hpp"
 using json = nlohmann::json;
 using namespace std;
