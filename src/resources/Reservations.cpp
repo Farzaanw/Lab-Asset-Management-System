@@ -8,7 +8,14 @@
 #include <sstream>
 #include <fstream>
 
-// Helps to read int policy values that might be string/number.
+/**
+ * read_policy_int:
+ * Safely reads an integer policy value from a JSON object, even if it is stored
+ * as a string. Falls back to defVal on missing keys or parse errors.
+ *
+ * Returns the parsed integer from j[key], or defVal if absent/invalid.
+ */
+
 static int read_policy_int(const nlohmann::json &j, const std::string &key, int defVal)
 {
     if (!j.contains(key))
@@ -30,8 +37,31 @@ static int read_policy_int(const nlohmann::json &j, const std::string &key, int 
     return defVal;
 }
 
-// ASSETS
-// reserve an asset, returns a int
+/**
+ * Reserve a single asset:
+ * End-to-end interactive reservation flow for one asset by AssetID.
+ * Loads assets.json and accounts.json, prints currently reservable assets
+ * (including consumable/software availability rules), validates user input,
+ * checks policy constraints (MAXBOOKINGDURATION & ADVANCEBOOKINGHORIZON),
+ * and then either:
+ *   - auto-approves and records the reservation (updates accounts/assets), or
+ *   - creates a "pending" reservation and sends a lab-manager approval notification
+ *     when the user's clearanceLevel is below the asset's clearanceLevel.
+ *
+ * Behavior details:
+ *  - Consumable: must have stock > 0; decrements stock on approval.
+ *  - Software: seatsInUse must be < seatCount; increments seat usage on approval.
+ *  - Equipment/other: asset operationalStatus → "reserved" on approval.
+ *  - If clearance insufficient: asset status becomes "pending", reservation stored
+ *    as "pending", and a "reservation_request" is sent to all lab managers.
+ *  - Validates date/time format (YYYY-MM-DD HH:MM), duration, and booking horizon.
+ *  - Logs key actions via sysController when available.
+ *
+ * Return codes:
+ *   0  = approved and stored successfully
+ *   2  = pending (requires lab manager approval; notification sent)
+ *  -1  = cancellation, invalid input, policy violation, or I/O error
+ */
 int Reservations::reserveAsset(const std::string &email)
 {
     cout << "--- Reserve Asset ---\n"
@@ -60,7 +90,6 @@ int Reservations::reserveAsset(const std::string &email)
     }
     accountsIn >> accounts;
     accountsIn.close();
-    // --------------------------------------------------
 
     // First, show available assets
     cout << "Available Assets:\n"
@@ -376,10 +405,8 @@ int Reservations::reserveAsset(const std::string &email)
             sysController->update_usage_log("Error: Account not found");
         return -1;
     }
-    // -----------------------------------------
+
     // MAKING RESERVATION OR SENDING FOR APPROVAL
-    // -----------------------------------------
-    // Get user's clerance level (ADDED HERE)
     auto read_clearance = [](const json &obj, const std::string &key, const std::string &def) -> std::string
     {
         if (!obj.contains(key) || obj[key].is_null())
@@ -424,7 +451,6 @@ int Reservations::reserveAsset(const std::string &email)
         ofstream outAssetFile("../../data/assets.json");
         outAssetFile << setw(4) << assets << endl;
         outAssetFile.close();
-        ////////////////////////////////////////////////////
 
         // Update user's reservations in accounts.json
         bool userFound = false;
@@ -475,7 +501,6 @@ int Reservations::reserveAsset(const std::string &email)
         return 2; // Indicate that approval is needed
     }
 
-    // ------------------------------------------------------------------------------------
     // ELSE --- APPROVE RESERVATION IMMEDIATELY
     std::cout << "You meet the clearance level required to reserve this asset." << std::endl;
     json reservation = {
@@ -540,7 +565,21 @@ int Reservations::reserveAsset(const std::string &email)
     return 0;
 }
 
-// Reserve multiple assets at once
+/**
+ * Reserve multiple assets (batch):
+ * Lets the user reserve N available assets in a single flow. Validates a shared
+ * date range (YYYY-MM-DD → whole-day start/end), checks policies (MAXBOOKINGDURATION,
+ * ADVANCEBOOKINGHORIZON), ensures each AssetID is valid and currently "available",
+ * then records reservations and updates asset usage:
+ *   - Consumable: decrements stock (1 per reservation).
+ *   - Software: increments seatsInUse.
+ *   - Equipment/other: sets operationalStatus → "reserved".
+ *
+ * Saves updated accounts.json and assets.json once at the end.
+ * Logs "Multiple assets reserved" on success.
+ *
+ * Returns true on success, false on cancel/invalid input/policy fail/I/O error.
+ */
 bool Reservations::reserveMultipleAssets(const std::string &email)
 {
     cout << "--- Reserve Multiple Assets ---\n"
@@ -776,7 +815,14 @@ bool Reservations::reserveMultipleAssets(const std::string &email)
     return true;
 }
 
-// RESERVATION MANAGEMENT
+/**
+ * View my reservations:
+ * Prints all reservations for the current user (email) from accounts.json,
+ * including Asset ID, name, start/end, status, and (optional) reason.
+ * If none exist, shows a friendly message. Logs the view action.
+ *
+ * Returns true on success (including "no reservations"), false on I/O error.
+ */
 bool Reservations::viewMyReservations(const std::string &email)
 {
     cout << "--- My Reservations ---\n"
@@ -836,7 +882,18 @@ bool Reservations::viewMyReservations(const std::string &email)
     return true;
 }
 
-// Cancel own reservation
+
+/**
+ * Cancel own reservation:
+ * Lists the user's reservations and prompts for one to cancel.
+ * Removes the selected reservation from accounts.json and restores asset state:
+ *   - Consumable: "returns" one unit to stock (via decrementConsumable with -1).
+ *   - Software: releases one seat (adjustSeatUsage with -1).
+ *   - Equipment/other: sets operationalStatus → "available".
+ * Persists both files and logs the action.
+ *
+ * Returns true on success, false on cancel/invalid selection/I/O error.
+ */
 bool Reservations::cancelReservation(const std::string &email)
 {
     cout << "--- Cancel Reservation ---\n"
@@ -958,7 +1015,17 @@ bool Reservations::cancelReservation(const std::string &email)
     return true;
 }
 
-// Allows a user to check out an "approved/confirmed" reservation whose start time has arrived.
+/**
+ * Check-Out (start of actual usage):
+ * Allows the user to check out a reservation once its scheduled start time has
+ * arrived. Lists reservations with status "approved"/"confirmed" whose startDate
+ * is ≤ now, prompts for one, then:
+ *   - Sets status → "checked_out"
+ *   - Records actualStart timestamp (local time, YYYY-MM-DD HH:MM:SS)
+ *   - Saves accounts.json and logs the event
+ *
+ * Returns true on successful check-out, false on cancel/none eligible/I/O error.
+ */
 bool Reservations::checkOut(const std::string &email)
 {
     json accounts;
@@ -1060,7 +1127,21 @@ bool Reservations::checkOut(const std::string &email)
     return true;
 }
 
-// Allows a user to check in a previously checked-out reservation (captures actualEnd).
+/**
+ * FR-18 — Check-In (end of actual usage):
+ * Finalizes a previously checked-out reservation. Lists items with status
+ * "checked_out", prompts for one, then:
+ *   - Captures actualEnd timestamp
+ *   - Determines if the return is overdue (now > endDate)
+ *   - Accepts optional incident/damage notes for logging
+ *   - Logs the check-in (with OVERDUE flag and notes if provided)
+ *   - Sets the asset’s operationalStatus → "available"
+ *   - Removes the reservation from the user's list
+ *   - Persists accounts.json and assets.json
+ *
+ * Prints whether the check-in was OVERDUE or successful.
+ * Returns true on success; false on cancel/none eligible/I/O error.
+ */
 bool Reservations::checkIn(const std::string &email)
 {
     json accounts;
@@ -1069,7 +1150,7 @@ bool Reservations::checkIn(const std::string &email)
     {
         cerr << "Error: Could not open accounts.json" << endl;
         if (sysController)
-            sysController->update_usage_log("FR-18 checkin failed: accounts.json open error");
+            sysController->update_usage_log("Checkin failed: accounts.json open error");
         return false;
     }
     inAcc >> accounts;
@@ -1134,7 +1215,7 @@ bool Reservations::checkIn(const std::string &email)
     }
 
     size_t rIndex = eligible[choice - 1];
-    auto res = (*user)["reservations"][rIndex]; // copy (we’ll log before removal)
+    auto res = (*user)["reservations"][rIndex]; 
 
     // actual end time
     std::time_t now = std::time(nullptr);
@@ -1149,15 +1230,13 @@ bool Reservations::checkIn(const std::string &email)
     std::time_t endT = mktime(&endTm);
     bool overdue = (endT != -1 && now > endT);
 
-    // optional notes
     cout << "Add incident/damage notes (or press Enter to skip): ";
     std::string notes;
     getline(cin, notes);
 
-    // ---- write a usage log record before deletion ----
     if (sysController)
     {
-        std::string msg = "FR-18: Checked IN asset ID " + std::to_string(res.value("assetID", 0)) +
+        std::string msg = "Checked IN asset ID " + std::to_string(res.value("assetID", 0)) +
                           " by " + email + (overdue ? " (OVERDUE) " : " ") +
                           "actualEnd=" + actualEnd;
         if (!notes.empty())
@@ -1198,7 +1277,16 @@ bool Reservations::checkIn(const std::string &email)
     return true;
 }
 
-// Mark reservations overdue if now > end + grace; notify LAM + user; log incident.
+/**
+ *  Mark overdue and notify:
+ * Scans all reservations across accounts.json; if now > endDate + graceMinutes,
+ * marks the reservation status → "overdue", logs the incident, and sends alerts:
+ *   - To role "lab asset manager" (overdue_alert)
+ *   - To the user (overdue_notice)
+ * Persists accounts.json only if any records changed.
+ *
+ * Returns true if any reservation was updated to overdue, false otherwise (or on I/O error opening accounts).
+ */
 bool Reservations::markOverdueAndNotify(int graceMinutes)
 {
     json accounts;
@@ -1245,7 +1333,7 @@ bool Reservations::markOverdueAndNotify(int graceMinutes)
                 if (sysController)
                 {
                     sysController->update_usage_log(
-                        "FR-18: OVERDUE asset ID " + std::to_string(assetID) +
+                        "OVERDUE asset ID " + std::to_string(assetID) +
                         " (" + assetName + ") user=" + userEmail + " due=" + due);
                 }
 

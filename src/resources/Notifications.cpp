@@ -9,7 +9,14 @@
 
 Notifications::Notifications() {}
 
-// Helper: Load JSON from file
+/**
+ * Save JSON to file:
+ *
+ * Writes the provided json object to the given filepath with pretty-print
+ * formatting (indent=4). Ensures the file can be opened before writing.
+ *
+ * Returns true on successful save, false if the file cannot be opened or written.
+ */
 json Notifications::load_json(const std::string& filepath) const {
     json data;
     std::ifstream inFile(filepath);
@@ -22,7 +29,14 @@ json Notifications::load_json(const std::string& filepath) const {
     return data;
 }
 
-// Helper: Save JSON to file
+/**
+ * Save JSON to file:
+ *
+ * Writes the provided json object to the given filepath with pretty-print
+ * formatting (indent=4). Ensures the file can be opened before writing.
+ *
+ * Returns true on successful save, false if the file cannot be opened or written.
+ */
 bool Notifications::save_json(const std::string& filepath, const json& data) const {
     std::ofstream outFile(filepath);
     if (!outFile.is_open()) {
@@ -34,7 +48,14 @@ bool Notifications::save_json(const std::string& filepath, const json& data) con
     return true;
 }
 
-// Helper: Display a single notification
+/**
+ * Display a single notification:
+ *
+ * Prints a human-readable view of one notification json object. Safely checks
+ * for fields (notificationID, message, type, timeStamp, reason) before printing.
+ *
+ * Returns nothing (prints to std::cout).
+ */
 void Notifications::display_notification(const json& notif) const {
     std::cout << "------------------------------";
     if (notif.contains("notificationID") && !notif["notificationID"].is_null())
@@ -50,7 +71,14 @@ void Notifications::display_notification(const json& notif) const {
     std::cout << "------------------------------\n";
 }
 
-// Helper to get current time as string
+/**
+ * Get current time (string):
+ *
+ * Produces a timestamp string in the format "YYYY-MM-DD HH:MM:SS" using the
+ * local system time. Intended for stamped notifications and audit messages.
+ *
+ * Returns the formatted timestamp string.
+ */
 std::string Notifications::get_current_time() const {
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
@@ -59,6 +87,20 @@ std::string Notifications::get_current_time() const {
     return ss.str();
 }
 
+/**
+ * Send notifications:
+ *
+ * Sends a notification to either a specific user (by recipientEmail) or to all
+ * users with a given role (e.g., "lab manager", "lab asset manager"). The
+ * notification payload is provided in 'data' and a per-user notificationID is assigned.
+ *
+ * Behavior:
+ *  - If recipientEmail is non-empty, sends to that user only.
+ *  - Else if role is non-empty, sends the same notification to all users with that role.
+ *  - Updates ../../data/accounts.json in place.
+ *
+ * Returns nothing (prints a success message on save). If accounts cannot be loaded, exits early.
+ */
 void Notifications::send_notifications(std::string recipientEmail, std::string role, json data) const {
     json accounts = load_json("../../data/accounts.json");
     if (accounts.is_null()) return;
@@ -102,7 +144,15 @@ void Notifications::send_notifications(std::string recipientEmail, std::string r
     }
 }
 
-
+/**
+ * View notifications for a user:
+ *
+ * Loads accounts.json, finds the user by email, and prints all notifications
+ * using display_notification(). If the viewer is a "lab manager", collects any
+ * "reservation_request" notifications and offers an approval workflow.
+ *
+ * Returns nothing (prints results). Exits early if accounts cannot be loaded or no notifications exist.
+ */
 void Notifications::view_notifications(std::string personEmail) const {
     json accounts = load_json("../../data/accounts.json");
     if (accounts.is_null()) return;
@@ -140,7 +190,20 @@ void Notifications::view_notifications(std::string personEmail) const {
     }
 }
 
-// Helper: Handle lab manager reservation approvals/rejections
+/**
+ * Handle lab manager approvals:
+ *
+ * Provides an interactive review flow for restricted reservation requests
+ * addressed to lab managers. Displays the list of requests, prompts for a
+ * Notification ID to process, and delegates to approval/rejection logic.
+ *
+ * Inputs:
+ *  - managerEmail: the lab manager’s email (viewer).
+ *  - reserve_requests: array of reservation_request notifications to review.
+ *  - accounts: full accounts json (modified in-place on approval).
+ *
+ * Returns nothing. On approval, updates accounts and assets; on rejection, removes the reservation and notifies the user.
+ */
 void Notifications::handle_lab_manager_approvals(const std::string& managerEmail, 
                                                    const json& reserve_requests,
                                                    json& accounts) const {
@@ -193,7 +256,17 @@ void Notifications::handle_lab_manager_approvals(const std::string& managerEmail
     }
 }
 
-// Helper: Approve a reservation
+/**
+ * Approve a reservation:
+ *
+ * Marks the requester's reservation as "reserved" (matching assetID, startDate, endDate),
+ * removes the corresponding notification from all lab managers, updates the asset’s
+ * operationalStatus to "reserved", and sends a confirmation notification to the requester.
+ *
+ * Saves changes to ../../data/accounts.json and ../../data/assets.json.
+ *
+ * Returns nothing (prints a confirmation message).
+ */
 void Notifications::approve_reservation(const std::string& managerEmail,
                                         const std::string& requesterEmail,
                                         const json& notification,
@@ -264,7 +337,17 @@ void Notifications::approve_reservation(const std::string& managerEmail,
     std::cout << "Reservation request approved.\n";
 }
 
-// Helper: Reject a reservation
+/**
+ * Reject a reservation:
+ *
+ * Marks the asset back to "available", removes the matching reservation from the
+ * requester's account, deletes the corresponding notification from all lab managers,
+ * and sends a rejection notification to the requester including the asset name.
+ *
+ * Saves changes to ../../data/accounts.json and ../../data/assets.json.
+ *
+ * Returns nothing (prints a confirmation message).
+ */
 void Notifications::reject_reservation(const std::string& requesterEmail,
                                        const json& notification) const {
     // Extract notification details
@@ -343,6 +426,16 @@ void Notifications::reject_reservation(const std::string& requesterEmail,
     std::cout << "Reservation request rejected.\n";
 }
 
+/**
+ * Handle restricted reservation requests (prompt):
+ *
+ * Prompts the lab manager for an action on the selected notification:
+ *  - 'a' / 'A' to approve (returns 1)
+ *  - 'r' / 'R' to reject  (returns -1)
+ *  - otherwise go back     (returns 0)
+ *
+ * Returns an integer code: 1 for approve, -1 for reject, 0 for back/other.
+ */
 int Notifications::handleRestrictedReservationRequests() const {
     // process the chosen notification
     std::cout << "Do you want to approve (a), reject (r), or go back to menu (b)?: ";
@@ -358,6 +451,15 @@ int Notifications::handleRestrictedReservationRequests() const {
     return 0;
 }
 
+/**
+ * Renewal date alert:
+ *
+ * Scans assets.json for software assets with a renewalDate (YYYY-MM-DD). If the
+ * renewalDate has passed relative to the current system time, sends a "renewal_alert"
+ * notification to all users with the role "lab asset manager".
+ *
+ * Returns nothing. Exits early if assets cannot be loaded.
+ */
 void Notifications::renewalDateAlert() const {
     json assets = load_json("../../data/assets.json");
     if (assets.is_null()) return;

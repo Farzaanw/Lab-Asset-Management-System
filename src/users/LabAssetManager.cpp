@@ -14,26 +14,58 @@ static Notifications n;
 using namespace std;
 using json = nlohmann::json;
 
-LabAssetManager::LabAssetManager(const string& email,
-			   SystemController* sys)
-	: User(email, sys) ,
+/**
+ * LabAssetManager user.
+ *
+ * Initializes a Lab Asset Manager with the provided email and
+ * SystemController pointer for logging and shared services.
+ *
+ * Account email for this user.
+ * Pointer to the SystemController used for logging and IO helpers.
+ */
+
+LabAssetManager::LabAssetManager(const string &email,
+								 SystemController *sys)
+	: User(email, sys),
 	  system(sys) {}
 
-
-//Destructor
+// Destructor
 LabAssetManager::~LabAssetManager() {}
 
-//Override getRole
-string LabAssetManager::getRole() const {
+// Override getRole
+string LabAssetManager::getRole() const
+{
 	return "lab asset manager";
 }
 
-void LabAssetManager::main(){
+/**
+ * Main interactive loop for the Lab Asset Manager.
+ *
+ * Renders a CLI menu providing management capabilities:
+ *   1) Create/Update/Delete/List Accounts (accounts.json)
+ *   2) Add/Update/Remove/List Assets (assets.json)
+ *   3) List/Upload Documents; Attach/View per Asset (documents.json + file copies)
+ *   4) View Reservation Logs / Audit Logs (usage_log.json)
+ *   5) Set low-stock threshold for consumables
+ *   6) Search/Filter assets
+ *   7) Display dashboards
+ *   8) Cancel reservations / List all reservations (accounts.json)
+ *   9) View notifications; run Renewal Date Alert
+ *
+ * Most actions log to usage_log via SystemController when successful.
+ * Returns only when the user selects Logout.
+ *
+ * returns void
+ */
+void LabAssetManager::main()
+{
 	cout << "\n=============================================" << endl;
 	cout << "Welcome " << getEmail() << endl;
 	cout << "=============================================" << endl;
-	while(true){
-		cout << endl << "---Lab Asset Manager Main Menu---" << endl; //add greeting of user
+	while (true)
+	{
+		cout << endl
+			 << "---Lab Asset Manager Main Menu---" << endl; // add greeting of user
 		cout << "1. Create Account" << endl;
 		cout << "2. Update Account" << endl;
 		cout << "3. Delete Account" << endl;
@@ -56,174 +88,250 @@ void LabAssetManager::main(){
 		cout << "20. View Documents per Asset" << endl;
 		cout << "21. Renewal Date Alert" << endl;
 		cout << "22. Logout" << endl;
-		
+
 		cout << "Please enter your choice: ";
 		string choice;
 		getline(cin, choice);
 		cout << endl;
 
-		if (choice == "1") {
-			if(createAccount()) {
+		if (choice == "1")
+		{
+			if (createAccount())
+			{
 				cout << "Account created successfully." << endl;
 				system->update_usage_log("Account created by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to create account." << endl;
 			}
 		}
-		else if (choice == "2") {
-			if(updateAccount()) {
+		else if (choice == "2")
+		{
+			if (updateAccount())
+			{
 				cout << "Account updated successfully." << endl;
 				system->update_usage_log("Account updated by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to update account." << endl;
 			}
 		}
-		else if (choice == "3") {
-			if(deleteAccount()) {
+		else if (choice == "3")
+		{
+			if (deleteAccount())
+			{
 				cout << "Account deleted successfully." << endl;
 				system->update_usage_log("Account deleted by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to delete account." << endl;
 			}
 		}
-		else if (choice == "4") {
-			if(listAccounts()) {
+		else if (choice == "4")
+		{
+			if (listAccounts())
+			{
 				cout << "Accounts listed successfully." << endl;
-			} else {
+			}
+			else
+			{
 				cout << "Failed to list accounts." << endl;
 			}
 		}
-		else if (choice == "5") {
-			if(Assets(system).addAsset()) {
+		else if (choice == "5")
+		{
+			if (Assets(system).addAsset())
+			{
 				cout << "Asset added successfully." << endl;
 				system->update_usage_log("Asset added by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to add asset." << endl;
 			}
 		}
-		else if (choice == "6") {
-			if(Assets(system).updateAsset()) {
+		else if (choice == "6")
+		{
+			if (Assets(system).updateAsset())
+			{
 				cout << "Asset updated successfully." << endl;
 				system->update_usage_log("Asset updated by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to update asset." << endl;
 			}
 		}
-		else if (choice == "7") {
-			if(Assets(system).removeAsset()) {
+		else if (choice == "7")
+		{
+			if (Assets(system).removeAsset())
+			{
 				cout << "Asset removed successfully." << endl;
 				system->update_usage_log("Asset removed by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to remove asset." << endl;
 			}
 		}
-		else if (choice == "8") {
-			if(Assets(system).listAssets()) {
+		else if (choice == "8")
+		{
+			if (Assets(system).listAssets())
+			{
 				cout << "Assets listed successfully." << endl;
-			} else {
+			}
+			else
+			{
 				cout << "Failed to list assets." << endl;
 			}
 		}
-		else if (choice == "9") {
+		else if (choice == "9")
+		{
 			Documents d;
 			d.listDocuments();
 		}
-		else if (choice == "10") {
+		else if (choice == "10")
+		{
 			Documents d;
-			if(d.uploadDocument()){
+			if (d.uploadDocument())
+			{
 				cout << "Document uploaded successfully." << endl;
 				system->update_usage_log("Document uploaded by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to upload document." << endl;
 			}
 		}
-		else if (choice == "11") {
+		else if (choice == "11")
+		{
 			viewLogs();
 		}
 
-		else if (choice == "12") {
+		else if (choice == "12")
+		{
 			viewAuditLog();
 		}
 
-		else if (choice == "13") {
-			if (setConsumableThreshold()){
+		else if (choice == "13")
+		{
+			if (setConsumableThreshold())
+			{
 				cout << "Threshold updated." << endl;
 				system->update_usage_log("Low-stock threshold updated by Lab Asset Manager");
-			} else {
+			}
+			else
+			{
 				cout << "Failed to update threshold." << endl;
 			}
 		}
-		else if (choice == "14") {
-			if (!Assets(system).searchAssets("", "")) {
+		else if (choice == "14")
+		{
+			if (!Assets(system).searchAssets("", ""))
+			{
 				cout << "Failed to search/filter assets." << endl;
 			}
 		}
-		else if (choice == "15") {
-			if(displayDashboard()) {
+		else if (choice == "15")
+		{
+			if (displayDashboard())
+			{
 				cout << "Dashboard displayed successfully." << endl;
-			} else {
+			}
+			else
+			{
 				cout << "Failed to display dashboard." << endl;
 			}
 		}
-		else if (choice == "16"){
-			if(cancelReservation()) {
+		else if (choice == "16")
+		{
+			if (cancelReservation())
+			{
 				cout << "Reservation cancelled successfully." << endl;
 				// Log updated in cancelReservation() no need to add here
-			} else {
+			}
+			else
+			{
 				cout << "Failed to cancel reservation." << endl;
 			}
 		}
-		else if (choice == "17") {
-			if(listReservations()) {
+		else if (choice == "17")
+		{
+			if (listReservations())
+			{
 				cout << "Reservations listed successfully." << endl;
-			} else {
+			}
+			else
+			{
 				cout << "Failed to list reservations." << endl;
 			}
-		} 	else if (choice == "18") {
-			n.view_notifications(getEmail());                     
+		}
+		else if (choice == "18")
+		{
+			n.view_notifications(getEmail());
 		}
 
-		else if (choice == "19") { // Upload and Attach
-    	
-        // After successful upload, ask for Asset ID to link
-        cout << "Enter Asset ID you want to link a Document to: ";
-        int aID, dID;
-        cin >> aID;
-        cout << "Enter Document ID to attach: ";
-        cin >> dID;
-        cin.ignore();
-        
-        if(Assets(system).attachDocumentToAsset(aID, dID)) {
-            cout << "Document linked to Asset successfully." << endl;
-        } else {
-            cout << "Failed to link document to asset record." << endl;
-        }
-  	  	
+		else if (choice == "19")
+		{
+
+			// After successful upload, ask for Asset ID to link
+			cout << "Enter Asset ID you want to link a Document to: ";
+			int aID, dID;
+			cin >> aID;
+			cout << "Enter Document ID to attach: ";
+			cin >> dID;
+			cin.ignore();
+
+			if (Assets(system).attachDocumentToAsset(aID, dID))
+			{
+				cout << "Document linked to Asset successfully." << endl;
+			}
+			else
+			{
+				cout << "Failed to link document to asset record." << endl;
+			}
 		}
-		else if (choice == "20") { // NEW option: View Documents per Asset
-   	 	cout << "Enter Asset ID to view attachments: ";
-    	int aID;
-    	cin >> aID;
-    	cin.ignore();
-    	Assets(system).viewDocumentsPerAsset(aID);
-}
-		else if (choice == "21") {
-   		 n.renewalDateAlert(); 
-    	cout << "Renewal check complete. Check notifications for alerts." << endl;
-}
-		else if (choice == "22") {
+		else if (choice == "20")
+		{
+			cout << "Enter Asset ID to view attachments: ";
+			int aID;
+			cin >> aID;
+			cin.ignore();
+			Assets(system).viewDocumentsPerAsset(aID);
+		}
+		else if (choice == "21")
+		{
+			n.renewalDateAlert();
+			cout << "Renewal check complete. Check notifications for alerts." << endl;
+		}
+		else if (choice == "22")
+		{
 			cout << "Logging out..." << endl;
 			system->update_usage_log("Lab Asset Manager logged out");
 			break;
 		}
-		
-		else {
+
+		else
+		{
 			cout << "Invalid choice. Please try again." << endl;
 		}
 	}
 }
 
-bool LabAssetManager::setConsumableThreshold() {
+/**
+ * Set the low-stock threshold for a consumable asset.
+ *
+ * Prompts for an asset ID and a threshold integer, then updates
+ * the associated asset record in ../../data/assets.json via Assets::setLowStockThreshold.
+ * On success, writes an entry to the usage log.
+ *
+ * Returns true if the threshold was updated; false on invalid input or IO failure.
+ */
+bool LabAssetManager::setConsumableThreshold()
+{
 	int assetID;
 	cout << "Enter asset ID of consumable to set threshold: ";
 	cin >> assetID;
@@ -235,23 +343,36 @@ bool LabAssetManager::setConsumableThreshold() {
 	cin.ignore();
 
 	bool ok = Assets(system).setLowStockThreshold(assetID, threshold);
-	if (ok) {
-		if (system) system->update_usage_log("Low-stock threshold updated for asset ID " + to_string(assetID));
+	if (ok)
+	{
+		if (system)
+			system->update_usage_log("Low-stock threshold updated for asset ID " + to_string(assetID));
 	}
 	return ok;
 }
 
-
-bool LabAssetManager::createAccount() {
+/**
+ * Creates a new account (user record).
+ *
+ * Interactively gathers email, role, and password; validates role against
+ * the allowed set; assigns a unique incremental ID; and initializes
+ * empty arrays for "reservations" and "notifications".
+ * Writes the updated array to ../../data/accounts.json.
+ *
+ * Returns true on success; false on file IO/parse error.
+ */
+bool LabAssetManager::createAccount()
+{
 	json j;
 	json account;
 	ifstream inFile(accountsFile);
-	if (inFile.is_open()) {
+	if (inFile.is_open())
+	{
 		inFile >> j;
 		inFile.close();
 	}
 
-	//asks user for account info
+	// asks user for account info
 	string role, email, password;
 	cout << "Creating a new account." << endl;
 	cout << "Enter email: ";
@@ -259,23 +380,27 @@ bool LabAssetManager::createAccount() {
 	cout << "Enter role: ";
 	getline(cin, role);
 
-	//role validation
-	while (validRoles.find(role) == validRoles.end()) {
+	// role validation
+	while (validRoles.find(role) == validRoles.end())
+	{
 		cout << "Invalid role entered. Please enter a valid role from the list (research student, faculty researcher, lab manager, lab asset manager):" << endl;
 		getline(cin, role);
 	}
 
-	//password
+	// password
 	cout << "Enter password: ";
 	getline(cin, password);
 	cout << endl;
 
 	// Generate unique ID. This will generate the highest ID in the accounts.json file.
 	int maxID = 0;
-	for (const auto& account : j) {
-		if (account.contains("id") && account["id"].is_number()) {
+	for (const auto &account : j)
+	{
+		if (account.contains("id") && account["id"].is_number())
+		{
 			int id = account["id"];
-			if (id > maxID) maxID = id;
+			if (id > maxID)
+				maxID = id;
 		}
 	}
 	int uniqueID = maxID + 1;
@@ -301,13 +426,26 @@ bool LabAssetManager::createAccount() {
 	return true;
 };
 
-bool LabAssetManager::updateAccount() {
+/**
+ * Update an existing account’s fields.
+ *
+ * Loads ../../data/accounts.json, prompts for an account ID (supports "quit"
+ * to cancel), displays current fields, then allows editing of each value.
+ * Role edits are validated. Saves changes back to disk.
+ *
+ * Returns true if an account was updated; false if canceled, ID not found,
+ * or on file IO/parse error.
+ */
+
+bool LabAssetManager::updateAccount()
+{
 	int ID;
 	json accounts;
 
 	// Load the JSON file
 	ifstream inFile(accountsFile);
-	if (!inFile.is_open()) {
+	if (!inFile.is_open())
+	{
 		cerr << "Error: Could not open accounts.json" << endl;
 		return false;
 	}
@@ -315,59 +453,73 @@ bool LabAssetManager::updateAccount() {
 	inFile.close();
 
 	// Loop until valid ID is entered
-	json* accountToUpdate = nullptr;
-	while (!accountToUpdate) {
+	json *accountToUpdate = nullptr;
+	while (!accountToUpdate)
+	{
 		string input;
 		cout << "Please enter the account ID you would like to modify (type quit to cancel the modification): ";
 		getline(cin, input);
 
-		if (input == "quit") {
+		if (input == "quit")
+		{
 			return false;
 		}
 
-		try {
+		try
+		{
 			ID = stoi(input);
-		} catch (...) {
+		}
+		catch (...)
+		{
 			cout << "Invalid input. Please enter a numeric ID." << endl;
 			continue;
 		}
 
 		// Search for the account
-		for (auto& acc : accounts) {
-			if (acc["id"].get<int>() == ID) {
+		for (auto &acc : accounts)
+		{
+			if (acc["id"].get<int>() == ID)
+			{
 				accountToUpdate = &acc;
 				break;
 			}
 		}
 
-		if (!accountToUpdate) {
+		if (!accountToUpdate)
+		{
 			cout << "Account ID not found. Please try again." << endl;
 		}
 	}
 
 	// Display current account info
 	cout << "\nCurrent account information:\n";
-	for (auto& [key, value] : accountToUpdate->items()) {
+	for (auto &[key, value] : accountToUpdate->items())
+	{
 		cout << key << ": " << value << endl;
 	}
 
 	cout << "\nEnter new information (leave blank to keep current value):\n";
 
 	// Update fields (ID is NOT updated)
-	for (auto& [key, value] : accountToUpdate->items()) {
-		if (key == "id") continue;
+	for (auto &[key, value] : accountToUpdate->items())
+	{
+		if (key == "id")
+			continue;
 
 		string input;
 		cout << key << " (" << value << "): ";
 		getline(cin, input);
 
-		if (input.empty()) {
+		if (input.empty())
+		{
 			continue;
 		}
 
 		// Role validation
-		if (key == "role") {
-			while (validRoles.find(input) == validRoles.end()) {
+		if (key == "role")
+		{
+			while (validRoles.find(input) == validRoles.end())
+			{
 				cout << "Invalid role. Please enter one of the following (research student, faculty researcher, lab manager, lab asset manager): ";
 				getline(cin, input);
 			}
@@ -386,31 +538,47 @@ bool LabAssetManager::updateAccount() {
 	return true;
 }
 
-bool LabAssetManager::listAccounts() {
+/**
+ * Lists all accounts.
+ *
+ * Reads ../../data/accounts.json and prints each account’s ID, email, role,
+ * and password. If no accounts exist, prints a friendly message.
+ *
+ * Returns true on success (including empty list); false on file IO/parse error.
+ */
+bool LabAssetManager::listAccounts()
+{
 	json accounts;
 
 	ifstream inFile(accountsFile);
-	if (!inFile.is_open()) {
+	if (!inFile.is_open())
+	{
 		cerr << "Error: Could not open " << accountsFile << endl;
 		return false;
 	}
 
-	try {
+	try
+	{
 		inFile >> accounts;
-	} catch (const exception& e) {
+	}
+	catch (const exception &e)
+	{
 		cerr << "Error reading JSON: " << e.what() << endl;
 		inFile.close();
 		return false;
 	}
 	inFile.close();
 
-	if (accounts.empty()) {
+	if (accounts.empty())
+	{
 		cout << "No accounts found." << endl;
 		return true;
 	}
 
-	cout << "Listing all accounts:\n" << endl;
-	for (const auto& acc : accounts) {
+	cout << "Listing all accounts:\n"
+		 << endl;
+	for (const auto &acc : accounts)
+	{
 		cout << "ID: " << acc["id"] << endl;
 		cout << "Email: " << acc["email"] << endl;
 		cout << "Role: " << acc["role"] << endl;
@@ -421,12 +589,24 @@ bool LabAssetManager::listAccounts() {
 	return true;
 }
 
-bool LabAssetManager::deleteAccount() {
+/**
+ * Delete an account by ID.
+ *
+ * Loads ../../data/accounts.json, prompts repeatedly until a valid numeric ID
+ * or "quit" is provided, shows the record, and asks for a yes/no confirmation
+ * before removing it from the array. Saves updates back to disk.
+ *
+ * Returns true if a record was deleted; false if canceled, not found,
+ * or on file IO/parse error.
+ */
+bool LabAssetManager::deleteAccount()
+{
 	json accounts;
 
 	// Load JSON file
 	ifstream inFile(accountsFile);
-	if (!inFile.is_open()) {
+	if (!inFile.is_open())
+	{
 		cerr << "Error: Could not open accounts.json" << endl;
 		return false;
 	}
@@ -434,44 +614,53 @@ bool LabAssetManager::deleteAccount() {
 	inFile.close();
 
 	// Pointer to the account to delete
-	json* accountToDelete = nullptr;
+	json *accountToDelete = nullptr;
 	int ID = -1;
 
 	// Loop until user enters a valid ID
-	while (!accountToDelete) {
+	while (!accountToDelete)
+	{
 		string input;
 		cout << "Please enter the account ID you want to delete (or type 'quit' to cancel): ";
 		getline(cin, input);
 
-		if (input == "quit") {
+		if (input == "quit")
+		{
 			cout << "Delete operation canceled.\n";
 			return false;
 		}
 
 		// Validate numeric ID
-		try {
+		try
+		{
 			ID = stoi(input);
-		} catch (...) {
+		}
+		catch (...)
+		{
 			cout << "Invalid input. Please enter a numeric ID.\n";
 			continue;
 		}
 
 		// Search for account
-		for (auto& acc : accounts) {
-			if (acc["id"].get<int>() == ID) {
+		for (auto &acc : accounts)
+		{
+			if (acc["id"].get<int>() == ID)
+			{
 				accountToDelete = &acc;
 				break;
 			}
 		}
 
-		if (!accountToDelete) {
+		if (!accountToDelete)
+		{
 			cout << "Account ID not found. Please try again.\n";
 		}
 	}
 
 	// Display account info before deleting
 	cout << "\nAccount found:\n";
-	for (auto& [key, value] : accountToDelete->items()) {
+	for (auto &[key, value] : accountToDelete->items())
+	{
 		cout << key << ": " << value << endl;
 	}
 
@@ -480,19 +669,23 @@ bool LabAssetManager::deleteAccount() {
 	cout << "\nAre you sure you want to delete this account? (yes/no): ";
 	getline(cin, confirm);
 
-	while (confirm != "yes" && confirm != "no") {
+	while (confirm != "yes" && confirm != "no")
+	{
 		cout << "Please enter 'yes' or 'no': ";
 		getline(cin, confirm);
 	}
 
-	if (confirm == "no") {
+	if (confirm == "no")
+	{
 		cout << "Deletion canceled.\n";
 		return false;
 	}
 
 	// Delete account
-	for (size_t i = 0; i < accounts.size(); i++) {
-		if (accounts[i]["id"].get<int>() == ID) {
+	for (size_t i = 0; i < accounts.size(); i++)
+	{
+		if (accounts[i]["id"].get<int>() == ID)
+		{
 			accounts.erase(accounts.begin() + i);
 			break;
 		}
@@ -507,83 +700,109 @@ bool LabAssetManager::deleteAccount() {
 	return true;
 }
 
-bool LabAssetManager::viewLogs() {
+/**
+ * View reservation logs.
+ *
+ * Opens ../../data/usage_log.json and prints events from the "events" array
+ * in a two-column table (Event, Timestamp). Optionally filters by actor/email
+ * and the default action keyword ("Asset reserved by") using a simple
+ * case-insensitive substring test. Pauses for Enter to continue.
+ *
+ * Returns true on success (even if no matches); false on file IO/parse error
+ * or missing/invalid "events" structure.
+ */
+bool LabAssetManager::viewLogs()
+{
 	json logs;
 	ifstream inFile(usageLogFile);
 
-	if (!inFile.is_open()) {
+	if (!inFile.is_open())
+	{
 		cerr << "Error: Could not open " << usageLogFile << endl;
 		return false;
 	}
 
-	try {
+	try
+	{
 		inFile >> logs;
-	} catch (const exception& e) {
+	}
+	catch (const exception &e)
+	{
 		cerr << "Error reading JSON: " << e.what() << endl;
 		return false;
 	}
 	inFile.close();
 
-	if (!logs.contains("events") || !logs["events"].is_array()) {
+	if (!logs.contains("events") || !logs["events"].is_array())
+	{
 		cerr << "Error: JSON does not contain 'events' array.\n";
 		return false;
 	}
 
-	const auto& events = logs["events"];
+	const auto &events = logs["events"];
 
-	if (events.empty()) {
+	if (events.empty())
+	{
 		cout << "No ASSET USAGE LOG entries found." << endl;
 		return true;
 	}
 
 	// Prompt for filtering options
-	cout << "\n===== ASSET USAGE LOG VIEWER =====\n" << endl;
+	cout << "\n===== ASSET USAGE LOG VIEWER =====\n"
+		 << endl;
 	cout << "Would you like to filter by email? (y/n): ";
 	string filterChoice;
 	getline(cin, filterChoice);
-	
+
 	string actionFilter = "Asset reserved by";
 	string actorFilter = "";
 
-	if (filterChoice == "y" || filterChoice == "Y") {
-		
+	if (filterChoice == "y" || filterChoice == "Y")
+	{
+
 		cout << "Enter email to filter (or leave blank for no filter): ";
 		getline(cin, actorFilter);
-		
-		// Convert to lowercase for case-insensitive matching
-		for (auto& c : actionFilter) c = tolower(c);
-		for (auto& c : actorFilter) c = tolower(c);
-	}
-	for (auto& c : actionFilter) c = tolower(c);
 
-	cout << "\n===== AUDIT LOG =====\n" << endl;
+		// Convert to lowercase for case-insensitive matching
+		for (auto &c : actionFilter)
+			c = tolower(c);
+		for (auto &c : actorFilter)
+			c = tolower(c);
+	}
+	for (auto &c : actionFilter)
+		c = tolower(c);
+
 	cout << left << setw(100) << "Event" << setw(25) << "Timestamp" << "\n";
 	cout << string(125, '-') << "\n";
 
 	int matchCount = 0;
-	for (const auto& ev : events) {
+	for (const auto &ev : events)
+	{
 		string eventStr = ev.contains("event") ? ev["event"].get<string>() : "";
 		string timestamp = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "";
 
 		// Apply filters
 		string eventLower = eventStr;
-		for (auto& c : eventLower) c = tolower(c);
+		for (auto &c : eventLower)
+			c = tolower(c);
 
 		bool actionMatch = actionFilter.empty() || eventLower.find(actionFilter) != string::npos;
 		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
 
-		if (actionMatch && actorMatch) {
-			cout << left << setw(115) << eventStr << setw(25) << timestamp << "\n";
+		if (actionMatch && actorMatch)
+		{
+			cout << left << setw(125) << eventStr << setw(30) << timestamp << "\n";
 			matchCount++;
 		}
 	}
-
-	
-
-	if (matchCount == 0) {
+	if (matchCount == 0)
+	{
 		cout << "No audit log entries matching the filter criteria.\n";
-	} else {
-		cout << "\n" << matchCount << " audit log entries displayed.\n";
+	}
+	else
+	{
+		cout << "\n"
+			 << matchCount << " audit log entries displayed.\n";
 	}
 
 	cout << "\nPress Enter to continue...";
@@ -592,54 +811,75 @@ bool LabAssetManager::viewLogs() {
 	return true;
 }
 
-bool LabAssetManager::viewAuditLog() {
+/**
+ * View audit logs (general log viewer).
+ *
+ * Opens ../../data/usage_log.json and prints the "events" array as a table.
+ * Optionally filters by an action keyword and/or actor/email (case-insensitive).
+ * Displays the number of matching entries; pauses for Enter.
+ *
+ * Returns true on success (even with zero matches); false on file IO/parse error
+ * or missing/invalid "events" structure.
+ */
+bool LabAssetManager::viewAuditLog()
+{
 	json logs;
 	ifstream inFile(usageLogFile);
 
-	if (!inFile.is_open()) {
+	if (!inFile.is_open())
+	{
 		cerr << "Error: Could not open " << usageLogFile << endl;
 		return false;
 	}
 
-	try {
+	try
+	{
 		inFile >> logs;
-	} catch (const exception& e) {
+	}
+	catch (const exception &e)
+	{
 		cerr << "Error reading JSON: " << e.what() << endl;
 		return false;
 	}
 	inFile.close();
 
-	if (!logs.contains("events") || !logs["events"].is_array()) {
+	if (!logs.contains("events") || !logs["events"].is_array())
+	{
 		cerr << "Error: JSON does not contain 'events' array.\n";
 		return false;
 	}
 
-	const auto& events = logs["events"];
+	const auto &events = logs["events"];
 
-	if (events.empty()) {
+	if (events.empty())
+	{
 		cout << "No audit log entries found." << endl;
 		return true;
 	}
 
 	// Prompt for filtering options
-	cout << "\n===== AUDIT LOG VIEWER =====\n" << endl;
+	cout << "\n===== AUDIT LOG VIEWER =====\n"
+		 << endl;
 	cout << "Would you like to filter logs? (y/n): ";
 	string filterChoice;
 	getline(cin, filterChoice);
-	
+
 	string actionFilter = "";
 	string actorFilter = "";
 
-	if (filterChoice == "y" || filterChoice == "Y") {
+	if (filterChoice == "y" || filterChoice == "Y")
+	{
 		cout << "Enter action keyword to filter (or leave blank for no filter): ";
 		getline(cin, actionFilter);
-		
+
 		cout << "Enter actor/email to filter (or leave blank for no filter): ";
 		getline(cin, actorFilter);
-		
+
 		// Convert to lowercase for case-insensitive matching
-		for (auto& c : actionFilter) c = tolower(c);
-		for (auto& c : actorFilter) c = tolower(c);
+		for (auto &c : actionFilter)
+			c = tolower(c);
+		for (auto &c : actorFilter)
+			c = tolower(c);
 	}
 
 	cout << "\n===== AUDIT LOG =====\n" << endl;
@@ -647,27 +887,34 @@ bool LabAssetManager::viewAuditLog() {
 	cout << string(150, '-') << "\n";
 
 	int matchCount = 0;
-	for (const auto& ev : events) {
+	for (const auto &ev : events)
+	{
 		string eventStr = ev.contains("event") ? ev["event"].get<string>() : "";
 		string timestamp = ev.contains("timestamp") ? ev["timestamp"].get<string>() : "";
 
 		// Apply filters
 		string eventLower = eventStr;
-		for (auto& c : eventLower) c = tolower(c);
+		for (auto &c : eventLower)
+			c = tolower(c);
 
 		bool actionMatch = actionFilter.empty() || eventLower.find(actionFilter) != string::npos;
 		bool actorMatch = actorFilter.empty() || eventLower.find(actorFilter) != string::npos;
 
-		if (actionMatch && actorMatch) {
+		if (actionMatch && actorMatch)
+		{
 			cout << left << setw(125) << eventStr << setw(30) << timestamp << "\n";
 			matchCount++;
 		}
 	}
 
-	if (matchCount == 0) {
+	if (matchCount == 0)
+	{
 		cout << "No audit log entries matching the filter criteria.\n";
-	} else {
-		cout << "\n" << matchCount << " audit log entries displayed.\n";
+	}
+	else
+	{
+		cout << "\n"
+			 << matchCount << " audit log entries displayed.\n";
 	}
 
 	cout << "\nPress Enter to continue...";
@@ -675,137 +922,181 @@ bool LabAssetManager::viewAuditLog() {
 
 	return true;
 }
-bool LabAssetManager::listReservations() {
-    json accounts;
-    ifstream inFile(accountsFile);
 
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open " << accountsFile << endl;
-        return false;
-    }
+/**
+ * List all reservations across all users.
+ *
+ * Scans ../../data/accounts.json and prints each reservation found in each user:
+ * user email, asset ID/name, start/end dates, and status. If none exist,
+ * prints a friendly message.
+ *
+ * Returns true on success; false on file IO/parse error.
+ */
+bool LabAssetManager::listReservations()
+{
+	json accounts;
+	ifstream inFile(accountsFile);
 
-    try {
-        inFile >> accounts;
-    } catch (exception& e) {
-        cerr << "Error reading JSON: " << e.what() << endl;
-        return false;
-    }
-    inFile.close();
+	if (!inFile.is_open())
+	{
+		cerr << "Error: Could not open " << accountsFile << endl;
+		return false;
+	}
 
-    cout << "\n===== ALL RESERVATIONS =====\n";
+	try
+	{
+		inFile >> accounts;
+	}
+	catch (exception &e)
+	{
+		cerr << "Error reading JSON: " << e.what() << endl;
+		return false;
+	}
+	inFile.close();
 
-    bool found = false;
+	cout << "\n===== ALL RESERVATIONS =====\n";
 
-    for (const auto& user : accounts) {
-        if (!user.contains("reservations")) continue;
+	bool found = false;
 
-        for (const auto& r : user["reservations"]) {
-            found = true;
+	for (const auto &user : accounts)
+	{
+		if (!user.contains("reservations"))
+			continue;
 
-            cout << "User Email: " << user["email"] << "\n"
-                 << "  Asset ID: " << r["assetID"] << "\n"
-                 << "  Asset Name: " << r["assetName"] << "\n"
-                 << "  Start Date: " << r["startDate"] << "\n"
-                 << "  End Date: " << r["endDate"] << "\n"
-                 << "  Status: " << r["status"] << "\n"
-                 << "------------------------------------\n";
-        }
-    }
+		for (const auto &r : user["reservations"])
+		{
+			found = true;
 
-    if (!found) {
-        cout << "No reservations found.\n";
-    }
+			cout << "User Email: " << user["email"] << "\n"
+				 << "  Asset ID: " << r["assetID"] << "\n"
+				 << "  Asset Name: " << r["assetName"] << "\n"
+				 << "  Start Date: " << r["startDate"] << "\n"
+				 << "  End Date: " << r["endDate"] << "\n"
+				 << "  Status: " << r["status"] << "\n"
+				 << "------------------------------------\n";
+		}
+	}
 
-    return true;
+	if (!found)
+	{
+		cout << "No reservations found.\n";
+	}
+
+	return true;
 }
 
-bool LabAssetManager::cancelReservation() {
-    int assetID;
-    cout << "Enter the Asset ID of the reservation to cancel: ";
-    cin >> assetID;
-    cin.ignore();
+/**
+ * Cancel reservation(s) by Asset ID (bulk cancel).
+ *
+ * Prompts for an Asset ID, counts how many reservations across all users
+ * reference that asset, and asks for a 'y/n' confirmation plus a free-text reason.
+ * Removes matching reservations from all accounts and saves the updated file.
+ * Also writes a detailed usage_log entry including the reason.
+ *
+ * Return true if one or more reservations were canceled; false if none found,
+ * user declined, or on file IO/parse error.
+ */
+bool LabAssetManager::cancelReservation()
+{
+	int assetID;
+	cout << "Enter the Asset ID of the reservation to cancel: ";
+	cin >> assetID;
+	cin.ignore();
 
-    json accounts;
-    ifstream inFile(accountsFile);
+	json accounts;
+	ifstream inFile(accountsFile);
 
-    if (!inFile.is_open()) {
-        cerr << "Error: Could not open " << accountsFile << endl;
-        return false;
-    }
+	if (!inFile.is_open())
+	{
+		cerr << "Error: Could not open " << accountsFile << endl;
+		return false;
+	}
 
-    try {
-        inFile >> accounts;
-    } catch (exception& e) {
-        cerr << "Error reading JSON: " << e.what() << endl;
-        return false;
-    }
-    inFile.close();
+	try
+	{
+		inFile >> accounts;
+	}
+	catch (exception &e)
+	{
+		cerr << "Error reading JSON: " << e.what() << endl;
+		return false;
+	}
+	inFile.close();
 
-    bool found = false;
-    int deleteCount = 0;
+	bool found = false;
+	int deleteCount = 0;
 
-    // Count how many reservations we are about to remove
-    for (const auto& user : accounts) {
-        if (!user.contains("reservations")) continue;
+	// Count how many reservations we are about to remove
+	for (const auto &user : accounts)
+	{
+		if (!user.contains("reservations"))
+			continue;
 
-        for (const auto& r : user["reservations"]) {
-            if (r.contains("assetID") && r["assetID"] == assetID) {
-                found = true;
-                deleteCount++;
-            }
-        }
-    }
+		for (const auto &r : user["reservations"])
+		{
+			if (r.contains("assetID") && r["assetID"] == assetID)
+			{
+				found = true;
+				deleteCount++;
+			}
+		}
+	}
 
-    if (!found) {
-        cout << "No reservation found with Asset ID " << assetID << ".\n";
-        return false;
-    }
+	if (!found)
+	{
+		cout << "No reservation found with Asset ID " << assetID << ".\n";
+		return false;
+	}
 
-    // Confirmation prompt
-    cout << "Are you sure you want to cancel " << deleteCount 
-         << " reservation(s) for Asset ID " << assetID << "? (y/n): ";
+	// Confirmation prompt
+	cout << "Are you sure you want to cancel " << deleteCount
+		 << " reservation(s) for Asset ID " << assetID << "? (y/n): ";
 
-    char choice;
-    cin >> choice;
-    choice = tolower(choice);
+	char choice;
+	cin >> choice;
+	choice = tolower(choice);
 
-    if (choice != 'y') {
-        cout << "Cancellation aborted.\n";
-        return false;
-    }
-	
+	if (choice != 'y')
+	{
+		cout << "Cancellation aborted.\n";
+		return false;
+	}
+
 	string reason;
 	cout << "Enter reason for cancellation: ";
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	getline(cin, reason);
 	// Remove reservations
-    for (auto& user : accounts) {
-        if (!user.contains("reservations")) continue;
+	for (auto &user : accounts)
+	{
+		if (!user.contains("reservations"))
+			continue;
 
-        auto& reservations = user["reservations"];
+		auto &reservations = user["reservations"];
 
-        reservations.erase(
-            remove_if(reservations.begin(), reservations.end(),
-                [&](const json& r) {
-                    return r.contains("assetID") && r["assetID"] == assetID;
-                }),
-            reservations.end()
-        );
-    }
+		reservations.erase(
+			remove_if(reservations.begin(), reservations.end(),
+					  [&](const json &r)
+					  {
+						  return r.contains("assetID") && r["assetID"] == assetID;
+					  }),
+			reservations.end());
+	}
 
-    // Save updated JSON back to file
-    ofstream outFile(accountsFile);
-    if (!outFile.is_open()) {
-        cerr << "Error: Could not write to " << accountsFile << endl;
-        return false;
-    }
+	// Save updated JSON back to file
+	ofstream outFile(accountsFile);
+	if (!outFile.is_open())
+	{
+		cerr << "Error: Could not write to " << accountsFile << endl;
+		return false;
+	}
 
-    outFile << setw(4) << accounts;
-    outFile.close();
+	outFile << setw(4) << accounts;
+	outFile.close();
 
-    cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully. with reason: " << reason << endl;
+	cout << "Reservation(s) for Asset ID " << assetID << " canceled successfully. with reason: " << reason << endl;
 	system->update_usage_log("Reservation(s) for Asset ID " + to_string(assetID) + " canceled. Reason: " + reason);
-    return true;
+	return true;
 }
 
 // ()) {
@@ -870,5 +1161,3 @@ bool LabAssetManager::cancelReservation() {
 
 // 	return true;
 // }
-
-

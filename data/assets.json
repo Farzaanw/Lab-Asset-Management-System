@@ -37,7 +37,7 @@
         "id": 4,
         "location": "Lab B - Chemical Analysis Section",
         "name": "Flamethrower",
-        "operationalStatus": "available"
+        "operationalStatus": "pending"
     },
     {
         "category": "equipment",

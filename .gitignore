@@ -70,3 +70,4 @@ data/assets.json
 *.json
 data/usage_log.json
 data/accounts.json
+*.nfs*
