@@ -619,7 +619,7 @@ bool Assets::updateAsset(){
 	return true;
 }
 
-//Return an asset
+//Return an asset, dont need
 bool Assets::return_asset(const std::string& email) {
     cout << "--- Return Asset ---\n" << endl;
 

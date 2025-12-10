@@ -57,18 +57,18 @@ void FacultyResearcher::main()
              << "---Faculty Researcher Main Menu---" << endl;
         cout << "1. Reserve Asset" << endl;
         cout << "2. Reserve Multiple Assets" << endl;
-        cout << "3. Return Asset" << endl;
-        cout << "4. View Available Assets" << endl;
-        cout << "5. Search/Filter Assets" << endl;
-        cout << "6. View My Reservations" << endl;
-        cout << "7. Cancel Reservation" << endl;
-        cout << "8. View Notifications" << endl;
-        cout << "9. View Student Reservations" << endl;
-        cout << "10. View Student Usage" << endl;
-        cout << "11. Generate Usage Report" << endl;
-        cout << "12. Check-Out (start)" << endl;
-        cout << "13. Check-In (return)" << endl;
-        cout << "14. Logout" << endl;
+        //cout << "3. Return Asset" << endl;
+        cout << "3. View Available Assets" << endl;
+        cout << "4. Search/Filter Assets" << endl;
+        cout << "5. View My Reservations" << endl;
+        cout << "6. Cancel Reservation" << endl;
+        cout << "7. View Notifications" << endl;
+        cout << "8. View Student Reservations" << endl;
+        cout << "9. View Student Usage" << endl;
+        cout << "10. Generate Usage Report" << endl;
+        cout << "11. Check-Out (start)" << endl;
+        cout << "12. Check-In (return)" << endl;
+        cout << "13. Logout" << endl;
         cout << "Please enter your choice: ";
 
         string choice;
@@ -98,39 +98,41 @@ void FacultyResearcher::main()
             string email = getEmail();
             r->reserveMultipleAssets(email);
         }
+        /*
         else if (choice == "3")
         {
-            string email = getEmail();
-            a->return_asset(email);
+            //string email = getEmail();
+            //a->return_asset(email);
         }
-        else if (choice == "4")
+        */
+        else if (choice == "3")
         {
             a->viewAvailableAssets();
         }
-        else if (choice == "5")
+        else if (choice == "4")
         {
             a->searchAssets("", "");
         }
-        else if (choice == "6")
+        else if (choice == "5")
         {
             string email = getEmail();
             r->viewMyReservations(email);
         }
-        else if (choice == "7")
+        else if (choice == "6")
         {
             string email = getEmail();
             r->cancelReservation(email);
         }
 
-        else if (choice == "8")
+        else if (choice == "7")
         {
             n.view_notifications(getEmail());
         }
-        else if (choice == "9")
+        else if (choice == "8")
         {
             a->viewStudentAssets("");
         }
-        else if (choice == "10")
+        else if (choice == "9")
         {
             viewStudentUsage();
         }
@@ -138,17 +140,17 @@ void FacultyResearcher::main()
         {
             generateUsageReport(0);
         }
-        else if (choice == "12")
+        else if (choice == "11")
         {
             // Check-Out: will list eligible reservations that have started
             Reservations(system).checkOut(getEmail());
         }
-        else if (choice == "13")
+        else if (choice == "12")
         {
             // Check-In: will list currently checked_out reservations
             Reservations(system).checkIn(getEmail());
         }
-        else if (choice == "14")
+        else if (choice == "13")
         {
             cout << "Logging out of Faculty Researcher." << endl;
             break;
