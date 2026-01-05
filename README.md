@@ -1,15 +1,18 @@
 # MicroCat
 
-## HOW TO BUILD
--Clone the repository
-1. cd src/cli
-2. Run the following block:
-make clean &&
-make &&
-make run
+**MicroCat** is a Lab Asset Management System developed for Oregon State University's research department. It provides a command-line interface (CLI) to efficiently manage lab resources and track laboratory assets.
 
-<!-- 2. Run the command: g++ main.cpp ../SystemController.cpp -I../library -std=c++17 -o TestExecutable.exe
-3. Execute: ./TestExecutable.exe -->
+---
+
+## Build & Run
+
+```bash
+git clone https://github.com/Farzaanw/Lab-Asset-Management-System.git
+cd src/cli
+make clean && make && make run
+```
+
+---
 
 ## Team Members
 Kai Johnson  
@@ -32,4 +35,5 @@ Email: boultonr@oregonstate.edu
 
 Quinn Mcnamee  
 Email: mcnameeq@oregonstate.edu
+
 
